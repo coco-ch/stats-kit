@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "sourceMap": false,
+    "noEmit": true,
+    "paths": {
+      "stats-kit/contrat": ["./packages/contrat/src/index.ts"],
+      "stats-kit/serveur": ["./packages/serveur/src/index.ts"]
+    }
+  },
+  "include": ["packages/contrat/src", "packages/contrat/test", "packages/serveur/src", "packages/serveur/test", "demo/serveur", "scripts/*.ts", "e2e", "playwright.config.ts", "vitest.config.ts"]
+}

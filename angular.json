@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": { "analytics": false, "packageManager": "npm" },
+  "newProjectRoot": "packages",
+  "projects": {
+    "stats-kit-angular": {
+      "projectType": "library",
+      "root": "packages/angular",
+      "sourceRoot": "packages/angular/src",
+      "prefix": "sk",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:library",
+          "options": { "tsConfig": "packages/angular/tsconfig.lib.json", "outputPath": "packages/angular/dist" }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": { "tsConfig": "packages/angular/tsconfig.spec.json", "runner": "vitest", "buildTarget": "demo:build:development", "coverageInclude": ["packages/angular/src/lib/**/*.ts"], "coverageExclude": ["**/*.spec.ts"], "coverageReporters": ["text-summary", "text", "lcov"], "coverageThresholds": { "lines": 100, "statements": 98, "functions": 97, "branches": 85 } }
+        }
+      }
+    },
+    "demo": {
+      "projectType": "application",
+      "root": "demo",
+      "sourceRoot": "demo/src",
+      "prefix": "demo",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/demo",
+            "browser": "demo/src/main.ts",
+            "index": "demo/src/index.html",
+            "tsConfig": "demo/tsconfig.app.json",
+            "assets": [],
+            "styles": ["demo/src/styles.css"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "700kB", "maximumError": "1MB" },
+                { "type": "anyComponentStyle", "maximumWarning": "16kB", "maximumError": "24kB" }
+              ],
+              "outputHashing": "all"
+            },
+            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    }
+  }
+}

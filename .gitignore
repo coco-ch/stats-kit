@@ -1,0 +1,11 @@
+node_modules/
+dist/
+packages/*/dist/
+coverage/
+test-results/
+playwright-report/
+.angular/
+*.log
+.env
+.env.*
+captures/tmp/
