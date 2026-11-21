@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { axe, noHorizontalScroll, ready } from './outils';
+import { axe, noHorizontalScroll, ready } from './outils.ts';
 
 test.describe('page Google', () => {
   test('toutes les sections, portée marque, indexation', async ({ page }) => {

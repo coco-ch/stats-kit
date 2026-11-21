@@ -318,7 +318,7 @@ describe('kit et routes HTTP', () => {
     await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
     const port = (server.address() as { port: number }).port;
     const live = await fetch(`http://127.0.0.1:${port}/live`);
-    expect([live.status, live.headers.get('content-type'), (await live.json()).version]).toEqual([200, 'application/json; charset=utf-8', 1]);
+    expect([live.status, live.headers.get('content-type'), ((await live.json()) as { version: number }).version]).toEqual([200, 'application/json; charset=utf-8', 1]);
     const next = await fetch(`http://127.0.0.1:${port}/ailleurs`);
     expect([next.status, await next.text()]).toEqual([418, 'suite']);
     server.close();

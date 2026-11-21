@@ -44,7 +44,7 @@
     "build:serveur": "tsc -p packages/serveur/tsconfig.build.json",
     "build:angular": "ng build stats-kit-angular",
     "schema": "node scripts/schema.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p e2e/tsconfig.json --noEmit && tsc -p demo/tsconfig.app.json --noEmit",
     "test": "vitest run --coverage",
     "test:angular": "ng test stats-kit-angular --watch=false --coverage",
     "demo:build": "ng build demo",

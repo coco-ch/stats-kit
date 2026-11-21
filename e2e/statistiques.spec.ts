@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { axe, noHorizontalScroll, ready } from './outils';
+import { axe, noHorizontalScroll, ready } from './outils.ts';
 
 test.describe('page Statistiques', () => {
   test('toutes les sections, sur données factices', async ({ page }) => {

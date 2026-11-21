@@ -174,12 +174,12 @@ describe('réglages', () => {
   });
   it('identifiants Google en JSON, en base64 ou en objet', () => {
     const o = { client_id: 'i', client_secret: 's', refresh_token: 'r' };
-    expect(parseCredentials(JSON.stringify(o), ['client_id', 'client_secret', 'refresh_token'])).toEqual(o);
-    expect(parseCredentials(Buffer.from(JSON.stringify(o)).toString('base64'), ['client_id'])).toEqual(o);
-    expect(parseCredentials(o, ['client_id'])).toEqual(o);
-    expect(parseCredentials('{"client_id":""}', ['client_id'])).toBeNull();
-    expect(parseCredentials('pas du json', ['client_id'])).toBeNull();
-    expect(parseCredentials(undefined, ['client_id'])).toBeNull();
+    expect(parseCredentials<{ client_id: string; client_secret: string; refresh_token: string }>(JSON.stringify(o), ['client_id', 'client_secret', 'refresh_token'])).toEqual(o);
+    expect(parseCredentials<{ client_id: string; client_secret: string; refresh_token: string }>(Buffer.from(JSON.stringify(o)).toString('base64'), ['client_id'])).toEqual(o);
+    expect(parseCredentials<{ client_id: string; client_secret: string; refresh_token: string }>(o, ['client_id'])).toEqual(o);
+    expect(parseCredentials<{ client_id: string; client_secret: string; refresh_token: string }>('{"client_id":""}', ['client_id'])).toBeNull();
+    expect(parseCredentials<{ client_id: string; client_secret: string; refresh_token: string }>('pas du json', ['client_id'])).toBeNull();
+    expect(parseCredentials<{ client_id: string; client_secret: string; refresh_token: string }>(undefined, ['client_id'])).toBeNull();
   });
   it('signe un JWT vérifiable', () => {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });

@@ -16,7 +16,7 @@ const kit = createStatsKit({
   report: { send: async () => 2 },
 });
 const dir = new URL('../packages/contrat/exemples/', import.meta.url);
-const write = (name, data) => writeFileSync(new URL(name, dir), JSON.stringify(data, null, 1) + '\n');
+const write = (name: string, data: unknown) => writeFileSync(new URL(name, dir), JSON.stringify(data, null, 1) + '\n');
 write('overview.json', await kit.overview({ days: 30 }));
 write('overview-24h.json', await kit.overview({ days: 1 }));
 write('live.json', await kit.live());
