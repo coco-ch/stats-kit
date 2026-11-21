@@ -1,0 +1,13 @@
+{
+  "name": "@stats-kit/angular",
+  "version": "0.1.0",
+  "description": "Composants Angular de stats-kit (paquet construit dans packages/angular/dist, exposé par le paquet racine sous « stats-kit/angular »).",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": { ".": "./src/public-api.ts" },
+  "peerDependencies": {
+    "@angular/common": ">=21.0.0",
+    "@angular/core": ">=21.0.0",
+    "rxjs": "^7.4.0"
+  }
+}

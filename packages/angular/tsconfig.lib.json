@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.angular.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "declaration": true,
+    "declarationMap": false,
+    "inlineSources": true,
+    "paths": { "stats-kit/contrat": ["../contrat/dist/index.d.ts"] }
+  },
+  "angularCompilerOptions": { "compilationMode": "partial" },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
+}
