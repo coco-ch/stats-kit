@@ -1,0 +1,73 @@
+{
+ "version": 1,
+ "status": "ok",
+ "error": null,
+ "checkedAt": "2026-11-16T10:30:00.000Z",
+ "total": 9,
+ "indexed": 7,
+ "pages": [
+  {
+   "url": "https://www.example.test/en",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/en/services",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/en/contact",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/en/pricing",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/en/projects",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/en/products/oak-table",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/en/site-map",
+   "verdict": "NEUTRAL",
+   "state": "Discovered - currently not indexed",
+   "lastCrawl": null,
+   "indexed": false
+  },
+  {
+   "url": "https://www.example.test/fr",
+   "verdict": "PASS",
+   "state": "Submitted and indexed",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.example.test/de",
+   "verdict": "NEUTRAL",
+   "state": "Discovered - currently not indexed",
+   "lastCrawl": null,
+   "indexed": false
+  }
+ ]
+}

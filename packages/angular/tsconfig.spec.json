@@ -3,7 +3,7 @@
   "compilerOptions": {
     "types": ["vitest/globals"],
     "resolveJsonModule": true,
-    "paths": { "stats-kit/contrat": ["../contrat/src/index.ts"] }
+    "paths": { "stats-kit/contract": ["../contract/src/index.ts"] }
   },
   "include": ["src/**/*.ts"]
 }

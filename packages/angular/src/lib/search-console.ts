@@ -1,15 +1,15 @@
 /*
- * Page « Google » (Search Console) : tuiles, affichages et clics par jour avec la période précédente, recherches (toutes, marque,
- * hors marque), requêtes × pages, opportunités et anomalies, pages, pays, appareils, apparence, plans du site, indexation.
+ * "Google" page (Search Console): tiles, impressions and clicks per day with the previous period, queries (all, brand,
+ * non-brand), queries × pages, opportunities and anomalies, pages, countries, devices, appearance, sitemaps, indexing.
  */
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DOCUMENT, PLATFORM_ID, computed, inject, input, signal, type OnInit } from '@angular/core';
 import {
-  byKey, cannibalization, countryName, delta, fill, formatNumber, formatPercent, gap, isBrand, lostPages, lowCtrPages, movers, newQueries, pathOf, potential,
+  byKey, cannibalization, countryName, csvSeparator, delta, fill, formatNumber, formatPercent, gap, isBrand, lostPages, lowCtrPages, movers, newQueries, pathOf, potential,
   shortDate, sparkPath, toCsv,
   type IndexationResponse, type SearchOverview, type SearchRow, type TextOverrides,
-} from 'stats-kit/contrat';
-import { SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocs';
+} from 'stats-kit/contract';
+import { SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocks';
 import { StatsKitApi, download, injectOptions, resolveTexts } from './config';
 import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
 
@@ -181,7 +181,7 @@ export class SkSearchConsole implements OnInit {
     this.doc.defaultView?.print();
   }
 
-  /* ---------------------------------------------------------------- graphiques */
+  /* ---------------------------------------------------------------- charts */
   protected readonly slots = computed(() => (this.data()?.series ?? []).map((x) => x.date));
   protected series(k: 'clicks' | 'impressions'): number[] {
     return (this.data()?.series ?? []).map((x) => x[k]);
@@ -190,7 +190,7 @@ export class SkSearchConsole implements OnInit {
     return (this.data()?.previousSeries ?? []).map((x) => x[k]);
   }
 
-  /* ---------------------------------------------------------------- tuiles */
+  /* ---------------------------------------------------------------- tiles */
   readonly tiles = computed<TileData[]>(() => {
     const d = this.data();
     if (!d || d.status !== 'ok') return [];
@@ -204,7 +204,7 @@ export class SkSearchConsole implements OnInit {
     const C = G.groupClicks, V = G.groupVisibility;
     const out: TileData[] = [
       { id: 'clicks', group: C, label: G.clicks, value: this.fmt(t.clicks), change: delta(T, t.clicks, b.clicks), sub: fill(T.common.perDay, { n: this.fmt(t.clicks / Math.max(1, d.days), 1) }), spark: line('clicks') },
-      { id: 'ctr', group: C, label: G.ctr, value: formatPercent(T, t.ctr), change: b.impressions ? gap(T, t.ctr * 100, b.ctr * 100, false, 1, ' pt') : null, sub: '', spark: line('ctr') },
+      { id: 'ctr', group: C, label: G.ctr, value: formatPercent(T, t.ctr), change: b.impressions ? gap(T, t.ctr * 100, b.ctr * 100, false, 1, 'points') : null, sub: '', spark: line('ctr') },
       { id: 'impressions', group: V, label: G.impressions, value: this.fmt(t.impressions), change: delta(T, t.impressions, b.impressions), sub: fill(T.common.perDay, { n: this.fmt(t.impressions / Math.max(1, d.days), 1) }), spark: line('impressions') },
       { id: 'position', group: V, label: G.position, value: t.impressions ? this.fmt(t.position, 1) : '—', change: t.impressions && b.impressions ? gap(T, t.position, b.position, true, 1) : null, sub: T.common.lowerIsBetter, spark: '' },
       { id: 'queries', group: V, label: G.queriesCount, value: this.fmt(visible.length), change: delta(T, visible.length, d.previousQueries.filter((q) => q.impressions > 0).length), sub: fill(G.firstPage, { n: this.fmt(visible.filter((q) => q.position <= 10).length) }), spark: '' },
@@ -221,11 +221,11 @@ export class SkSearchConsole implements OnInit {
     const maps = d.sitemaps ?? [];
     if (maps.length) out.push({ id: 'sitemap', group: G.groupIndex, label: G.sitemapPages, value: this.fmt(maps.reduce((n, m) => n + m.submitted, 0)), change: null, sub: fill(G.sitemapSub, { n: maps.reduce((n, m) => n + m.errors, 0) }), spark: '' });
     const ix = this.indexation();
-    if (ix?.status === 'ok') out.push({ id: 'indexed', group: G.groupIndex, label: G.indexedPages, value: `${ix.indexed} / ${ix.total}`, change: null, sub: ix.total ? fill(G.indexedSub, { p: formatPercent(T, ix.indexed / ix.total, 0) }) : '', spark: '' });
+    if (ix?.status === 'ok') out.push({ id: 'indexed', group: G.groupIndex, label: G.indexedPages, value: `${this.fmt(ix.indexed)} / ${this.fmt(ix.total)}`, change: null, sub: ix.total ? fill(G.indexedSub, { p: formatPercent(T, ix.indexed / ix.total, 0) }) : '', spark: '' });
     return out;
   });
 
-  /* ---------------------------------------------------------------- tableaux */
+  /* ---------------------------------------------------------------- tables */
   protected readonly perfCols = computed<Col[]>(() => {
     const G = this.T().search;
     return [
@@ -291,7 +291,7 @@ export class SkSearchConsole implements OnInit {
     const out: (string | number | null)[][] = [[this.T().stats.csvSection, this.T().stats.csvLabel, G.colClicks, G.colImpressions, G.colCtr, G.colPosition]];
     const d = this.data()!;
     const add = (section: string, list: SearchRow[]) => list.forEach((r) => out.push([section, r.key, r.clicks, r.impressions, r.ctr, r.position]));
-    add(this.T().common.total, [{ key: `${d.start} – ${d.end}`, ...d.totals }]);
+    add(this.T().common.total, [{ key: fill(this.T().periods.short, { from: d.start, to: d.end }), ...d.totals }]);
     add(G.barImpressions, d.series.map((x) => ({ key: x.date, ...x })));
     add(G.queriesTitle, d.queries);
     add(G.pagesTitle, d.pages);
@@ -300,6 +300,6 @@ export class SkSearchConsole implements OnInit {
     return out;
   }
   exportCsv(): void {
-    download(this.doc, `${this.T().search.csvName}-${this.days()}j.csv`, toCsv(this.csvRows()));
+    download(this.doc, `${fill(this.T().search.csvFile, { days: this.days() })}.csv`, toCsv(this.csvRows(), csvSeparator(this.T())));
   }
 }

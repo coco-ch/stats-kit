@@ -8,6 +8,6 @@ bootstrapApplication(Demo, {
   providers: [
     provideZonelessChangeDetection(),
     provideHttpClient(),
-    provideStatsKit({ apiUrl: '/api/admin/audience', locale: 'fr' }),
+    provideStatsKit({ apiUrl: '/api/admin/audience', locale: 'en' }),
   ],
 }).catch((e) => console.error(e));

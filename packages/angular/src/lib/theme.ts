@@ -1,9 +1,9 @@
 /*
- * Thème des composants : variables CSS publiques `--sk-*` que le site peut définir sur n'importe quel ancêtre (ou sur la balise du
- * composant), avec des valeurs par défaut claires et sombres. Aucun style global : tout est dans les styles des composants.
+ * Theme of the components: public `--sk-*` CSS variables the site can set on any ancestor (or on the component tag), with light
+ * and dark defaults. No global style: everything is in the component styles.
  *
- * Mode : `data-sk-mode="dark"` sur un ancêtre (posé par les pages selon leur entrée `theme`, ou par le site) passe en sombre.
- * Une variable publique définie par le site l'emporte toujours ; à lui d'en donner une valeur sombre sous son propre sélecteur.
+ * Mode: `data-sk-mode="dark"` on an ancestor (set by the pages from their `theme` input, or by the site) switches to dark.
+ * A public variable set by the site always wins; it is up to the site to give it a dark value under its own selector.
  */
 import { DestroyRef, DOCUMENT, computed, inject, signal, type Signal } from '@angular/core';
 
@@ -25,7 +25,7 @@ const DARK = `
   --_shadow:0 1px 2px rgb(0 0 0 / 30%);
   color-scheme: dark;`;
 
-/** Variables résolues `--k-*` : publique `--sk-*` si le site l'a définie, sinon valeur par défaut du mode. */
+/** Resolved `--k-*` variables: public `--sk-*` if the site set it, otherwise the default of the mode. */
 const RESOLVED = `
   --k-card: var(--sk-card, var(--_card));
   --k-bg: var(--sk-bg, var(--_bg));
@@ -58,13 +58,13 @@ const RESOLVED = `
   --k-shadow: var(--sk-shadow, var(--_shadow));
 `;
 
-/** À placer en tête des styles de chaque composant. */
+/** To put first in the styles of every component. */
 export const TOKENS = `
   :host { ${LIGHT} ${RESOLVED} --k-radius: var(--sk-radius, 12px); --k-gap: var(--sk-gap, 12px); --k-font: var(--sk-font, inherit); }
   :host-context([data-sk-mode=dark]) { ${DARK} }
 `;
 
-/** Briques de mise en page communes aux pages (préfixe « sk- » : aucune collision avec les classes du site). */
+/** Layout blocks shared by the pages ("sk-" prefix: no collision with the site classes). */
 export const LAYOUT = `
   :host { display: block; width: 100%; min-width: 0; font-family: var(--k-font); color: var(--k-ink); background: var(--k-bg); line-height: 1.45; }
   * { box-sizing: border-box; }
@@ -114,7 +114,7 @@ export const LAYOUT = `
 
 export type ThemeChoice = 'auto' | 'light' | 'dark';
 
-/** Mode effectif (« light » / « dark ») d'un choix, en suivant le système pour « auto ». */
+/** Effective mode ("light" / "dark") of a choice, following the system for "auto". */
 export function resolvedMode(choice: Signal<ThemeChoice>): Signal<'light' | 'dark'> {
   const doc = inject(DOCUMENT);
   const mq = doc.defaultView?.matchMedia?.('(prefers-color-scheme: dark)') ?? null;

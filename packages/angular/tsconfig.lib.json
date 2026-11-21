@@ -6,7 +6,7 @@
     "declaration": true,
     "declarationMap": false,
     "inlineSources": true,
-    "paths": { "stats-kit/contrat": ["../contrat/dist/index.d.ts"] }
+    "paths": { "stats-kit/contract": ["../contract/dist/index.d.ts"] }
   },
   "angularCompilerOptions": { "compilationMode": "partial" },
   "include": ["src/**/*.ts"],

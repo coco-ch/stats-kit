@@ -1,8 +1,8 @@
-# Recherche de secrets : règles par défaut de gitleaks. Les faux identifiants de la démo (domaines *.exemple.test, clé RSA
-# générée à la volée, jamais écrite) ne déclenchent aucune règle ; rien n'est mis en liste blanche ici.
+# Secret scanning: default gitleaks rules. The fake credentials of the demo (*.example.test domains, RSA key generated on the
+# fly, never written) trigger no rule; nothing is allow-listed here.
 [extend]
 useDefault = true
 
 [allowlist]
-description = "Fichiers générés sans secret"
-paths = ['''package-lock\.json''', '''packages/serveur/assets/world-110m\.json''']
+description = "Generated files without secrets"
+paths = ['''package-lock\.json''', '''packages/server/assets/world-110m\.json''']

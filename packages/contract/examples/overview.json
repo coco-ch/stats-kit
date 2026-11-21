@@ -1,0 +1,1642 @@
+{
+ "version": 1,
+ "status": "ok",
+ "error": null,
+ "generatedAt": "2026-11-16T10:30:00.000Z",
+ "range": {
+  "from": "2026-10-17T10:30:00.000Z",
+  "to": "2026-11-16T10:30:00.000Z",
+  "days": 30,
+  "unit": "day",
+  "timeZone": "Europe/Paris",
+  "previousFrom": "2026-09-17T10:30:00.000Z",
+  "previousTo": "2026-10-17T10:30:00.000Z"
+ },
+ "totals": {
+  "pageviews": 4121,
+  "visitors": 1772,
+  "visits": 2308,
+  "bounces": 946,
+  "totaltime": 221568
+ },
+ "previous": {
+  "pageviews": 3786,
+  "visitors": 1628,
+  "visits": 2120,
+  "bounces": 869,
+  "totaltime": 203520
+ },
+ "active": 5,
+ "series": {
+  "unit": "day",
+  "slots": [
+   "2026-10-17",
+   "2026-10-18",
+   "2026-10-19",
+   "2026-10-20",
+   "2026-10-21",
+   "2026-10-22",
+   "2026-10-23",
+   "2026-10-24",
+   "2026-10-25",
+   "2026-10-26",
+   "2026-10-27",
+   "2026-10-28",
+   "2026-10-29",
+   "2026-10-30",
+   "2026-10-31",
+   "2026-11-01",
+   "2026-11-02",
+   "2026-11-03",
+   "2026-11-04",
+   "2026-11-05",
+   "2026-11-06",
+   "2026-11-07",
+   "2026-11-08",
+   "2026-11-09",
+   "2026-11-10",
+   "2026-11-11",
+   "2026-11-12",
+   "2026-11-13",
+   "2026-11-14",
+   "2026-11-15",
+   "2026-11-16"
+  ],
+  "pageviews": [
+   67,
+   82,
+   177,
+   165,
+   162,
+   155,
+   150,
+   103,
+   84,
+   181,
+   173,
+   165,
+   167,
+   147,
+   98,
+   88,
+   176,
+   166,
+   163,
+   145,
+   145,
+   96,
+   80,
+   163,
+   151,
+   155,
+   149,
+   136,
+   95,
+   76,
+   61
+  ],
+  "visitors": [
+   29,
+   35,
+   76,
+   71,
+   70,
+   67,
+   65,
+   44,
+   36,
+   78,
+   74,
+   71,
+   72,
+   63,
+   42,
+   38,
+   76,
+   71,
+   70,
+   62,
+   62,
+   41,
+   34,
+   70,
+   65,
+   67,
+   64,
+   58,
+   41,
+   33,
+   26
+  ],
+  "previousPageviews": [
+   90,
+   119,
+   82,
+   68,
+   141,
+   140,
+   130,
+   132,
+   116,
+   82,
+   70,
+   154,
+   145,
+   138,
+   138,
+   132,
+   84,
+   76,
+   158,
+   155,
+   153,
+   144,
+   137,
+   92,
+   81,
+   169,
+   160,
+   159,
+   155,
+   147,
+   39
+  ]
+ },
+ "last24h": {
+  "unit": "hour",
+  "slots": [
+   "2026-11-15T11",
+   "2026-11-15T12",
+   "2026-11-15T13",
+   "2026-11-15T14",
+   "2026-11-15T15",
+   "2026-11-15T16",
+   "2026-11-15T17",
+   "2026-11-15T18",
+   "2026-11-15T19",
+   "2026-11-15T20",
+   "2026-11-15T21",
+   "2026-11-15T22",
+   "2026-11-15T23",
+   "2026-11-16T00",
+   "2026-11-16T01",
+   "2026-11-16T02",
+   "2026-11-16T03",
+   "2026-11-16T04",
+   "2026-11-16T05",
+   "2026-11-16T06",
+   "2026-11-16T07",
+   "2026-11-16T08",
+   "2026-11-16T09",
+   "2026-11-16T10",
+   "2026-11-16T11"
+  ],
+  "pageviews": [
+   6,
+   4,
+   4,
+   6,
+   6,
+   6,
+   4,
+   4,
+   3,
+   5,
+   2,
+   1,
+   0,
+   2,
+   1,
+   0,
+   1,
+   2,
+   2,
+   2,
+   6,
+   9,
+   13,
+   12,
+   11
+  ],
+  "visitors": [
+   3,
+   2,
+   2,
+   3,
+   3,
+   3,
+   2,
+   2,
+   1,
+   2,
+   1,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
+   3,
+   4,
+   6,
+   5,
+   5
+  ],
+  "previousPageviews": null
+ },
+ "heatmap": [
+  [
+   6,
+   2,
+   2,
+   5,
+   6,
+   8,
+   11,
+   27,
+   49,
+   66,
+   69,
+   60,
+   42,
+   45,
+   51,
+   53,
+   50,
+   43,
+   34,
+   40,
+   35,
+   29,
+   16,
+   9
+  ],
+  [
+   3,
+   0,
+   4,
+   4,
+   4,
+   1,
+   8,
+   21,
+   40,
+   51,
+   51,
+   47,
+   35,
+   44,
+   53,
+   50,
+   46,
+   39,
+   33,
+   38,
+   33,
+   28,
+   14,
+   8
+  ],
+  [
+   4,
+   6,
+   7,
+   7,
+   5,
+   4,
+   10,
+   21,
+   37,
+   49,
+   49,
+   43,
+   34,
+   41,
+   51,
+   45,
+   42,
+   39,
+   31,
+   36,
+   35,
+   26,
+   16,
+   7
+  ],
+  [
+   2,
+   5,
+   5,
+   4,
+   2,
+   2,
+   10,
+   20,
+   35,
+   46,
+   48,
+   46,
+   30,
+   41,
+   48,
+   45,
+   42,
+   36,
+   33,
+   36,
+   33,
+   24,
+   15,
+   8
+  ],
+  [
+   2,
+   3,
+   4,
+   4,
+   5,
+   4,
+   10,
+   17,
+   34,
+   44,
+   46,
+   43,
+   35,
+   38,
+   45,
+   43,
+   39,
+   32,
+   31,
+   29,
+   29,
+   23,
+   13,
+   5
+  ],
+  [
+   4,
+   3,
+   4,
+   1,
+   2,
+   5,
+   9,
+   12,
+   21,
+   29,
+   31,
+   32,
+   26,
+   31,
+   35,
+   35,
+   34,
+   30,
+   24,
+   27,
+   24,
+   20,
+   14,
+   6
+  ],
+  [
+   3,
+   3,
+   4,
+   4,
+   5,
+   5,
+   10,
+   13,
+   22,
+   30,
+   30,
+   29,
+   23,
+   23,
+   32,
+   30,
+   29,
+   21,
+   20,
+   19,
+   23,
+   16,
+   9,
+   7
+  ]
+ ],
+ "breakdowns": {
+  "pages": [
+   {
+    "key": "/",
+    "label": "Home",
+    "value": 1401,
+    "previous": 1288
+   },
+   {
+    "key": "/services",
+    "label": null,
+    "value": 618,
+    "previous": 567
+   },
+   {
+    "key": "/contact",
+    "label": "Contact",
+    "value": 440,
+    "previous": 405
+   },
+   {
+    "key": "/products/oak-table",
+    "label": null,
+    "value": 329,
+    "previous": 303
+   },
+   {
+    "key": "/articles/caring-for-wood",
+    "label": null,
+    "value": 206,
+    "previous": 189
+   },
+   {
+    "key": "/products/walnut-chair",
+    "label": null,
+    "value": 206,
+    "previous": 189
+   },
+   {
+    "key": "/about",
+    "label": null,
+    "value": 165,
+    "previous": 151
+   },
+   {
+    "key": "/products/ash-shelf",
+    "label": null,
+    "value": 144,
+    "previous": 133
+   },
+   {
+    "key": "/articles/choosing-a-wood",
+    "label": null,
+    "value": 103,
+    "previous": 95
+   },
+   {
+    "key": "/pricing",
+    "label": null,
+    "value": 99,
+    "previous": 91
+   },
+   {
+    "key": "/projects",
+    "label": null,
+    "value": 91,
+    "previous": 83
+   },
+   {
+    "key": "/articles/natural-finishes",
+    "label": null,
+    "value": 74,
+    "previous": 68
+   },
+   {
+    "key": "/legal-notice",
+    "label": null,
+    "value": 33,
+    "previous": 30
+   },
+   {
+    "key": "/site-map",
+    "label": null,
+    "value": 25,
+    "previous": 23
+   }
+  ],
+  "entries": [
+   {
+    "key": "/",
+    "label": "Home",
+    "value": 443,
+    "previous": null
+   },
+   {
+    "key": "/services",
+    "label": null,
+    "value": 213,
+    "previous": null
+   },
+   {
+    "key": "/contact",
+    "label": "Contact",
+    "value": 167,
+    "previous": null
+   },
+   {
+    "key": "/products/oak-table",
+    "label": null,
+    "value": 111,
+    "previous": null
+   },
+   {
+    "key": "/products/walnut-chair",
+    "label": null,
+    "value": 78,
+    "previous": null
+   },
+   {
+    "key": "/articles/caring-for-wood",
+    "label": null,
+    "value": 65,
+    "previous": null
+   },
+   {
+    "key": "/about",
+    "label": null,
+    "value": 62,
+    "previous": null
+   },
+   {
+    "key": "/products/ash-shelf",
+    "label": null,
+    "value": 45,
+    "previous": null
+   },
+   {
+    "key": "/pricing",
+    "label": null,
+    "value": 34,
+    "previous": null
+   },
+   {
+    "key": "/projects",
+    "label": null,
+    "value": 34,
+    "previous": null
+   },
+   {
+    "key": "/articles/choosing-a-wood",
+    "label": null,
+    "value": 32,
+    "previous": null
+   },
+   {
+    "key": "/articles/natural-finishes",
+    "label": null,
+    "value": 26,
+    "previous": null
+   },
+   {
+    "key": "/legal-notice",
+    "label": null,
+    "value": 10,
+    "previous": null
+   },
+   {
+    "key": "/site-map",
+    "label": null,
+    "value": 9,
+    "previous": null
+   }
+  ],
+  "exits": [
+   {
+    "key": "/",
+    "label": "Home",
+    "value": 396,
+    "previous": null
+   },
+   {
+    "key": "/services",
+    "label": null,
+    "value": 191,
+    "previous": null
+   },
+   {
+    "key": "/contact",
+    "label": "Contact",
+    "value": 149,
+    "previous": null
+   },
+   {
+    "key": "/products/oak-table",
+    "label": null,
+    "value": 99,
+    "previous": null
+   },
+   {
+    "key": "/products/walnut-chair",
+    "label": null,
+    "value": 69,
+    "previous": null
+   },
+   {
+    "key": "/articles/caring-for-wood",
+    "label": null,
+    "value": 58,
+    "previous": null
+   },
+   {
+    "key": "/about",
+    "label": null,
+    "value": 55,
+    "previous": null
+   },
+   {
+    "key": "/products/ash-shelf",
+    "label": null,
+    "value": 40,
+    "previous": null
+   },
+   {
+    "key": "/pricing",
+    "label": null,
+    "value": 30,
+    "previous": null
+   },
+   {
+    "key": "/projects",
+    "label": null,
+    "value": 30,
+    "previous": null
+   },
+   {
+    "key": "/articles/choosing-a-wood",
+    "label": null,
+    "value": 29,
+    "previous": null
+   },
+   {
+    "key": "/articles/natural-finishes",
+    "label": null,
+    "value": 23,
+    "previous": null
+   },
+   {
+    "key": "/legal-notice",
+    "label": null,
+    "value": 9,
+    "previous": null
+   },
+   {
+    "key": "/site-map",
+    "label": null,
+    "value": 8,
+    "previous": null
+   }
+  ],
+  "referrers": [
+   {
+    "key": "",
+    "label": null,
+    "value": 1062,
+    "previous": 975
+   },
+   {
+    "key": "google.com",
+    "label": null,
+    "value": 623,
+    "previous": 572
+   },
+   {
+    "key": "bing.com",
+    "label": null,
+    "value": 115,
+    "previous": 106
+   },
+   {
+    "key": "duckduckgo.com",
+    "label": null,
+    "value": 92,
+    "previous": 85
+   },
+   {
+    "key": "youtube.com",
+    "label": null,
+    "value": 92,
+    "previous": 85
+   },
+   {
+    "key": "linkedin.com",
+    "label": null,
+    "value": 69,
+    "previous": 64
+   },
+   {
+    "key": "craft-directory.example",
+    "label": null,
+    "value": 46,
+    "previous": 42
+   },
+   {
+    "key": "facebook.com",
+    "label": null,
+    "value": 46,
+    "previous": 42
+   },
+   {
+    "key": "qwant.com",
+    "label": null,
+    "value": 28,
+    "previous": 25
+   }
+  ],
+  "channels": [
+   {
+    "key": "direct",
+    "label": null,
+    "value": 1016,
+    "previous": 933
+   },
+   {
+    "key": "organicSearch",
+    "label": null,
+    "value": 854,
+    "previous": 784
+   },
+   {
+    "key": "organicSocial",
+    "label": null,
+    "value": 185,
+    "previous": 170
+   },
+   {
+    "key": "referral",
+    "label": null,
+    "value": 138,
+    "previous": 127
+   },
+   {
+    "key": "organicVideo",
+    "label": null,
+    "value": 92,
+    "previous": 85
+   },
+   {
+    "key": "email",
+    "label": null,
+    "value": 23,
+    "previous": 21
+   }
+  ],
+  "countries": [
+   {
+    "key": "FR",
+    "label": null,
+    "value": 1339,
+    "previous": 1230
+   },
+   {
+    "key": "CH",
+    "label": null,
+    "value": 208,
+    "previous": 191
+   },
+   {
+    "key": "BE",
+    "label": null,
+    "value": 185,
+    "previous": 170
+   },
+   {
+    "key": "CA",
+    "label": null,
+    "value": 138,
+    "previous": 127
+   },
+   {
+    "key": "US",
+    "label": null,
+    "value": 92,
+    "previous": 85
+   },
+   {
+    "key": "DE",
+    "label": null,
+    "value": 81,
+    "previous": 74
+   },
+   {
+    "key": "GB",
+    "label": null,
+    "value": 46,
+    "previous": 42
+   },
+   {
+    "key": "ES",
+    "label": null,
+    "value": 35,
+    "previous": 32
+   },
+   {
+    "key": "IT",
+    "label": null,
+    "value": 35,
+    "previous": 32
+   },
+   {
+    "key": "MA",
+    "label": null,
+    "value": 28,
+    "previous": 25
+   },
+   {
+    "key": "SN",
+    "label": null,
+    "value": 18,
+    "previous": 17
+   },
+   {
+    "key": "LU",
+    "label": null,
+    "value": 16,
+    "previous": 15
+   },
+   {
+    "key": "JP",
+    "label": null,
+    "value": 12,
+    "previous": 11
+   },
+   {
+    "key": "BR",
+    "label": null,
+    "value": 9,
+    "previous": 8
+   },
+   {
+    "key": "AU",
+    "label": null,
+    "value": 7,
+    "previous": 6
+   }
+  ],
+  "regions": [
+   {
+    "key": "FR-ARA",
+    "label": null,
+    "value": 415,
+    "previous": null
+   },
+   {
+    "key": "FR-IDF",
+    "label": null,
+    "value": 369,
+    "previous": null
+   },
+   {
+    "key": "FR-PAC",
+    "label": null,
+    "value": 231,
+    "previous": null
+   },
+   {
+    "key": "CA-QC",
+    "label": null,
+    "value": 115,
+    "previous": null
+   },
+   {
+    "key": "CH-GE",
+    "label": null,
+    "value": 115,
+    "previous": null
+   },
+   {
+    "key": "BE-BRU",
+    "label": null,
+    "value": 92,
+    "previous": null
+   },
+   {
+    "key": "FR-OCC",
+    "label": null,
+    "value": 92,
+    "previous": null
+   }
+  ],
+  "cities": [
+   {
+    "key": "Lyon",
+    "label": null,
+    "value": 254,
+    "previous": null
+   },
+   {
+    "key": "Paris",
+    "label": null,
+    "value": 231,
+    "previous": null
+   },
+   {
+    "key": "Grenoble",
+    "label": null,
+    "value": 138,
+    "previous": null
+   },
+   {
+    "key": "Geneva",
+    "label": null,
+    "value": 115,
+    "previous": null
+   },
+   {
+    "key": "Brussels",
+    "label": null,
+    "value": 92,
+    "previous": null
+   },
+   {
+    "key": "Montreal",
+    "label": null,
+    "value": 92,
+    "previous": null
+   },
+   {
+    "key": "Marseille",
+    "label": null,
+    "value": 81,
+    "previous": null
+   },
+   {
+    "key": "Annecy",
+    "label": null,
+    "value": 69,
+    "previous": null
+   },
+   {
+    "key": "Lausanne",
+    "label": null,
+    "value": 58,
+    "previous": null
+   },
+   {
+    "key": "Toulouse",
+    "label": null,
+    "value": 46,
+    "previous": null
+   },
+   {
+    "key": "Nantes",
+    "label": null,
+    "value": 35,
+    "previous": null
+   },
+   {
+    "key": "Liege",
+    "label": null,
+    "value": 23,
+    "previous": null
+   }
+  ],
+  "languages": [
+   {
+    "key": "fr",
+    "label": null,
+    "value": 1639,
+    "previous": null
+   },
+   {
+    "key": "en",
+    "label": null,
+    "value": 346,
+    "previous": null
+   },
+   {
+    "key": "de",
+    "label": null,
+    "value": 138,
+    "previous": null
+   },
+   {
+    "key": "es",
+    "label": null,
+    "value": 58,
+    "previous": null
+   },
+   {
+    "key": "it",
+    "label": null,
+    "value": 46,
+    "previous": null
+   },
+   {
+    "key": "ja",
+    "label": null,
+    "value": 12,
+    "previous": null
+   }
+  ],
+  "siteLanguages": [
+   {
+    "key": "en",
+    "label": null,
+    "value": 3123,
+    "previous": 2869
+   },
+   {
+    "key": "fr",
+    "label": null,
+    "value": 638,
+    "previous": 587
+   },
+   {
+    "key": "de",
+    "label": null,
+    "value": 173,
+    "previous": 159
+   }
+  ],
+  "devices": [
+   {
+    "key": "mobile",
+    "label": null,
+    "value": 1200,
+    "previous": null
+   },
+   {
+    "key": "desktop",
+    "label": null,
+    "value": 692,
+    "previous": null
+   },
+   {
+    "key": "laptop",
+    "label": null,
+    "value": 277,
+    "previous": null
+   },
+   {
+    "key": "tablet",
+    "label": null,
+    "value": 138,
+    "previous": null
+   }
+  ],
+  "browsers": [
+   {
+    "key": "chrome",
+    "label": null,
+    "value": 1062,
+    "previous": null
+   },
+   {
+    "key": "ios",
+    "label": null,
+    "value": 485,
+    "previous": null
+   },
+   {
+    "key": "safari",
+    "label": null,
+    "value": 231,
+    "previous": null
+   },
+   {
+    "key": "firefox",
+    "label": null,
+    "value": 185,
+    "previous": null
+   },
+   {
+    "key": "edge-chromium",
+    "label": null,
+    "value": 162,
+    "previous": null
+   },
+   {
+    "key": "samsung",
+    "label": null,
+    "value": 92,
+    "previous": null
+   },
+   {
+    "key": "android",
+    "label": null,
+    "value": 46,
+    "previous": null
+   }
+  ],
+  "os": [
+   {
+    "key": "Android OS",
+    "label": null,
+    "value": 715,
+    "previous": null
+   },
+   {
+    "key": "iOS",
+    "label": null,
+    "value": 623,
+    "previous": null
+   },
+   {
+    "key": "Windows 10",
+    "label": null,
+    "value": 554,
+    "previous": null
+   },
+   {
+    "key": "Mac OS",
+    "label": null,
+    "value": 300,
+    "previous": null
+   },
+   {
+    "key": "Linux",
+    "label": null,
+    "value": 92,
+    "previous": null
+   }
+  ],
+  "screens": [
+   {
+    "key": "390x844",
+    "label": null,
+    "value": 485,
+    "previous": null
+   },
+   {
+    "key": "1920x1080",
+    "label": null,
+    "value": 369,
+    "previous": null
+   },
+   {
+    "key": "1536x864",
+    "label": null,
+    "value": 208,
+    "previous": null
+   },
+   {
+    "key": "412x915",
+    "label": null,
+    "value": 208,
+    "previous": null
+   },
+   {
+    "key": "1440x900",
+    "label": null,
+    "value": 138,
+    "previous": null
+   },
+   {
+    "key": "768x1024",
+    "label": null,
+    "value": 92,
+    "previous": null
+   }
+  ],
+  "events": [
+   {
+    "key": "phone-click",
+    "label": "Click to call",
+    "value": 144,
+    "previous": 133
+   },
+   {
+    "key": "email-click",
+    "label": null,
+    "value": 91,
+    "previous": 83
+   },
+   {
+    "key": "form-sent",
+    "label": null,
+    "value": 74,
+    "previous": 68
+   },
+   {
+    "key": "catalogue-download",
+    "label": null,
+    "value": 66,
+    "previous": 61
+   },
+   {
+    "key": "directions-click",
+    "label": null,
+    "value": 41,
+    "previous": 38
+   },
+   {
+    "key": "video-play",
+    "label": null,
+    "value": 33,
+    "previous": 30
+   }
+  ],
+  "hostnames": [
+   {
+    "key": "www.example.test",
+    "label": null,
+    "value": 2239,
+    "previous": null
+   },
+   {
+    "key": "example.test",
+    "label": null,
+    "value": 69,
+    "previous": null
+   }
+  ],
+  "utmSources": [
+   {
+    "key": "youtube",
+    "label": null,
+    "value": 69,
+    "previous": null
+   },
+   {
+    "key": "newsletter",
+    "label": null,
+    "value": 28,
+    "previous": null
+   },
+   {
+    "key": "fair",
+    "label": null,
+    "value": 14,
+    "previous": null
+   }
+  ],
+  "utmMediums": [
+   {
+    "key": "video",
+    "label": null,
+    "value": 69,
+    "previous": null
+   },
+   {
+    "key": "email",
+    "label": null,
+    "value": 28,
+    "previous": null
+   },
+   {
+    "key": "print",
+    "label": null,
+    "value": 14,
+    "previous": null
+   }
+  ],
+  "utmCampaigns": [
+   {
+    "key": "open-days",
+    "label": null,
+    "value": 32,
+    "previous": null
+   },
+   {
+    "key": "autumn",
+    "label": null,
+    "value": 23,
+    "previous": null
+   }
+  ]
+ },
+ "pages": [
+  {
+   "key": "/",
+   "label": "Home",
+   "views": 1401,
+   "visitors": 840,
+   "entries": 707,
+   "exits": 707,
+   "bounces": 212,
+   "totaltime": 74580,
+   "previousViews": 1288
+  },
+  {
+   "key": "/services",
+   "label": null,
+   "views": 618,
+   "visitors": 371,
+   "entries": 340,
+   "exits": 340,
+   "bounces": 119,
+   "totaltime": 31515,
+   "previousViews": 567
+  },
+  {
+   "key": "/contact",
+   "label": "Contact",
+   "views": 440,
+   "visitors": 264,
+   "entries": 264,
+   "exits": 264,
+   "bounces": 103,
+   "totaltime": 34625,
+   "previousViews": 405
+  },
+  {
+   "key": "/products/oak-table",
+   "label": null,
+   "views": 329,
+   "visitors": 197,
+   "entries": 177,
+   "exits": 177,
+   "bounces": 88,
+   "totaltime": 29210,
+   "previousViews": 303
+  },
+  {
+   "key": "/articles/caring-for-wood",
+   "label": null,
+   "views": 206,
+   "visitors": 124,
+   "entries": 103,
+   "exits": 103,
+   "bounces": 34,
+   "totaltime": 26780,
+   "previousViews": 189
+  },
+  {
+   "key": "/products/walnut-chair",
+   "label": null,
+   "views": 206,
+   "visitors": 124,
+   "entries": 124,
+   "exits": 124,
+   "bounces": 31,
+   "totaltime": 23690,
+   "previousViews": 189
+  },
+  {
+   "key": "/about",
+   "label": null,
+   "views": 165,
+   "visitors": 99,
+   "entries": 99,
+   "exits": 99,
+   "bounces": 49,
+   "totaltime": 9075,
+   "previousViews": 151
+  },
+  {
+   "key": "/products/ash-shelf",
+   "label": null,
+   "views": 144,
+   "visitors": 86,
+   "entries": 72,
+   "exits": 72,
+   "bounces": 41,
+   "totaltime": 10080,
+   "previousViews": 133
+  },
+  {
+   "key": "/articles/choosing-a-wood",
+   "label": null,
+   "views": 103,
+   "visitors": 62,
+   "entries": 52,
+   "exits": 52,
+   "bounces": 21,
+   "totaltime": 11845,
+   "previousViews": 95
+  },
+  {
+   "key": "/pricing",
+   "label": null,
+   "views": 99,
+   "visitors": 59,
+   "entries": 54,
+   "exits": 54,
+   "bounces": 26,
+   "totaltime": 12870,
+   "previousViews": 91
+  },
+  {
+   "key": "/projects",
+   "label": null,
+   "views": 91,
+   "visitors": 55,
+   "entries": 55,
+   "exits": 55,
+   "bounces": 31,
+   "totaltime": 3640,
+   "previousViews": 83
+  },
+  {
+   "key": "/articles/natural-finishes",
+   "label": null,
+   "views": 74,
+   "visitors": 44,
+   "entries": 41,
+   "exits": 41,
+   "bounces": 14,
+   "totaltime": 5180,
+   "previousViews": 68
+  },
+  {
+   "key": "/legal-notice",
+   "label": null,
+   "views": 33,
+   "visitors": 20,
+   "entries": 17,
+   "exits": 17,
+   "bounces": 8,
+   "totaltime": 3300,
+   "previousViews": 30
+  },
+  {
+   "key": "/site-map",
+   "label": null,
+   "views": 25,
+   "visitors": 15,
+   "entries": 15,
+   "exits": 15,
+   "bounces": 4,
+   "totaltime": 3250,
+   "previousViews": 23
+  }
+ ],
+ "groups": [
+  {
+   "id": "products",
+   "title": "Product pages",
+   "items": [
+    {
+     "key": "oak-table",
+     "label": null,
+     "value": 329,
+     "previous": 303
+    },
+    {
+     "key": "walnut-chair",
+     "label": null,
+     "value": 206,
+     "previous": 189
+    },
+    {
+     "key": "ash-shelf",
+     "label": null,
+     "value": 144,
+     "previous": 133
+    }
+   ]
+  }
+ ],
+ "goals": [
+  {
+   "id": "calls",
+   "label": "Clicks to call",
+   "value": 144,
+   "previous": 133
+  }
+ ],
+ "counts": {
+  "countries": 15,
+  "events": 453
+ },
+ "sessions": [
+  {
+   "country": "FR",
+   "city": "Lyon",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Android OS",
+   "views": 2,
+   "lastAt": "2026-11-16T10:27:00.000Z"
+  },
+  {
+   "country": "CH",
+   "city": "Geneva",
+   "device": "desktop",
+   "browser": "ios",
+   "os": "iOS",
+   "views": 2,
+   "lastAt": "2026-11-16T10:10:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Paris",
+   "device": "mobile",
+   "browser": "firefox",
+   "os": "Windows 10",
+   "views": 5,
+   "lastAt": "2026-11-16T09:53:00.000Z"
+  },
+  {
+   "country": "BE",
+   "city": "Brussels",
+   "device": "laptop",
+   "browser": "safari",
+   "os": "Mac OS",
+   "views": 5,
+   "lastAt": "2026-11-16T09:36:00.000Z"
+  },
+  {
+   "country": "CA",
+   "city": "Montreal",
+   "device": "tablet",
+   "browser": "edge-chromium",
+   "os": "iOS",
+   "views": 7,
+   "lastAt": "2026-11-16T09:19:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Grenoble",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Linux",
+   "views": 7,
+   "lastAt": "2026-11-16T09:02:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Annecy",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Android OS",
+   "views": 2,
+   "lastAt": "2026-11-16T08:45:00.000Z"
+  },
+  {
+   "country": "DE",
+   "city": "Berlin",
+   "device": "desktop",
+   "browser": "ios",
+   "os": "iOS",
+   "views": 4,
+   "lastAt": "2026-11-16T08:28:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Marseille",
+   "device": "mobile",
+   "browser": "firefox",
+   "os": "Windows 10",
+   "views": 6,
+   "lastAt": "2026-11-16T08:11:00.000Z"
+  },
+  {
+   "country": "US",
+   "city": "Boston",
+   "device": "laptop",
+   "browser": "safari",
+   "os": "Mac OS",
+   "views": 6,
+   "lastAt": "2026-11-16T07:54:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Nantes",
+   "device": "tablet",
+   "browser": "edge-chromium",
+   "os": "iOS",
+   "views": 4,
+   "lastAt": "2026-11-16T07:37:00.000Z"
+  },
+  {
+   "country": "MA",
+   "city": "Rabat",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Linux",
+   "views": 7,
+   "lastAt": "2026-11-16T07:20:00.000Z"
+  }
+ ],
+ "extras": {
+  "tiles": [
+   {
+    "id": "requests",
+    "label": "Requests received",
+    "value": 12,
+    "previous": 9,
+    "sub": null,
+    "group": null,
+    "highlight": false
+   }
+  ],
+  "tables": [
+   {
+    "id": "subjects",
+    "title": "Requests by subject",
+    "sub": null,
+    "head": "Subject",
+    "column": "Requests",
+    "section": "actions",
+    "items": [
+     {
+      "key": "quote",
+      "label": "Quote",
+      "value": 7,
+      "previous": 5
+     }
+    ]
+   }
+  ],
+  "funnel": {
+   "label": "Requests received",
+   "value": 12
+  }
+ },
+ "dashboardUrl": "https://umami.example.test/websites/site-demo"
+}

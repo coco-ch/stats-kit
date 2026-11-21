@@ -15,19 +15,19 @@ concurrency:
 
 jobs:
   secrets:
-    name: Recherche de secrets (gitleaks)
+    name: Secret scanning (gitleaks)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      # Image officielle plutôt que l'action : celle-ci demande une licence pour les dépôts d'organisation.
-      - name: gitleaks sur tout l'historique
+      # Official image rather than the action: the action requires a licence for organisation repositories.
+      - name: gitleaks on the whole history
         run: docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:v8.18.4 detect --source /repo --config /repo/.gitleaks.toml --redact --verbose
 
   tests:
-    name: Tests (serveur, contrat, composants) et construction
+    name: Tests (server, contract, components) and build
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -39,23 +39,23 @@ jobs:
       - run: npm ci
       - name: Types
         run: npm run typecheck
-      - name: Schéma JSON à jour
+      - name: JSON schema up to date
         run: npm run schema:check
-      - name: Serveur et contrat (Vitest, couverture)
+      - name: Server and contract (Vitest, coverage)
         run: npm test
-      - name: Composants Angular (couverture)
+      - name: Angular components (coverage)
         run: npm run test:angular
-      - name: Construction des paquets
+      - name: Build the packages
         run: npm run build
       - uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: couverture
+          name: coverage
           path: coverage/
           if-no-files-found: ignore
 
   e2e:
-    name: Bout en bout (Playwright, Chrome)
+    name: End to end (Playwright, Chrome)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -72,7 +72,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: rapport-playwright
+          name: playwright-report
           path: |
             playwright-report/
             test-results/

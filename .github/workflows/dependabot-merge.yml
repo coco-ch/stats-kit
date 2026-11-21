@@ -1,0 +1,31 @@
+name: Dependabot automatic merge
+
+# Dependency updates proposed by Dependabot (npm, GitHub Actions) are merged automatically (squash) as soon as CI is green,
+# majors included; a red CI leaves the PR open. Nothing else is merged by this workflow.
+# Triggered at the end of CI (workflow_run): no input coming from the PR is executed, only the branch name is read.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    name: Merge the Dependabot PR
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.actor.login == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BRANCH: ${{ github.event.workflow_run.head_branch }}
+    steps:
+      - name: Merge
+        run: |
+          set -euo pipefail
+          case "$BRANCH" in dependabot/*) ;; *) echo "Unexpected branch: nothing to do."; exit 0 ;; esac
+          pr=$(gh pr list -R "$GITHUB_REPOSITORY" --head "$BRANCH" --state open --json number,author --jq '[.[] | select(.author.login == "app/dependabot" or .author.login == "dependabot[bot]")][0].number // empty')
+          [ -n "$pr" ] || { echo "No open Dependabot PR for $BRANCH."; exit 0; }
+          gh pr merge "$pr" -R "$GITHUB_REPOSITORY" --squash --delete-branch

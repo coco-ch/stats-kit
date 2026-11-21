@@ -1,11 +1,11 @@
 /*
- * Page « YouTube » : la chaîne (en-tête, liens), tuiles de la chaîne et de la période, ce que la chaîne apporte au site (visites
- * par lien suivi, pages d'arrivée, demandes), vues et minutes par jour avec la période précédente, provenance des vues, vidéos.
+ * "YouTube" page: the channel (header, links), channel and period tiles, what the channel brings to the site (visits through a
+ * tracked link, landing pages, requests), views and minutes per day with the previous period, traffic sources, videos.
  */
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DOCUMENT, PLATFORM_ID, computed, inject, input, signal, type OnInit } from '@angular/core';
-import { delta, fill, formatDuration, formatNumber, gap, lastDays, shortDate, sparkPath, toCsv, type TextOverrides, type YoutubeOverview } from 'stats-kit/contrat';
-import { SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocs';
+import { csvSeparator, delta, fill, formatDuration, formatNumber, gap, lastDays, shortDate, sparkPath, toCsv, type TextOverrides, type YoutubeOverview } from 'stats-kit/contract';
+import { SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocks';
 import { StatsKitApi, download, injectOptions, resolveTexts } from './config';
 import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
 
@@ -152,15 +152,15 @@ export class SkYoutube implements OnInit {
       { id: 'videos', group: C, label: Y.videos, value: this.fmt(d.videos.length), change: null, sub: Y.videosSub, spark: '' },
       { id: 'views', group: P, label: Y.views, value: this.fmt(t.views), change: delta(T, t.views, b.views), sub: fill(T.common.perDay, { n: this.fmt(t.views / Math.max(1, d.days), 1) }), spark: spark('views') },
       { id: 'minutes', group: P, label: Y.minutes, value: this.fmt(t.minutes), change: delta(T, t.minutes, b.minutes), sub: fill(Y.hoursSub, { n: this.fmt(t.minutes / 60, 1) }), spark: spark('minutes') },
-      { id: 'avg', group: P, label: Y.avgView, value: formatDuration(t.averageViewDuration), change: b.views ? gap(T, t.averageViewDuration, b.averageViewDuration, false, 0, ' s') : null, sub: Y.perView, spark: '' },
-      { id: 'gained', group: P, label: Y.gained, value: this.fmt(t.gained), change: delta(T, t.gained, b.gained), sub: fill(Y.gainedSub, { lost: this.fmt(t.lost), balance: `${t.gained - t.lost >= 0 ? '+' : ''}${this.fmt(t.gained - t.lost)}` }), spark: '' },
+      { id: 'avg', group: P, label: Y.avgView, value: formatDuration(T, t.averageViewDuration), change: b.views ? gap(T, t.averageViewDuration, b.averageViewDuration, false, 0, 'seconds') : null, sub: Y.perView, spark: '' },
+      { id: 'gained', group: P, label: Y.gained, value: this.fmt(t.gained), change: delta(T, t.gained, b.gained), sub: fill(Y.gainedSub, { lost: this.fmt(t.lost), balance: formatNumber(T, t.gained - t.lost, 0, true) }), spark: '' },
     ];
   });
 
   readonly siteTiles = computed<TileData[]>(() => {
     const s = this.data()?.site;
     if (!s) return [];
-    const T = this.T(), Y = T.youtube, G = ''; // le titre de la section suffit
+    const T = this.T(), Y = T.youtube, G = ''; // the section title is enough
     const n = (v: number | null) => (v === null ? '—' : this.fmt(v));
     const out: TileData[] = [
       { id: 'visits', group: G, label: Y.siteVisits, value: n(s.visits), change: s.visits === null ? null : delta(T, s.visits, s.previousVisits), sub: Y.siteVisitsSub, spark: '' },
@@ -193,11 +193,11 @@ export class SkYoutube implements OnInit {
       [Y.colVideo, Y.colViews, Y.colMinutes, Y.colAvgPct, Y.colDuration, Y.colLikes, Y.colComments, Y.colPublished],
       ...d.videos.map((v) => [v.title, v.views, v.minutes, v.averageViewPercentage, v.duration, v.likes, v.comments, v.publishedAt]),
       [],
-      ['date', Y.views, Y.minutes, Y.gained, 'lost'],
+      [Y.colDate, Y.views, Y.minutes, Y.gained, Y.colLost],
       ...d.series.map((x) => [x.date, x.views, x.minutes, x.gained, x.lost]),
     ];
   }
   exportCsv(): void {
-    download(this.doc, `${this.T().youtube.csvName}-${this.days()}j.csv`, toCsv(this.csvRows()));
+    download(this.doc, `${fill(this.T().youtube.csvFile, { days: this.days() })}.csv`, toCsv(this.csvRows(), csvSeparator(this.T())));
   }
 }

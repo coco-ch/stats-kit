@@ -6,20 +6,20 @@ const src = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 export default defineConfig({
   resolve: {
     alias: {
-      'stats-kit/contrat': src('./packages/contrat/src/index.ts'),
-      'stats-kit/serveur': src('./packages/serveur/src/index.ts'),
+      'stats-kit/contract': src('./packages/contract/src/index.ts'),
+      'stats-kit/server': src('./packages/server/src/index.ts'),
     },
   },
   test: {
-    include: ['packages/contrat/test/**/*.test.ts', 'packages/serveur/test/**/*.test.ts'],
+    include: ['packages/contract/test/**/*.test.ts', 'packages/server/test/**/*.test.ts'],
     environment: 'node',
-    testTimeout: 30_000, // la carte PNG du rapport est dessinée en pur JavaScript
+    testTimeout: 30_000, // the PNG map of the report is drawn in pure JavaScript
     coverage: {
       provider: 'v8',
-      include: ['packages/contrat/src/**/*.ts', 'packages/serveur/src/**/*.ts'],
-      exclude: ['**/index.ts', '**/types.ts', '**/centroides.ts'],
+      include: ['packages/contract/src/**/*.ts', 'packages/server/src/**/*.ts'],
+      exclude: ['**/index.ts', '**/types.ts', '**/centroids.ts'],
       reporter: ['text-summary', 'text', 'lcov'],
-      reportsDirectory: 'coverage/serveur',
+      reportsDirectory: 'coverage/server',
       thresholds: { lines: 100, statements: 99, functions: 99, branches: 92 },
     },
   },

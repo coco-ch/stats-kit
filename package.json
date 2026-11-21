@@ -1,59 +1,72 @@
 {
   "name": "stats-kit",
-  "version": "0.1.1",
-  "description": "Statistiques de fréquentation pour l'administration d'un site : connecteurs Umami, Google Search Console et YouTube, rapport hebdomadaire par e-mail, composants Angular.",
+  "version": "0.2.0",
+  "description": "Website traffic statistics for a site administration: Umami, Google Search Console and YouTube connectors, weekly e-mail report, Angular components, labels in several languages.",
   "license": "MIT",
   "type": "module",
   "engines": {
     "node": ">=22.18"
   },
   "files": [
-    "packages/contrat/dist",
-    "packages/contrat/schema",
-    "packages/serveur/dist",
-    "packages/serveur/assets",
+    "packages/contract/dist",
+    "packages/contract/schema",
+    "packages/server/dist",
+    "packages/server/assets",
     "packages/angular/dist",
     "scripts/prepare.mjs",
     "LICENSE",
     "README.md",
+    "CHANGELOG.md",
     "docs"
   ],
   "exports": {
-    "./contrat": {
-      "types": "./packages/contrat/dist/index.d.ts",
-      "stats-kit-source": "./packages/contrat/src/index.ts",
-      "default": "./packages/contrat/dist/index.js"
+    "./contract": {
+      "types": "./packages/contract/dist/index.d.ts",
+      "stats-kit-source": "./packages/contract/src/index.ts",
+      "default": "./packages/contract/dist/index.js"
     },
-    "./contrat/schema.json": "./packages/contrat/schema/contrat.schema.json",
-    "./serveur": {
-      "types": "./packages/serveur/dist/index.d.ts",
-      "stats-kit-source": "./packages/serveur/src/index.ts",
-      "default": "./packages/serveur/dist/index.js"
+    "./contract/schema.json": "./packages/contract/schema/contract.schema.json",
+    "./server": {
+      "types": "./packages/server/dist/index.d.ts",
+      "stats-kit-source": "./packages/server/src/index.ts",
+      "default": "./packages/server/dist/index.js"
     },
-    "./serveur/monde.json": "./packages/serveur/assets/world-110m.json",
+    "./server/world.json": "./packages/server/assets/world-110m.json",
     "./angular": {
       "types": "./packages/angular/dist/types/stats-kit-angular.d.ts",
       "default": "./packages/angular/dist/fesm2022/stats-kit-angular.mjs"
     },
+    "./contrat": {
+      "types": "./packages/contract/dist/index.d.ts",
+      "stats-kit-source": "./packages/contract/src/index.ts",
+      "default": "./packages/contract/dist/index.js"
+    },
+    "./contrat/schema.json": "./packages/contract/schema/contract.schema.json",
+    "./serveur": {
+      "types": "./packages/server/dist/index.d.ts",
+      "stats-kit-source": "./packages/server/src/index.ts",
+      "default": "./packages/server/dist/index.js"
+    },
+    "./serveur/monde.json": "./packages/server/assets/world-110m.json",
     "./package.json": "./package.json"
   },
   "scripts": {
     "prepare": "node scripts/prepare.mjs",
-    "build": "npm run build:contrat && npm run build:serveur && npm run build:angular",
-    "build:contrat": "tsc -p packages/contrat/tsconfig.build.json",
-    "build:serveur": "tsc -p packages/serveur/tsconfig.build.json",
+    "build": "npm run build:contract && npm run build:server && npm run build:angular",
+    "build:contract": "tsc -p packages/contract/tsconfig.build.json",
+    "build:server": "tsc -p packages/server/tsconfig.build.json",
     "build:angular": "ng build stats-kit-angular",
     "schema": "node scripts/schema.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p e2e/tsconfig.json --noEmit && tsc -p demo/tsconfig.app.json --noEmit",
     "test": "vitest run --coverage",
     "test:angular": "ng test stats-kit-angular --watch=false --coverage",
     "demo:build": "ng build demo",
-    "demo": "node --conditions=stats-kit-source demo/serveur/demarrer.ts",
+    "demo": "node --conditions=stats-kit-source demo/server/start.ts",
     "e2e": "npm run demo:build && playwright test",
-    "captures": "node --conditions=stats-kit-source scripts/captures.ts",
-    "exemples": "node --conditions=stats-kit-source scripts/exemples.ts",
+    "screenshots": "node --conditions=stats-kit-source scripts/screenshots.ts",
+    "examples": "node --conditions=stats-kit-source scripts/examples.ts",
     "schema:check": "node scripts/schema.mjs --check",
-    "publier": "node scripts/publier-tag.mjs"
+    "release": "node scripts/publish-tag.mjs"
   },
   "peerDependencies": {
     "@angular/common": ">=21.0.0",

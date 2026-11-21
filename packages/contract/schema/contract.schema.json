@@ -1,0 +1,1766 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$ref": "#/definitions/Contract",
+  "definitions": {
+    "Contract": {
+      "type": "object",
+      "properties": {
+        "overview": {
+          "$ref": "#/definitions/StatsOverview"
+        },
+        "live": {
+          "$ref": "#/definitions/LiveResponse"
+        },
+        "search": {
+          "$ref": "#/definitions/SearchOverview"
+        },
+        "indexation": {
+          "$ref": "#/definitions/IndexationResponse"
+        },
+        "youtube": {
+          "$ref": "#/definitions/YoutubeOverview"
+        },
+        "reportPreview": {
+          "$ref": "#/definitions/ReportPreview"
+        },
+        "reportSend": {
+          "$ref": "#/definitions/ReportSendResult"
+        }
+      },
+      "required": [
+        "overview",
+        "live",
+        "search",
+        "indexation",
+        "youtube",
+        "reportPreview",
+        "reportSend"
+      ],
+      "additionalProperties": false,
+      "description": "All the responses (root of the JSON schema)."
+    },
+    "StatsOverview": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "status": {
+          "$ref": "#/definitions/SourceStatus"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Short message when `status` is `error`."
+        },
+        "generatedAt": {
+          "type": "string",
+          "description": "Computation instant, UTC."
+        },
+        "range": {
+          "$ref": "#/definitions/Range"
+        },
+        "totals": {
+          "$ref": "#/definitions/Totals"
+        },
+        "previous": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Totals"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Totals of the previous period; `null` if unknown."
+        },
+        "active": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Visitors active right now (last 5 minutes); `null` if unknown."
+        },
+        "series": {
+          "$ref": "#/definitions/Series"
+        },
+        "last24h": {
+          "$ref": "#/definitions/Series",
+          "description": "Last 24 hours, hour by hour (whatever the chosen period)."
+        },
+        "heatmap": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "description": "Page views by weekday (Monday = 0) and hour (0 to 23), in the time zone of the period: 7 rows of 24 numbers."
+        },
+        "breakdowns": {
+          "$ref": "#/definitions/Breakdowns"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/PageRow"
+          },
+          "description": "Detail by page; empty if the source does not provide it (the components then fall back to `breakdowns.pages`)."
+        },
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ItemGroup"
+          }
+        },
+        "goals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Goal"
+          }
+        },
+        "counts": {
+          "$ref": "#/definitions/Counts"
+        },
+        "sessions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Session"
+          }
+        },
+        "extras": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Extras"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "dashboardUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Address of the source dashboard (Umami), to go further; `null` to hide it."
+        }
+      },
+      "required": [
+        "version",
+        "status",
+        "error",
+        "generatedAt",
+        "range",
+        "totals",
+        "previous",
+        "active",
+        "series",
+        "last24h",
+        "heatmap",
+        "breakdowns",
+        "pages",
+        "groups",
+        "goals",
+        "counts",
+        "sessions",
+        "extras",
+        "dashboardUrl"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `GET {base}/overview`: everything the Statistics page shows."
+    },
+    "ContractVersion": {
+      "type": "number",
+      "const": 1,
+      "description": "Contract version; it changes with every incompatible change."
+    },
+    "SourceStatus": {
+      "type": "string",
+      "enum": [
+        "ok",
+        "not-configured",
+        "error"
+      ],
+      "description": "State of a source: `ok`, `not-configured` (no settings: nothing is called) or `error` (the source did not answer)."
+    },
+    "Range": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string",
+          "description": "Start (included), UTC instant."
+        },
+        "to": {
+          "type": "string",
+          "description": "End (excluded), UTC instant."
+        },
+        "days": {
+          "type": "number",
+          "description": "Number of days covered (1 for the last 24 hours)."
+        },
+        "unit": {
+          "$ref": "#/definitions/Unit",
+          "description": "Granularity of the main series: `hour` for 24 hours, `day` beyond."
+        },
+        "timeZone": {
+          "type": "string",
+          "description": "IANA time zone of the slots (\"Europe/Paris\")."
+        },
+        "previousFrom": {
+          "type": "string",
+          "description": "Start of the previous period, UTC instant."
+        },
+        "previousTo": {
+          "type": "string",
+          "description": "End of the previous period (= start of the period), UTC instant."
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "days",
+        "unit",
+        "timeZone",
+        "previousFrom",
+        "previousTo"
+      ],
+      "additionalProperties": false,
+      "description": "Period shown and previous period of the same length."
+    },
+    "Unit": {
+      "type": "string",
+      "enum": [
+        "day",
+        "hour"
+      ],
+      "description": "Granularity of a series: one point per day or per hour."
+    },
+    "Totals": {
+      "type": "object",
+      "properties": {
+        "pageviews": {
+          "type": "number",
+          "description": "Page views."
+        },
+        "visitors": {
+          "type": "number",
+          "description": "Distinct visitors."
+        },
+        "visits": {
+          "type": "number",
+          "description": "Visits (sessions)."
+        },
+        "bounces": {
+          "type": "number",
+          "description": "Single-page visits."
+        },
+        "totaltime": {
+          "type": "number",
+          "description": "Cumulated time spent, in seconds."
+        }
+      },
+      "required": [
+        "pageviews",
+        "visitors",
+        "visits",
+        "bounces",
+        "totaltime"
+      ],
+      "additionalProperties": false,
+      "description": "Totals of a period."
+    },
+    "Series": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/definitions/Unit"
+        },
+        "slots": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Slots in the time zone of the period: \"YYYY-MM-DD\" (day) or \"YYYY-MM-DDTHH\" (hour)."
+        },
+        "pageviews": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Page views, one value per slot."
+        },
+        "visitors": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Visitors (Umami sessions), one value per slot."
+        },
+        "previousPageviews": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Page views of the previous period, aligned slot by slot; `null` if unknown."
+        }
+      },
+      "required": [
+        "unit",
+        "slots",
+        "pageviews",
+        "visitors",
+        "previousPageviews"
+      ],
+      "additionalProperties": false,
+      "description": "Continuous time series: one slot per day or hour of the period, even without data (zero)."
+    },
+    "Breakdowns": {
+      "type": "object",
+      "properties": {
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Page views by logical path."
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Entry pages (visits)."
+        },
+        "exits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Exit pages (visits)."
+        },
+        "referrers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Sites the visits come from (domain; empty key = direct access)."
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Umami acquisition channels (direct, organicSearch…)."
+        },
+        "countries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Countries (ISO code)."
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Regions (\"FR-PAC\")."
+        },
+        "cities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        },
+        "languages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Browser language of the visitors (code)."
+        },
+        "siteLanguages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Site language viewed (path prefix), if the site is multilingual."
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Devices (desktop, laptop, mobile, tablet)."
+        },
+        "browsers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        },
+        "os": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        },
+        "screens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Screen sizes (\"390x844\")."
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Tracked events (name)."
+        },
+        "hostnames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Addresses (host names) visited."
+        },
+        "utmSources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        },
+        "utmMediums": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        },
+        "utmCampaigns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        }
+      },
+      "required": [
+        "pages",
+        "entries",
+        "exits",
+        "referrers",
+        "channels",
+        "countries",
+        "regions",
+        "cities",
+        "languages",
+        "siteLanguages",
+        "devices",
+        "browsers",
+        "os",
+        "screens",
+        "events",
+        "hostnames",
+        "utmSources",
+        "utmMediums",
+        "utmCampaigns"
+      ],
+      "additionalProperties": false,
+      "description": "Rankings of a period. Each list is sorted by decreasing value."
+    },
+    "Item": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Raw value returned by the source: path, ISO country code, language code, event name…"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Readable label given by the server (site settings); otherwise the components compute one from `key`."
+        },
+        "value": {
+          "type": "number",
+          "description": "Number (visits, views or occurrences depending on the ranking)."
+        },
+        "previous": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Same number over the previous period; `null` if the source does not provide it."
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "value",
+        "previous"
+      ],
+      "additionalProperties": false,
+      "description": "Row of a ranking (page, country, source…)."
+    },
+    "PageRow": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Logical path (\"/contact\")."
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "views": {
+          "type": "number"
+        },
+        "visitors": {
+          "type": "number"
+        },
+        "entries": {
+          "type": "number",
+          "description": "Visits that started on this page."
+        },
+        "exits": {
+          "type": "number",
+          "description": "Visits that ended on this page."
+        },
+        "bounces": {
+          "type": "number",
+          "description": "Single-page visits that started here."
+        },
+        "totaltime": {
+          "type": "number",
+          "description": "Cumulated time spent on the page, in seconds."
+        },
+        "previousViews": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Views of the previous period; `null` if unknown."
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "views",
+        "visitors",
+        "entries",
+        "exits",
+        "bounces",
+        "totaltime",
+        "previousViews"
+      ],
+      "additionalProperties": false,
+      "description": "Detail of a page (all languages together if the site groups its paths)."
+    },
+    "ItemGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "items"
+      ],
+      "additionalProperties": false,
+      "description": "Group of pages defined by the site (product pages, articles…)."
+    },
+    "Goal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "previous": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "value",
+        "previous"
+      ],
+      "additionalProperties": false,
+      "description": "Goal of the site: total of one or more tracked events (click to call, form sent…)."
+    },
+    "Counts": {
+      "type": "object",
+      "properties": {
+        "countries": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "events": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "countries",
+        "events"
+      ],
+      "additionalProperties": false,
+      "description": "Number of distinct dimensions over the period (`null` if the source does not give it)."
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "country": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "ISO 3166-1 alpha-2 country code."
+        },
+        "city": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "device": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "browser": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "os": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "views": {
+          "type": "number"
+        },
+        "lastAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Last activity, UTC instant."
+        }
+      },
+      "required": [
+        "country",
+        "city",
+        "device",
+        "browser",
+        "os",
+        "views",
+        "lastAt"
+      ],
+      "additionalProperties": false,
+      "description": "Recent visit, without identifying the person."
+    },
+    "Extras": {
+      "type": "object",
+      "properties": {
+        "tiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtraTile"
+          }
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExtraTable"
+          }
+        },
+        "funnel": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Last step of the funnel (\"Requests received\"); `null` without a step."
+        }
+      },
+      "required": [
+        "tiles",
+        "tables",
+        "funnel"
+      ],
+      "additionalProperties": false,
+      "description": "Site's own data, shown with the sources' data (shown even if Umami does not answer)."
+    },
+    "ExtraTile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "Number, or text already formatted."
+        },
+        "previous": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "sub": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Context under the figure."
+        },
+        "group": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Title of the tile group; `null`: the site data group."
+        },
+        "highlight": {
+          "type": "boolean",
+          "description": "Highlighted (to handle, pending…)."
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "value",
+        "previous",
+        "sub",
+        "group",
+        "highlight"
+      ],
+      "additionalProperties": false,
+      "description": "Figure tile added by the site (data from its own database: requests received, orders…)."
+    },
+    "ExtraTable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "sub": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "head": {
+          "type": "string",
+          "description": "Title of the label column."
+        },
+        "column": {
+          "type": "string",
+          "description": "Title of the number column."
+        },
+        "section": {
+          "$ref": "#/definitions/Section"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "sub",
+        "head",
+        "column",
+        "section",
+        "items"
+      ],
+      "additionalProperties": false,
+      "description": "Table added by the site."
+    },
+    "Section": {
+      "type": "string",
+      "enum": [
+        "pages",
+        "sources",
+        "audience",
+        "actions"
+      ],
+      "description": "Section of the Statistics page where a table goes."
+    },
+    "LiveResponse": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "active": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "at": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "active",
+        "at"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `GET {base}/live`: active visitors."
+    },
+    "SearchOverview": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "status": {
+          "$ref": "#/definitions/SourceStatus"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "generatedAt": {
+          "type": "string"
+        },
+        "property": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Search Console property (\"sc-domain:example.org\")."
+        },
+        "serviceAccount": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Address of the service account to add as a user of the property; `null` with OAuth or without settings."
+        },
+        "start": {
+          "type": "string",
+          "description": "Period (days included): Google publishes two to three days late, so it ends before today."
+        },
+        "end": {
+          "type": "string"
+        },
+        "days": {
+          "type": "number"
+        },
+        "previousStart": {
+          "type": "string"
+        },
+        "previousEnd": {
+          "type": "string"
+        },
+        "totals": {
+          "$ref": "#/definitions/SearchTotals"
+        },
+        "previous": {
+          "$ref": "#/definitions/SearchTotals"
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchDay"
+          }
+        },
+        "previousSeries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchDay"
+          }
+        },
+        "queries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "previousQueries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "previousPages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "countries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "previousCountries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "devices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "previousDevices": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          }
+        },
+        "appearance": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchRow"
+          },
+          "description": "Search appearance (rich results, videos…)."
+        },
+        "queryPages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/QueryPage"
+          }
+        },
+        "sitemaps": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Sitemap"
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Sitemaps; `null` if Google refused them."
+        },
+        "brandTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Words of the site name: separate brand queries from the others."
+        }
+      },
+      "required": [
+        "version",
+        "status",
+        "error",
+        "generatedAt",
+        "property",
+        "serviceAccount",
+        "start",
+        "end",
+        "days",
+        "previousStart",
+        "previousEnd",
+        "totals",
+        "previous",
+        "series",
+        "previousSeries",
+        "queries",
+        "previousQueries",
+        "pages",
+        "previousPages",
+        "countries",
+        "previousCountries",
+        "devices",
+        "previousDevices",
+        "appearance",
+        "queryPages",
+        "sitemaps",
+        "brandTerms"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `GET {base}/search`: performance in Google Search."
+    },
+    "SearchTotals": {
+      "type": "object",
+      "properties": {
+        "clicks": {
+          "type": "number"
+        },
+        "impressions": {
+          "type": "number"
+        },
+        "ctr": {
+          "type": "number",
+          "description": "Click-through rate, from 0 to 1."
+        },
+        "position": {
+          "type": "number",
+          "description": "Average position (1 = first result); 0 without impressions."
+        }
+      },
+      "required": [
+        "clicks",
+        "impressions",
+        "ctr",
+        "position"
+      ],
+      "additionalProperties": false
+    },
+    "SearchDay": {
+      "type": "object",
+      "properties": {
+        "clicks": {
+          "type": "number"
+        },
+        "impressions": {
+          "type": "number"
+        },
+        "ctr": {
+          "type": "number",
+          "description": "Click-through rate, from 0 to 1."
+        },
+        "position": {
+          "type": "number",
+          "description": "Average position (1 = first result); 0 without impressions."
+        },
+        "date": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "clicks",
+        "ctr",
+        "date",
+        "impressions",
+        "position"
+      ],
+      "additionalProperties": false
+    },
+    "SearchRow": {
+      "type": "object",
+      "properties": {
+        "clicks": {
+          "type": "number"
+        },
+        "impressions": {
+          "type": "number"
+        },
+        "ctr": {
+          "type": "number",
+          "description": "Click-through rate, from 0 to 1."
+        },
+        "position": {
+          "type": "number",
+          "description": "Average position (1 = first result); 0 without impressions."
+        },
+        "key": {
+          "type": "string",
+          "description": "Query, page address, ISO 3166-1 alpha-3 country code (lower case, as Google gives it), device…"
+        }
+      },
+      "required": [
+        "clicks",
+        "ctr",
+        "impressions",
+        "key",
+        "position"
+      ],
+      "additionalProperties": false
+    },
+    "QueryPage": {
+      "type": "object",
+      "properties": {
+        "clicks": {
+          "type": "number"
+        },
+        "impressions": {
+          "type": "number"
+        },
+        "ctr": {
+          "type": "number",
+          "description": "Click-through rate, from 0 to 1."
+        },
+        "position": {
+          "type": "number",
+          "description": "Average position (1 = first result); 0 without impressions."
+        },
+        "query": {
+          "type": "string"
+        },
+        "page": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "clicks",
+        "ctr",
+        "impressions",
+        "page",
+        "position",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "Sitemap": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "lastDownloaded": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "errors": {
+          "type": "number"
+        },
+        "warnings": {
+          "type": "number"
+        },
+        "pending": {
+          "type": "boolean"
+        },
+        "submitted": {
+          "type": "number"
+        },
+        "indexed": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "path",
+        "lastDownloaded",
+        "errors",
+        "warnings",
+        "pending",
+        "submitted",
+        "indexed"
+      ],
+      "additionalProperties": false
+    },
+    "IndexationResponse": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "status": {
+          "$ref": "#/definitions/SourceStatus"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "checkedAt": {
+          "type": "string"
+        },
+        "total": {
+          "type": "number"
+        },
+        "indexed": {
+          "type": "number"
+        },
+        "pages": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Inspection"
+          }
+        }
+      },
+      "required": [
+        "version",
+        "status",
+        "error",
+        "checkedAt",
+        "total",
+        "indexed",
+        "pages"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `GET {base}/search/indexation`: indexing state page by page (slow: kept for several hours)."
+    },
+    "Inspection": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "verdict": {
+          "type": "string",
+          "description": "PASS, NEUTRAL, FAIL, UNKNOWN or ERROR."
+        },
+        "state": {
+          "type": "string"
+        },
+        "lastCrawl": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "indexed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "url",
+        "verdict",
+        "state",
+        "lastCrawl",
+        "indexed"
+      ],
+      "additionalProperties": false
+    },
+    "YoutubeOverview": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "status": {
+          "$ref": "#/definitions/SourceStatus"
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "generatedAt": {
+          "type": "string"
+        },
+        "channelUrl": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Public channel (useful link even without settings); `null` if unknown."
+        },
+        "channel": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/YoutubeChannel"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "videos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/YoutubeVideo"
+          }
+        },
+        "days": {
+          "type": "number",
+          "description": "Days of the chosen period."
+        },
+        "start": {
+          "type": "string"
+        },
+        "end": {
+          "type": "string"
+        },
+        "totals": {
+          "$ref": "#/definitions/YoutubeTotals"
+        },
+        "previous": {
+          "$ref": "#/definitions/YoutubeTotals"
+        },
+        "series": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/YoutubeDay"
+          },
+          "description": "180 days, oldest first, up to yesterday (YouTube publishes one to two days late)."
+        },
+        "traffic": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/YoutubeTraffic"
+          }
+        },
+        "analyticsError": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Message if YouTube Analytics refused (the channel and the videos are shown anyway)."
+        },
+        "site": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/YoutubeSite"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "status",
+        "error",
+        "generatedAt",
+        "channelUrl",
+        "channel",
+        "videos",
+        "days",
+        "start",
+        "end",
+        "totals",
+        "previous",
+        "series",
+        "traffic",
+        "analyticsError",
+        "site"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `GET {base}/youtube`: the channel, its videos and its statistics."
+    },
+    "YoutubeChannel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "handle": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "url": {
+          "type": "string"
+        },
+        "studioUrl": {
+          "type": "string"
+        },
+        "thumbnail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subscribers": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "`null` if the channel hides its subscriber count."
+        },
+        "views": {
+          "type": "number"
+        },
+        "videos": {
+          "type": "number"
+        },
+        "createdAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "handle",
+        "url",
+        "studioUrl",
+        "thumbnail",
+        "subscribers",
+        "views",
+        "videos",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    },
+    "YoutubeVideo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "label": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Label given by the site (film name…), or `null`."
+        },
+        "publishedAt": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "duration": {
+          "type": "number",
+          "description": "Duration in seconds."
+        },
+        "visibility": {
+          "type": "string",
+          "description": "public, unlisted or private."
+        },
+        "views": {
+          "type": "number"
+        },
+        "likes": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "comments": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "minutes": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Minutes watched since publication (YouTube Analytics); `null` as long as YouTube has counted nothing."
+        },
+        "averageViewDuration": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "averageViewPercentage": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Average percentage watched (0 to 100)."
+        }
+      },
+      "required": [
+        "id",
+        "url",
+        "title",
+        "label",
+        "publishedAt",
+        "duration",
+        "visibility",
+        "views",
+        "likes",
+        "comments",
+        "minutes",
+        "averageViewDuration",
+        "averageViewPercentage"
+      ],
+      "additionalProperties": false
+    },
+    "YoutubeTotals": {
+      "type": "object",
+      "properties": {
+        "views": {
+          "type": "number"
+        },
+        "minutes": {
+          "type": "number"
+        },
+        "gained": {
+          "type": "number"
+        },
+        "lost": {
+          "type": "number"
+        },
+        "averageViewDuration": {
+          "type": "number",
+          "description": "Average duration watched per view, in seconds."
+        }
+      },
+      "required": [
+        "views",
+        "minutes",
+        "gained",
+        "lost",
+        "averageViewDuration"
+      ],
+      "additionalProperties": false
+    },
+    "YoutubeDay": {
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "views": {
+          "type": "number"
+        },
+        "minutes": {
+          "type": "number"
+        },
+        "gained": {
+          "type": "number"
+        },
+        "lost": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "date",
+        "views",
+        "minutes",
+        "gained",
+        "lost"
+      ],
+      "additionalProperties": false
+    },
+    "YoutubeTraffic": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "YouTube traffic source type (YT_SEARCH, RELATED_VIDEO…)."
+        },
+        "views": {
+          "type": "number"
+        },
+        "minutes": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "source",
+        "views",
+        "minutes"
+      ],
+      "additionalProperties": false
+    },
+    "YoutubeSite": {
+      "type": "object",
+      "properties": {
+        "visits": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "`null` if Umami is not connected or did not answer."
+        },
+        "visitors": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "previousVisits": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "referred": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Visits from a YouTube domain, tracked link or not."
+        },
+        "landing": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          },
+          "description": "Landing pages."
+        },
+        "requests": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "description": "Requests recorded by the site after such a visit; `null` if the site does not count them."
+        },
+        "previousRequests": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "requestsBySubject": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Item"
+          }
+        }
+      },
+      "required": [
+        "visits",
+        "visitors",
+        "previousVisits",
+        "referred",
+        "landing",
+        "requests",
+        "previousRequests",
+        "requestsBySubject"
+      ],
+      "additionalProperties": false,
+      "description": "What the channel brings to the site: visits through a tracked link (`utm_source`) and the requests that follow."
+    },
+    "ReportPreview": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "html": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "version",
+        "subject",
+        "html",
+        "text"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `GET {base}/report/preview`: the report as it would be sent, images included."
+    },
+    "ReportSendResult": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "$ref": "#/definitions/ContractVersion"
+        },
+        "ok": {
+          "type": "boolean"
+        },
+        "recipients": {
+          "type": "number",
+          "description": "Number of recipients reported by the site."
+        },
+        "error": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "version",
+        "ok",
+        "recipients",
+        "error"
+      ],
+      "additionalProperties": false,
+      "description": "Response of `POST {base}/report/send`."
+    }
+  },
+  "$id": "stats-kit/contract.schema.json",
+  "title": "stats-kit data contract (version 1)"
+}

@@ -1,38 +1,45 @@
-/** Configuration commune des composants : adresse de l'API, langue, textes du site. */
+/** Shared configuration of the components: API address, language, site texts. */
 import { HttpClient } from '@angular/common/http';
-import { Injectable, InjectionToken, inject, type Provider } from '@angular/core';
+import { Injectable, InjectionToken, LOCALE_ID, inject, type Provider } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { textes, type TextOverrides, type Texts } from 'stats-kit/contrat';
+import { createTexts, type TextOverrides, type Texts } from 'stats-kit/contract';
 
 export interface StatsKitOptions {
   /**
-   * Adresse où le serveur monte les routes de la librairie (« /api/admin/audience »). Éviter « analytics », « stats » ou « track »
-   * dans l'adresse : les bloqueurs de publicités bloquent ces appels.
+   * Address where the server mounts the library routes ("/api/admin/audience"). Avoid "analytics", "stats" or "track" in the
+   * address: ad blockers block these calls.
    */
   apiUrl: string;
-  /** Langue des textes : « fr » (défaut), « en », ou une autre avec `baseTexts`. */
+  /**
+   * Language of the texts: "en", "fr", "de", "es", "it", "pt", "nl", or a tag with a region ("fr-CH", "en-US") for number and
+   * date formats. Default: the application's `LOCALE_ID`, then English.
+   */
   locale?: string;
-  /** Remplacements de textes (réglages du site). */
+  /** Text overrides (site settings). */
   texts?: TextOverrides;
-  /** Textes complets d'une autre langue. */
+  /** Complete texts of a language the library does not ship. */
   baseTexts?: Texts;
 }
 
 export const STATS_KIT_OPTIONS = new InjectionToken<StatsKitOptions>('STATS_KIT_OPTIONS');
 
-/** `providers: [provideHttpClient(), provideStatsKit({ apiUrl: '/api/admin/audience' })]` */
+/** `providers: [provideHttpClient(), provideStatsKit({ apiUrl: '/api/admin/audience', locale: 'fr' })]` */
 export const provideStatsKit = (options: StatsKitOptions): Provider[] => [{ provide: STATS_KIT_OPTIONS, useValue: options }];
 
-/** Options en vigueur (valeurs par défaut sans fournisseur). */
-export const injectOptions = (): StatsKitOptions => inject(STATS_KIT_OPTIONS, { optional: true }) ?? { apiUrl: '/api/admin/audience' };
-
-/** Textes en vigueur, complétés par les remplacements propres au composant. */
-export function resolveTexts(o: StatsKitOptions, locale?: string | null, overrides?: TextOverrides | null): Texts {
-  const base = textes(locale ?? o.locale ?? 'fr', o.texts, o.baseTexts);
-  return overrides ? textes(locale ?? o.locale ?? 'fr', overrides, base) : base;
+/** Options in force (defaults without a provider); the language falls back to the application's `LOCALE_ID`. */
+export function injectOptions(): StatsKitOptions {
+  const options = inject(STATS_KIT_OPTIONS, { optional: true }) ?? { apiUrl: '/api/admin/audience' };
+  return options.locale ? options : { ...options, locale: inject(LOCALE_ID, { optional: true }) ?? undefined };
 }
 
-/** Appels à l'API de la librairie (HttpClient : les intercepteurs du site, d'authentification par exemple, s'appliquent). */
+/** Texts in force, completed by the overrides of the component. */
+export function resolveTexts(o: StatsKitOptions, locale?: string | null, overrides?: TextOverrides | null): Texts {
+  const lang = locale ?? o.locale ?? 'en';
+  const base = createTexts(lang, o.texts, o.baseTexts);
+  return overrides ? createTexts(lang, overrides, base) : base;
+}
+
+/** Calls to the library API (HttpClient: the site's interceptors, for authentication for example, apply). */
 @Injectable({ providedIn: 'root' })
 export class StatsKitApi {
   private readonly http = inject(HttpClient);
@@ -46,7 +53,7 @@ export class StatsKitApi {
     return firstValueFrom(this.http.post<T>(`${base.replace(/\/+$/, '')}${path}`, {}, { params }));
   }
 
-  /** Fond de carte, chargé une seule fois par adresse. */
+  /** Base map, loaded once per address. */
   world(url: string): Promise<unknown> {
     let p = this.worlds.get(url);
     if (!p) {
@@ -60,7 +67,7 @@ export class StatsKitApi {
   }
 }
 
-/** Télécharge un texte comme fichier (export CSV). */
+/** Downloads a text as a file (CSV export). */
 export function download(doc: Document, name: string, content: string, type = 'text/csv;charset=utf-8'): void {
   const url = URL.createObjectURL(new Blob([content], { type }));
   const a = doc.createElement('a');
