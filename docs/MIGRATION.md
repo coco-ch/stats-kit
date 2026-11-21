@@ -1,104 +1,108 @@
-# Migrer un site existant vers stats-kit
+# Migrating an existing site to stats-kit
 
-stats-kit réunit ce qui avait été recopié de site en site : connecteurs, agrégations, pages d'administration et rapport hebdomadaire. Ce guide décrit, pour chaque type de site, comment passer à la librairie **sans perdre de fonction**. Les sites sont décrits de façon générique.
+stats-kit gathers what had been copied from site to site: connectors, aggregations, administration pages and weekly report. This guide describes, for each kind of site, how to move to the library **without losing any feature**. Sites are described generically.
 
-Principe commun :
+To upgrade a site that already uses stats-kit 0.1.x, see "Upgrading from 0.1.x" in the [README](../README.md#upgrading-from-01x).
 
-1. installer la librairie (`npm i <dépôt>#vX.Y.Z`, voir le README) ;
-2. côté serveur, remplacer les modules maison (Umami, Search Console, YouTube, rapport, kit d'e-mail, carte PNG) par **un seul** `createStatsKit(…)` monté derrière l'authentification de l'administration ;
-3. côté Angular, remplacer les écrans maison par `<sk-statistiques>`, `<sk-search-console>` et `<sk-youtube>` ;
-4. reporter les réglages du site (libellés, regroupements, objectifs, données de la base, textes, couleurs) dans la configuration ;
-5. supprimer les copies : modules serveur, composants, `world-110m.json` du dossier public, Leaflet et ses réglages (`allowedCommonJsDependencies`, feuille de style), tests devenus inutiles ;
-6. garder les tests de bout en bout du site sur ses propres pages (ils vérifient l'intégration), en les adaptant aux nouvelles classes `sk-*`.
+Common principle:
 
-Les variables d'environnement gardent leurs noms (`UMAMI_*`, `GSC_*`, `YOUTUBE_*`) : `sourcesFromEnv()` les lit telles quelles.
+1. install the library (`npm i <repository>#vX.Y.Z`, see the README);
+2. on the server, replace the home-made modules (Umami, Search Console, YouTube, report, e-mail kit, PNG map) by **a single** `createStatsKit(…)` mounted behind the administration's authentication;
+3. in Angular, replace the home-made screens by `<sk-statistics>`, `<sk-search-console>` and `<sk-youtube>`;
+4. move the site's settings (labels, groups, goals, database data, texts, colours, language) into the configuration;
+5. delete the copies: server modules, components, `world-110m.json` from the public folder, Leaflet and its settings (`allowedCommonJsDependencies`, stylesheet), tests that became useless;
+6. keep the site's end-to-end tests on its own pages (they check the integration), adapting them to the new `sk-*` classes.
 
-## Correspondance générale
+Environment variables keep their names (`UMAMI_*`, `GSC_*`, `YOUTUBE_*`): `sourcesFromEnv()` reads them as they are.
 
-| Avant (copie maison) | Avec stats-kit |
+## General mapping
+
+| Before (home-made copy) | With stats-kit |
 |---|---|
-| `server/umami.ts` (connexion, `collect`, `analytics`, `group`, `heatmap`, `pageRows`, `resolveRange`, cache 2 min) | `createStatsKit({ umami })`, routes `/overview` et `/live` ; `pages.languages` pour le regroupement par langue |
-| `server/gsc.ts` (JWT de compte de service, OAuth, `performance`, `sitemaps`, `indexation`) | `createStatsKit({ gsc })`, routes `/search` et `/search/indexation` ; `gsc.indexationFilter` pour ne contrôler qu'une partie du plan du site |
-| `server/youtube.ts` (chaîne, vidéos, 180 jours, provenance, visites venues de YouTube) | `createStatsKit({ youtube })`, route `/youtube` ; `youtube.videoLabel` et `youtube.extraVideoIds` pour relier les vidéos aux contenus du site ; `sourceRequests` pour les demandes qui suivent une visite |
-| `server/report.ts`, `email-kit.ts`, `worldmap.ts` | `stats.report()`, `stats.sendReport()`, route `/report/preview` ; `report.send` = fonction d'envoi existante du site ; `startWeeklyReport` pour la planification |
-| Libellés de pages et d'événements (`PAGE_LABELS`, `EVENT_LABELS`…) | `pages.labels`, `events.labels` |
-| Fiches, secteurs, articles comptés à part | `pages.groups` (un motif par regroupement, libellés facultatifs) |
-| Événements « appel », « devis », « formulaire envoyé » additionnés | `goals` |
-| Demandes reçues, à traiter, rappels (base du site) | `extras` : tuiles (mise en avant avec `highlight`), tableaux (par sujet, par langue), dernière étape de l'entonnoir |
-| Textes du rapport modifiables dans l'administration (objet, titre, introduction, pied) | `texts.report.subject`, `title`, `intro`, `footer`, relus à chaque envoi (passer une fonction qui recrée le kit, ou des textes lus en base au démarrage) ; variables `{site}`, `{from}`, `{to}`, `{period}`, `{days}` à la place de l'ancienne `{periode}` |
-| Couleurs du rapport et de la carte | `report.theme.brand` (le reste en découle), logo par `report.theme.logo` |
-| `stats-kit.ts` / `admin/stats.ts` / `admin/google.ts` / `admin/youtube.ts` / `world-map.ts` | composants de `stats-kit/angular` |
-| Variables CSS `--adm-*` | variables `--sk-*` (voir le README) ; le site peut les relier : `--sk-brand: var(--adm-brand)` |
+| `server/umami.ts` (sign-in, `collect`, `analytics`, `group`, `heatmap`, `pageRows`, `resolveRange`, 2 min cache) | `createStatsKit({ umami })`, routes `/overview` and `/live`; `pages.languages` to group by language |
+| `server/gsc.ts` (service account JWT, OAuth, `performance`, `sitemaps`, `indexation`) | `createStatsKit({ gsc })`, routes `/search` and `/search/indexation`; `gsc.indexationFilter` to check only part of the sitemap |
+| `server/youtube.ts` (channel, videos, 180 days, traffic sources, visits from YouTube) | `createStatsKit({ youtube })`, route `/youtube`; `youtube.videoLabel` and `youtube.extraVideoIds` to link videos to the site's content; `sourceRequests` for the requests following a visit |
+| `server/report.ts`, `email-kit.ts`, `worldmap.ts` | `stats.report()`, `stats.sendReport()`, route `/report/preview`; `report.send` = the site's existing sending function; `startWeeklyReport` for scheduling |
+| Page and event labels (`PAGE_LABELS`, `EVENT_LABELS`…) | `pages.labels`, `events.labels` |
+| Product pages, areas, articles counted separately | `pages.groups` (one pattern per group, optional labels) |
+| "Call", "quote", "form sent" events added up | `goals` |
+| Requests received, to handle, call-backs (site database) | `extras`: tiles (highlighted with `highlight`), tables (by subject, by language), last funnel step |
+| Report texts editable in the administration (subject, title, introduction, footer) | `texts.report.subject`, `title`, `intro`, `footer`, read again at every sending (pass a function that recreates the kit, or texts read from the database at start-up); variables `{site}`, `{from}`, `{to}`, `{period}`, `{days}` |
+| Language of the screens and of the report | `locale` (`en`, `fr`, `de`, `es`, `it`, `pt`, `nl`, or a regional tag); in Angular, the application's `LOCALE_ID` by default |
+| Report and map colours | `report.theme.brand` (the rest derives from it), logo through `report.theme.logo` |
+| `stats-kit.ts` / `admin/stats.ts` / `admin/google.ts` / `admin/youtube.ts` / `world-map.ts` | components of `stats-kit/angular` |
+| CSS variables `--adm-*` | `--sk-*` variables (see the README); the site can link them: `--sk-brand: var(--adm-brand)` |
 
-## Site Node + Angular, version la plus complète côté Node (Umami, Search Console, YouTube, rapport, demandes)
+## Node + Angular site, most complete Node version (Umami, Search Console, YouTube, report, requests)
 
-C'est la copie la plus proche de la librairie : la migration est surtout un branchement.
+This is the copy closest to the library: the migration is mostly plugging in.
 
-Serveur :
+Server:
 
 ```ts
 const stats = createStatsKit({
-  siteName: NOM_DU_SITE, timeZone: 'Europe/Paris', locale: 'fr', ...sourcesFromEnv(),
-  pages: { languages: LANGUES_DU_SITE, labels: PAGE_LABELS, groups: [
-    { id: 'fiches', title: 'Fiches les plus vues', pattern: /^\/produits\/([a-z0-9-]+)$/, labels: (k) => dictionnaire[`products.${k}.name`] },
-    { id: 'zones', title: 'Secteurs les plus vus', pattern: /^\/secteurs\/([a-z0-9-]+)$/, labels: SECTEUR_LABELS },
-    { id: 'articles', title: 'Articles les plus lus', pattern: /^\/articles\/([a-z0-9-]+)$/ },
+  siteName: SITE_NAME, timeZone: 'Europe/Paris', locale: SITE_LANGUAGE, ...sourcesFromEnv(),
+  pages: { languages: SITE_LANGUAGES, labels: PAGE_LABELS, groups: [
+    { id: 'products', title: 'Most viewed products', pattern: /^\/products\/([a-z0-9-]+)$/, labels: (k) => dictionary[`products.${k}.name`] },
+    { id: 'areas', title: 'Most viewed areas', pattern: /^\/areas\/([a-z0-9-]+)$/, labels: AREA_LABELS },
+    { id: 'articles', title: 'Most read articles', pattern: /^\/articles\/([a-z0-9-]+)$/ },
   ] },
   events: { labels: EVENT_LABELS },
-  goals: [{ id: 'appels', label: 'Clics pour appeler', events: CALL_EVENTS }, { id: 'devis', label: 'Clics « devis »', events: QUOTE_EVENTS }, { id: 'envois', label: 'Formulaires envoyés', events: ['formulaire-envoye'] }],
-  extras: async (range) => demandesDuSite(range),           // tuiles « Demandes reçues », « À traiter », « Rappels », tableaux par sujet et par langue
-  sourceRequests: (from, to, source) => demandesVenuesDe(source, from, to),
-  youtube: youtubeFromEnv() && { ...youtubeFromEnv()!, channelUrl: ADRESSE_DE_LA_CHAINE, videoLabel: (v) => filmDeLaVideo(v.id), extraVideoIds: anciennesVersions },
-  gsc: gscFromEnv() && { ...gscFromEnv()!, sitemapUrl: `${URL_PUBLIQUE}/sitemap.xml`, indexationFilter: (u) => u.includes('/fr'), brandTerms: ['nom-du-site'] },
-  report: { theme: { brand: COULEUR }, statsUrl: `${URL_PUBLIQUE}/admin/stats`, send: (m) => sendMail({ to: destinataires(), ...m }) },
+  goals: [{ id: 'calls', label: 'Clicks to call', events: CALL_EVENTS }, { id: 'quotes', label: 'Quote clicks', events: QUOTE_EVENTS }, { id: 'forms', label: 'Forms sent', events: ['form-sent'] }],
+  extras: async (range) => siteRequests(range),            // "Requests received", "To handle", "Call-backs" tiles, tables by subject and by language
+  sourceRequests: (from, to, source) => requestsFrom(source, from, to),
+  youtube: youtubeFromEnv() && { ...youtubeFromEnv()!, channelUrl: CHANNEL_ADDRESS, videoLabel: (v) => filmOfVideo(v.id), extraVideoIds: olderVersions },
+  gsc: gscFromEnv() && { ...gscFromEnv()!, sitemapUrl: `${PUBLIC_URL}/sitemap.xml`, indexationFilter: (u) => u.includes('/en'), brandTerms: ['site-name'] },
+  report: { theme: { brand: COLOUR }, statsUrl: `${PUBLIC_URL}/admin/stats`, send: (m) => sendMail({ to: recipients(), ...m }) },
 });
-app.use('/api/admin/audience', exigerAdmin, stats.middleware());
+app.use('/api/admin/audience', requireAdmin, stats.middleware());
 startWeeklyReport({ schedule: { weekday: 1, hour: 8, timeZone: 'Europe/Paris' }, getLastSent: () => privateGet('report.lastSent'), setLastSent: (w) => privateSet('report.lastSent', w), send: async () => (await stats.sendReport({ days: 7 }, true)).ok });
 ```
 
-- Garder l'écran de réglages du rapport (activé, destinataires, textes) : il alimente `report.send` (destinataires) et les textes. L'interrupteur « activé » se traduit par `send` qui renvoie `false` sans rien faire, ou par l'arrêt de `startWeeklyReport`.
-- La fonction d'envoi existante accepte une pièce jointe en ligne : passer `m.attachments` (carte, logo).
-- Le réglage « ne pas compter ce navigateur » (visites de l'équipe) reste dans le site : l'afficher au-dessus de `<sk-statistiques>`.
-- Tableau de bord et autres écrans qui lisaient `/api/admin/stats` : lire `/api/admin/audience/overview` (mêmes informations, forme du contrat).
-- Tests e2e : le faux Umami du site peut rester ; les sélecteurs `.kpi`, `.top`, `.geo`, `.heat .cell`, `table.sessions` deviennent `sk-tile`, `sk-metric-table`, `sk-world-map`, `.sk-heat__cell`, `.sk-sessions table`.
+- Keep the report settings screen (enabled, recipients, texts): it feeds `report.send` (recipients) and the texts. The "enabled" switch becomes a `send` that returns `false` without doing anything, or stopping `startWeeklyReport`.
+- The existing sending function accepts an inline attachment: pass `m.attachments` (map, logo).
+- The "do not count this browser" setting (team visits) stays in the site: show it above `<sk-statistics>`.
+- Dashboard and other screens that read `/api/admin/stats`: read `/api/admin/audience/overview` (same information, contract shape).
+- End-to-end tests: the site's fake Umami can stay; the selectors `.kpi`, `.top`, `.geo`, `.heat .cell`, `table.sessions` become `sk-tile`, `sk-metric-table`, `sk-world-map`, `.sk-heat__cell`, `.sk-sessions table`.
 
-Écarts à connaître (non repris, à garder dans le site si besoin) :
+Gaps to know (not taken over, keep them in the site if needed):
 
-- la colonne « 7 derniers jours » du tableau des actions (série par événement) ;
-- la carte « Où en est-on cette semaine ? » de l'écran Google ;
-- l'état de la publication automatique des vidéos (fichier de publication) : seul le lien vidéo → contenu est repris (`videoLabel`, `extraVideoIds`).
+- the "last 7 days" column of the actions table (series per event);
+- the "Where do we stand this week?" card of the Google screen;
+- the state of automatic video publishing (publishing file): only the video → content link is taken over (`videoLabel`, `extraVideoIds`).
 
-## Site Node + Angular, copie plus ancienne (Umami et Search Console, suivi des conversions)
+## Node + Angular site, older copy (Umami and Search Console, conversion tracking)
 
-- Même branchement que ci-dessus, sans YouTube ni `extras` s'il n'y a pas de base de demandes.
-- Les indicateurs de conversion (clics vers l'e-mail, vers un réseau professionnel, formulaire envoyé) deviennent des `goals`.
-- Le bloc « 7 derniers jours contre les 7 d'avant » est couvert par les tuiles (évolution par rapport à la période précédente) et, sur l'écran Google, par les tuiles « 7 derniers jours ».
-- L'écran Search Console embarqué gagne les opportunités, l'apparence et l'indexation.
+- Same plugging as above, without YouTube or `extras` if there is no requests database.
+- Conversion indicators (clicks to e-mail, to a professional network, form sent) become `goals`.
+- The "last 7 days against the 7 before" block is covered by the tiles (change against the previous period) and, on the Google screen, by the "last 7 days" tiles.
+- The embedded Search Console screen gains opportunities, appearance and indexing.
 
-## Site .NET + Angular (version de référence : carte, direct, 24 h, carte de chaleur, rapport illustré, 11 langues)
+## .NET + Angular site (reference version: map, live count, 24 h, heatmap, illustrated report, 11 languages)
 
-Le serveur reste en .NET ; seul le contrat change.
+The server stays in .NET; only the contract changes.
 
-1. **Contrôleur** : à l'adresse actuelle (déjà sans « analytics » dans le chemin), renvoyer `StatsOverview` au lieu de la vue d'ensemble maison. La correspondance champ par champ est dans [CONTRAT.md](CONTRAT.md#écrire-un-serveur-compatible-en-net) ; à compléter : `range`, `series.slots` en heure locale, `previousPageviews` (série de la période précédente), `breakdowns.channels`, `regions`, `hostnames`, `utm*` (même appel `metrics` avec d'autres `type`), `pages` (Umami `metrics/expanded`), `goals`, `counts`, `extras`. Ajouter `GET …/live`. Servir `world-110m.json` (déjà présent dans le projet) en `GET …/world.json`, ou passer `worldUrl` au composant.
-2. **Rapport** : garder le rapport C# existant (déjà en tableaux, carte PNG dessinée côté serveur, aperçu) derrière `GET …/report/preview` et `POST …/report/send`, en renvoyant `ReportPreview` et `ReportSendResult`. Le bloc « coûts » (usage des services d'IA, abonnements) reste propre au site ; dans la page, l'exposer en `extras` (tuiles et tableau « par fournisseur »).
-3. **Angular** : remplacer le composant d'analyse par `<sk-statistiques [locale]="langueActive()" [texts]="textesDuSite()" />` ; les appels passent par `HttpClient`, l'intercepteur JWT du site s'applique. Retirer Leaflet et la copie des centroïdes.
-4. **Langues** : la librairie fournit le français et l'anglais. Pour les neuf autres langues du site, construire `baseTexts` à partir des fichiers de traduction existants (même forme que `LANGUES.fr`) et le passer à `provideStatsKit` ; en attendant, les langues sans traduction retombent sur le français.
-5. **Rafraîchissement** : le site actualisait toute la page toutes les 15 secondes ; la librairie actualise le direct toutes les 30 secondes et le reste toutes les 2 minutes (`liveMs`, `refreshMs` pour retrouver l'ancien rythme).
+1. **Controller**: at the current address (already without "analytics" in the path), return `StatsOverview` instead of the home-made overview. The field-by-field mapping is in [CONTRACT.md](CONTRACT.md#writing-a-compatible-server-in-net); to complete: `range`, `series.slots` in local time, `previousPageviews` (series of the previous period), `breakdowns.channels`, `regions`, `hostnames`, `utm*` (same `metrics` call with other `type`s), `pages` (Umami `metrics/expanded`), `goals`, `counts`, `extras`. Add `GET …/live`. Serve `world-110m.json` (already in the project) as `GET …/world.json`, or pass `worldUrl` to the component.
+2. **Report**: keep the existing C# report (already in tables, PNG map drawn on the server, preview) behind `GET …/report/preview` and `POST …/report/send`, returning `ReportPreview` and `ReportSendResult`. The "costs" block (AI service usage, subscriptions) stays specific to the site; in the page, expose it as `extras` (tiles and a "by provider" table).
+3. **Angular**: replace the analytics component by `<sk-statistics [locale]="activeLanguage()" [texts]="siteTexts()" />`; calls go through `HttpClient`, the site's JWT interceptor applies. Remove Leaflet and the copy of the centroids.
+4. **Languages**: the library ships English, French, German, Spanish, Italian, Portuguese and Dutch. For the site's other languages, build `baseTexts` from its existing translation files (same shape as `LOCALES.en`) and pass it to `provideStatsKit` with the matching `locale`; until then, those languages fall back to English. A language worth sharing can be added to the library itself (see "Languages" in the README).
+5. **Refresh**: the site refreshed the whole page every 15 seconds; the library refreshes the live count every 30 seconds and the rest every 2 minutes (`liveMs`, `refreshMs` to get the former rhythm back).
 
-Écarts à connaître : l'alerte de pic de trafic (envoi d'un message quand l'heure écoulée dépasse la moyenne) n'est pas dans la librairie ; elle reste dans le site.
+Gaps to know: the traffic peak alert (a message sent when the past hour exceeds the average) is not in the library; it stays in the site.
 
-## Console d'administration multi-sources (en construction)
+## Multi-source administration console (under construction)
 
-- Une console qui suit plusieurs sites crée **un kit par site** (`createStatsKit` avec les réglages de chacun) et les monte sous une adresse par site (`/api/sites/:id/audience`) ; chaque page reçoit `apiUrl` du site affiché.
-- Ses propres sources (publication YouTube, rapport maison) se branchent par `youtube.videoLabel` / `extraVideoIds`, `extras` et `report.send`.
-- Manque encore dans la librairie : un sélecteur de site et une vue de synthèse de plusieurs sites côte à côte ; un rapport qui regroupe plusieurs sites.
+- A console following several sites creates **one kit per site** (`createStatsKit` with the settings of each) and mounts them under one address per site (`/api/sites/:id/audience`); each page receives the `apiUrl` of the site shown.
+- Its own sources (YouTube publishing, home-made report) plug in through `youtube.videoLabel` / `extraVideoIds`, `extras` and `report.send`.
+- Still missing in the library: a site selector and a summary view of several sites side by side; a report gathering several sites.
 
-## Vérifier qu'aucune fonction ne se perd
+## Checking that no feature is lost
 
-Pour chaque site, avant de supprimer l'ancienne page :
+For each site, before deleting the former page:
 
-- comparer, sur la même période, les totaux de l'ancienne et de la nouvelle page (visiteurs, visites, pages vues, rebond, durée) ;
-- vérifier la carte, les 24 heures, la carte de chaleur, les classements, les sessions, l'export CSV, l'impression ;
-- comparer le rapport : aperçu, puis un envoi réel à une adresse de test, ouvert dans Outlook et sur téléphone ;
-- vérifier les écrans Google et YouTube et leurs états « non configuré » ;
-- passer l'audit d'accessibilité (axe) de la page intégrée, en clair et en sombre.
+- compare, over the same period, the totals of the former and of the new page (visitors, visits, page views, bounce, duration);
+- check the map, the 24 hours, the heatmap, the rankings, the sessions, the CSV export, printing;
+- compare the report: preview, then a real sending to a test address, opened in Outlook and on a phone;
+- check the Google and YouTube screens and their "not configured" states;
+- check the pages and the report in each language the site uses;
+- run the accessibility audit (axe) of the integrated page, light and dark.
