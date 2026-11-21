@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.angular.json",
+  "compilerOptions": {
+    "paths": {
+      "stats-kit/contrat": ["../packages/contrat/src/index.ts"],
+      "stats-kit/angular": ["../packages/angular/src/public-api.ts"]
+    }
+  },
+  "files": ["src/main.ts"],
+  "include": ["src/**/*.ts"]
+}

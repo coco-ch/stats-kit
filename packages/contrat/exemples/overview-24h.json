@@ -1,0 +1,1604 @@
+{
+ "version": 1,
+ "status": "ok",
+ "error": null,
+ "generatedAt": "2026-11-16T10:30:00.000Z",
+ "range": {
+  "from": "2026-11-15T10:30:00.000Z",
+  "to": "2026-11-16T10:30:00.000Z",
+  "days": 1,
+  "unit": "hour",
+  "timeZone": "Europe/Paris",
+  "previousFrom": "2026-11-14T10:30:00.000Z",
+  "previousTo": "2026-11-15T10:30:00.000Z"
+ },
+ "totals": {
+  "pageviews": 112,
+  "visitors": 48,
+  "visits": 63,
+  "bounces": 26,
+  "totaltime": 6048
+ },
+ "previous": {
+  "pageviews": 95,
+  "visitors": 41,
+  "visits": 53,
+  "bounces": 22,
+  "totaltime": 5088
+ },
+ "active": 5,
+ "series": {
+  "unit": "hour",
+  "slots": [
+   "2026-11-15T11",
+   "2026-11-15T12",
+   "2026-11-15T13",
+   "2026-11-15T14",
+   "2026-11-15T15",
+   "2026-11-15T16",
+   "2026-11-15T17",
+   "2026-11-15T18",
+   "2026-11-15T19",
+   "2026-11-15T20",
+   "2026-11-15T21",
+   "2026-11-15T22",
+   "2026-11-15T23",
+   "2026-11-16T00",
+   "2026-11-16T01",
+   "2026-11-16T02",
+   "2026-11-16T03",
+   "2026-11-16T04",
+   "2026-11-16T05",
+   "2026-11-16T06",
+   "2026-11-16T07",
+   "2026-11-16T08",
+   "2026-11-16T09",
+   "2026-11-16T10",
+   "2026-11-16T11"
+  ],
+  "pageviews": [
+   6,
+   4,
+   4,
+   6,
+   6,
+   6,
+   4,
+   4,
+   3,
+   5,
+   2,
+   1,
+   0,
+   2,
+   1,
+   0,
+   1,
+   2,
+   2,
+   2,
+   6,
+   9,
+   13,
+   12,
+   11
+  ],
+  "visitors": [
+   3,
+   2,
+   2,
+   3,
+   3,
+   3,
+   2,
+   2,
+   1,
+   2,
+   1,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
+   3,
+   4,
+   6,
+   5,
+   5
+  ],
+  "previousPageviews": [
+   6,
+   6,
+   6,
+   6,
+   6,
+   6,
+   4,
+   5,
+   6,
+   5,
+   4,
+   3,
+   1,
+   1,
+   1,
+   0,
+   2,
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   6
+  ]
+ },
+ "last24h": {
+  "unit": "hour",
+  "slots": [
+   "2026-11-15T11",
+   "2026-11-15T12",
+   "2026-11-15T13",
+   "2026-11-15T14",
+   "2026-11-15T15",
+   "2026-11-15T16",
+   "2026-11-15T17",
+   "2026-11-15T18",
+   "2026-11-15T19",
+   "2026-11-15T20",
+   "2026-11-15T21",
+   "2026-11-15T22",
+   "2026-11-15T23",
+   "2026-11-16T00",
+   "2026-11-16T01",
+   "2026-11-16T02",
+   "2026-11-16T03",
+   "2026-11-16T04",
+   "2026-11-16T05",
+   "2026-11-16T06",
+   "2026-11-16T07",
+   "2026-11-16T08",
+   "2026-11-16T09",
+   "2026-11-16T10",
+   "2026-11-16T11"
+  ],
+  "pageviews": [
+   6,
+   4,
+   4,
+   6,
+   6,
+   6,
+   4,
+   4,
+   3,
+   5,
+   2,
+   1,
+   0,
+   2,
+   1,
+   0,
+   1,
+   2,
+   2,
+   2,
+   6,
+   9,
+   13,
+   12,
+   11
+  ],
+  "visitors": [
+   3,
+   2,
+   2,
+   3,
+   3,
+   3,
+   2,
+   2,
+   1,
+   2,
+   1,
+   0,
+   0,
+   1,
+   0,
+   0,
+   0,
+   1,
+   1,
+   1,
+   3,
+   4,
+   6,
+   5,
+   5
+  ],
+  "previousPageviews": null
+ },
+ "heatmap": [
+  [
+   2,
+   1,
+   0,
+   1,
+   2,
+   2,
+   2,
+   6,
+   9,
+   13,
+   12,
+   11,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   6,
+   4,
+   4,
+   6,
+   6,
+   6,
+   4,
+   4,
+   3,
+   5,
+   2,
+   1,
+   0
+  ]
+ ],
+ "breakdowns": {
+  "pages": [
+   {
+    "key": "/",
+    "label": "Accueil",
+    "value": 38,
+    "previous": 33
+   },
+   {
+    "key": "/services",
+    "label": null,
+    "value": 16,
+    "previous": 14
+   },
+   {
+    "key": "/contact",
+    "label": "Contact",
+    "value": 11,
+    "previous": 9
+   },
+   {
+    "key": "/produits/table-chene",
+    "label": null,
+    "value": 7,
+    "previous": 6
+   },
+   {
+    "key": "/articles/entretenir-le-bois",
+    "label": null,
+    "value": 6,
+    "previous": 5
+   },
+   {
+    "key": "/produits/chaise-noyer",
+    "label": null,
+    "value": 6,
+    "previous": 5
+   },
+   {
+    "key": "/a-propos",
+    "label": null,
+    "value": 4,
+    "previous": 4
+   },
+   {
+    "key": "/produits/etagere-frene",
+    "label": null,
+    "value": 4,
+    "previous": 3
+   },
+   {
+    "key": "/articles/choisir-son-essence",
+    "label": null,
+    "value": 3,
+    "previous": 2
+   },
+   {
+    "key": "/tarifs",
+    "label": null,
+    "value": 3,
+    "previous": 2
+   },
+   {
+    "key": "/articles/finitions-naturelles",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "/products/oak-table",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "/realisations",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "/kontakt",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "/mentions-legales",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "/plan-du-site",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   }
+  ],
+  "entries": [
+   {
+    "key": "/",
+    "label": "Accueil",
+    "value": 11,
+    "previous": null
+   },
+   {
+    "key": "/services",
+    "label": null,
+    "value": 6,
+    "previous": null
+   },
+   {
+    "key": "/contact",
+    "label": "Contact",
+    "value": 4,
+    "previous": null
+   },
+   {
+    "key": "/a-propos",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/articles/entretenir-le-bois",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/produits/chaise-noyer",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/produits/table-chene",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/articles/choisir-son-essence",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/articles/finitions-naturelles",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/kontakt",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/products/oak-table",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/produits/etagere-frene",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/realisations",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/tarifs",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "exits": [
+   {
+    "key": "/",
+    "label": "Accueil",
+    "value": 11,
+    "previous": null
+   },
+   {
+    "key": "/services",
+    "label": null,
+    "value": 5,
+    "previous": null
+   },
+   {
+    "key": "/contact",
+    "label": "Contact",
+    "value": 4,
+    "previous": null
+   },
+   {
+    "key": "/a-propos",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/articles/entretenir-le-bois",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/produits/chaise-noyer",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/produits/table-chene",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "/articles/choisir-son-essence",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/articles/finitions-naturelles",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/products/oak-table",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/produits/etagere-frene",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/realisations",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "/tarifs",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "referrers": [
+   {
+    "key": "",
+    "label": null,
+    "value": 29,
+    "previous": 24
+   },
+   {
+    "key": "google.com",
+    "label": null,
+    "value": 17,
+    "previous": 14
+   },
+   {
+    "key": "bing.com",
+    "label": null,
+    "value": 3,
+    "previous": 3
+   },
+   {
+    "key": "duckduckgo.com",
+    "label": null,
+    "value": 3,
+    "previous": 2
+   },
+   {
+    "key": "youtube.com",
+    "label": null,
+    "value": 3,
+    "previous": 2
+   },
+   {
+    "key": "linkedin.com",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "annuaire-artisans.exemple",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "facebook.com",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "qwant.com",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   }
+  ],
+  "channels": [
+   {
+    "key": "direct",
+    "label": null,
+    "value": 28,
+    "previous": 23
+   },
+   {
+    "key": "organicSearch",
+    "label": null,
+    "value": 23,
+    "previous": 20
+   },
+   {
+    "key": "organicSocial",
+    "label": null,
+    "value": 5,
+    "previous": 4
+   },
+   {
+    "key": "referral",
+    "label": null,
+    "value": 4,
+    "previous": 3
+   },
+   {
+    "key": "organicVideo",
+    "label": null,
+    "value": 3,
+    "previous": 2
+   },
+   {
+    "key": "email",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   }
+  ],
+  "countries": [
+   {
+    "key": "FR",
+    "label": null,
+    "value": 37,
+    "previous": 31
+   },
+   {
+    "key": "CH",
+    "label": null,
+    "value": 6,
+    "previous": 5
+   },
+   {
+    "key": "BE",
+    "label": null,
+    "value": 5,
+    "previous": 4
+   },
+   {
+    "key": "CA",
+    "label": null,
+    "value": 4,
+    "previous": 3
+   },
+   {
+    "key": "US",
+    "label": null,
+    "value": 3,
+    "previous": 2
+   },
+   {
+    "key": "DE",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "ES",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "GB",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "IT",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "MA",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "SN",
+    "label": null,
+    "value": 1,
+    "previous": 0
+   }
+  ],
+  "regions": [
+   {
+    "key": "FR-ARA",
+    "label": null,
+    "value": 11,
+    "previous": null
+   },
+   {
+    "key": "FR-IDF",
+    "label": null,
+    "value": 10,
+    "previous": null
+   },
+   {
+    "key": "FR-PAC",
+    "label": null,
+    "value": 6,
+    "previous": null
+   },
+   {
+    "key": "BE-BRU",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "CA-QC",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "CH-GE",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "FR-OCC",
+    "label": null,
+    "value": 3,
+    "previous": null
+   }
+  ],
+  "cities": [
+   {
+    "key": "Lyon",
+    "label": null,
+    "value": 7,
+    "previous": null
+   },
+   {
+    "key": "Paris",
+    "label": null,
+    "value": 6,
+    "previous": null
+   },
+   {
+    "key": "Grenoble",
+    "label": null,
+    "value": 4,
+    "previous": null
+   },
+   {
+    "key": "Bruxelles",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "Genève",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "Montréal",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "Annecy",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "Lausanne",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "Marseille",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "Liège",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "Nantes",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "Toulouse",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "languages": [
+   {
+    "key": "fr",
+    "label": null,
+    "value": 45,
+    "previous": null
+   },
+   {
+    "key": "en",
+    "label": null,
+    "value": 9,
+    "previous": null
+   },
+   {
+    "key": "de",
+    "label": null,
+    "value": 4,
+    "previous": null
+   },
+   {
+    "key": "es",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "it",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "siteLanguages": [
+   {
+    "key": "fr",
+    "label": null,
+    "value": 86,
+    "previous": 73
+   },
+   {
+    "key": "en",
+    "label": null,
+    "value": 17,
+    "previous": 15
+   },
+   {
+    "key": "de",
+    "label": null,
+    "value": 4,
+    "previous": 4
+   }
+  ],
+  "devices": [
+   {
+    "key": "mobile",
+    "label": null,
+    "value": 33,
+    "previous": null
+   },
+   {
+    "key": "desktop",
+    "label": null,
+    "value": 19,
+    "previous": null
+   },
+   {
+    "key": "laptop",
+    "label": null,
+    "value": 8,
+    "previous": null
+   },
+   {
+    "key": "tablet",
+    "label": null,
+    "value": 4,
+    "previous": null
+   }
+  ],
+  "browsers": [
+   {
+    "key": "chrome",
+    "label": null,
+    "value": 29,
+    "previous": null
+   },
+   {
+    "key": "ios",
+    "label": null,
+    "value": 13,
+    "previous": null
+   },
+   {
+    "key": "safari",
+    "label": null,
+    "value": 6,
+    "previous": null
+   },
+   {
+    "key": "firefox",
+    "label": null,
+    "value": 5,
+    "previous": null
+   },
+   {
+    "key": "edge-chromium",
+    "label": null,
+    "value": 4,
+    "previous": null
+   },
+   {
+    "key": "samsung",
+    "label": null,
+    "value": 3,
+    "previous": null
+   },
+   {
+    "key": "android",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "os": [
+   {
+    "key": "Android OS",
+    "label": null,
+    "value": 20,
+    "previous": null
+   },
+   {
+    "key": "iOS",
+    "label": null,
+    "value": 17,
+    "previous": null
+   },
+   {
+    "key": "Windows 10",
+    "label": null,
+    "value": 15,
+    "previous": null
+   },
+   {
+    "key": "Mac OS",
+    "label": null,
+    "value": 8,
+    "previous": null
+   },
+   {
+    "key": "Linux",
+    "label": null,
+    "value": 3,
+    "previous": null
+   }
+  ],
+  "screens": [
+   {
+    "key": "390x844",
+    "label": null,
+    "value": 13,
+    "previous": null
+   },
+   {
+    "key": "1920x1080",
+    "label": null,
+    "value": 10,
+    "previous": null
+   },
+   {
+    "key": "1536x864",
+    "label": null,
+    "value": 6,
+    "previous": null
+   },
+   {
+    "key": "412x915",
+    "label": null,
+    "value": 6,
+    "previous": null
+   },
+   {
+    "key": "1440x900",
+    "label": null,
+    "value": 4,
+    "previous": null
+   },
+   {
+    "key": "768x1024",
+    "label": null,
+    "value": 3,
+    "previous": null
+   }
+  ],
+  "events": [
+   {
+    "key": "clic-telephone",
+    "label": "Clic pour appeler",
+    "value": 4,
+    "previous": 3
+   },
+   {
+    "key": "clic-email",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "formulaire-envoye",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "telechargement-catalogue",
+    "label": null,
+    "value": 2,
+    "previous": 2
+   },
+   {
+    "key": "clic-itineraire",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   },
+   {
+    "key": "video-lecture",
+    "label": null,
+    "value": 1,
+    "previous": 1
+   }
+  ],
+  "hostnames": [
+   {
+    "key": "www.exemple.test",
+    "label": null,
+    "value": 61,
+    "previous": null
+   },
+   {
+    "key": "exemple.test",
+    "label": null,
+    "value": 2,
+    "previous": null
+   }
+  ],
+  "utmSources": [
+   {
+    "key": "youtube",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "lettre",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "utmMediums": [
+   {
+    "key": "video",
+    "label": null,
+    "value": 2,
+    "previous": null
+   },
+   {
+    "key": "email",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ],
+  "utmCampaigns": [
+   {
+    "key": "automne",
+    "label": null,
+    "value": 1,
+    "previous": null
+   },
+   {
+    "key": "portes-ouvertes",
+    "label": null,
+    "value": 1,
+    "previous": null
+   }
+  ]
+ },
+ "pages": [
+  {
+   "key": "/",
+   "label": "Accueil",
+   "views": 38,
+   "visitors": 23,
+   "entries": 20,
+   "exits": 20,
+   "bounces": 7,
+   "totaltime": 2015,
+   "previousViews": 33
+  },
+  {
+   "key": "/services",
+   "label": null,
+   "views": 16,
+   "visitors": 9,
+   "entries": 9,
+   "exits": 9,
+   "bounces": 3,
+   "totaltime": 820,
+   "previousViews": 14
+  },
+  {
+   "key": "/contact",
+   "label": "Contact",
+   "views": 11,
+   "visitors": 7,
+   "entries": 7,
+   "exits": 7,
+   "bounces": 3,
+   "totaltime": 860,
+   "previousViews": 9
+  },
+  {
+   "key": "/produits/table-chene",
+   "label": null,
+   "views": 7,
+   "visitors": 4,
+   "entries": 4,
+   "exits": 4,
+   "bounces": 2,
+   "totaltime": 700,
+   "previousViews": 6
+  },
+  {
+   "key": "/articles/entretenir-le-bois",
+   "label": null,
+   "views": 6,
+   "visitors": 4,
+   "entries": 3,
+   "exits": 3,
+   "bounces": 1,
+   "totaltime": 780,
+   "previousViews": 5
+  },
+  {
+   "key": "/produits/chaise-noyer",
+   "label": null,
+   "views": 6,
+   "visitors": 4,
+   "entries": 4,
+   "exits": 4,
+   "bounces": 1,
+   "totaltime": 690,
+   "previousViews": 5
+  },
+  {
+   "key": "/a-propos",
+   "label": null,
+   "views": 4,
+   "visitors": 2,
+   "entries": 2,
+   "exits": 2,
+   "bounces": 1,
+   "totaltime": 220,
+   "previousViews": 4
+  },
+  {
+   "key": "/produits/etagere-frene",
+   "label": null,
+   "views": 4,
+   "visitors": 2,
+   "entries": 2,
+   "exits": 2,
+   "bounces": 1,
+   "totaltime": 280,
+   "previousViews": 3
+  },
+  {
+   "key": "/articles/choisir-son-essence",
+   "label": null,
+   "views": 3,
+   "visitors": 2,
+   "entries": 2,
+   "exits": 2,
+   "bounces": 1,
+   "totaltime": 345,
+   "previousViews": 2
+  },
+  {
+   "key": "/tarifs",
+   "label": null,
+   "views": 3,
+   "visitors": 2,
+   "entries": 2,
+   "exits": 2,
+   "bounces": 1,
+   "totaltime": 390,
+   "previousViews": 2
+  },
+  {
+   "key": "/articles/finitions-naturelles",
+   "label": null,
+   "views": 2,
+   "visitors": 1,
+   "entries": 1,
+   "exits": 1,
+   "bounces": 0,
+   "totaltime": 140,
+   "previousViews": 2
+  },
+  {
+   "key": "/products/oak-table",
+   "label": null,
+   "views": 2,
+   "visitors": 1,
+   "entries": 1,
+   "exits": 1,
+   "bounces": 0,
+   "totaltime": 110,
+   "previousViews": 2
+  },
+  {
+   "key": "/realisations",
+   "label": null,
+   "views": 2,
+   "visitors": 1,
+   "entries": 1,
+   "exits": 1,
+   "bounces": 1,
+   "totaltime": 80,
+   "previousViews": 2
+  },
+  {
+   "key": "/kontakt",
+   "label": null,
+   "views": 1,
+   "visitors": 1,
+   "entries": 1,
+   "exits": 1,
+   "bounces": 0,
+   "totaltime": 85,
+   "previousViews": 1
+  },
+  {
+   "key": "/mentions-legales",
+   "label": null,
+   "views": 1,
+   "visitors": 1,
+   "entries": 1,
+   "exits": 1,
+   "bounces": 0,
+   "totaltime": 100,
+   "previousViews": 1
+  },
+  {
+   "key": "/plan-du-site",
+   "label": null,
+   "views": 1,
+   "visitors": 1,
+   "entries": 1,
+   "exits": 1,
+   "bounces": 0,
+   "totaltime": 130,
+   "previousViews": 1
+  }
+ ],
+ "groups": [
+  {
+   "id": "produits",
+   "title": "Fiches produit",
+   "items": [
+    {
+     "key": "table-chene",
+     "label": null,
+     "value": 7,
+     "previous": 6
+    },
+    {
+     "key": "chaise-noyer",
+     "label": null,
+     "value": 6,
+     "previous": 5
+    },
+    {
+     "key": "etagere-frene",
+     "label": null,
+     "value": 4,
+     "previous": 3
+    }
+   ]
+  }
+ ],
+ "goals": [
+  {
+   "id": "appels",
+   "label": "Clics pour appeler",
+   "value": 4,
+   "previous": 3
+  }
+ ],
+ "counts": {
+  "countries": 15,
+  "events": 12
+ },
+ "sessions": [
+  {
+   "country": "FR",
+   "city": "Lyon",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Android OS",
+   "views": 2,
+   "lastAt": "2026-11-16T10:27:00.000Z"
+  },
+  {
+   "country": "CH",
+   "city": "Genève",
+   "device": "desktop",
+   "browser": "ios",
+   "os": "iOS",
+   "views": 2,
+   "lastAt": "2026-11-16T10:10:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Paris",
+   "device": "mobile",
+   "browser": "firefox",
+   "os": "Windows 10",
+   "views": 5,
+   "lastAt": "2026-11-16T09:53:00.000Z"
+  },
+  {
+   "country": "BE",
+   "city": "Bruxelles",
+   "device": "laptop",
+   "browser": "safari",
+   "os": "Mac OS",
+   "views": 5,
+   "lastAt": "2026-11-16T09:36:00.000Z"
+  },
+  {
+   "country": "CA",
+   "city": "Montréal",
+   "device": "tablet",
+   "browser": "edge-chromium",
+   "os": "iOS",
+   "views": 7,
+   "lastAt": "2026-11-16T09:19:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Grenoble",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Linux",
+   "views": 7,
+   "lastAt": "2026-11-16T09:02:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Annecy",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Android OS",
+   "views": 2,
+   "lastAt": "2026-11-16T08:45:00.000Z"
+  },
+  {
+   "country": "DE",
+   "city": "Berlin",
+   "device": "desktop",
+   "browser": "ios",
+   "os": "iOS",
+   "views": 4,
+   "lastAt": "2026-11-16T08:28:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Marseille",
+   "device": "mobile",
+   "browser": "firefox",
+   "os": "Windows 10",
+   "views": 6,
+   "lastAt": "2026-11-16T08:11:00.000Z"
+  },
+  {
+   "country": "US",
+   "city": "Boston",
+   "device": "laptop",
+   "browser": "safari",
+   "os": "Mac OS",
+   "views": 6,
+   "lastAt": "2026-11-16T07:54:00.000Z"
+  },
+  {
+   "country": "FR",
+   "city": "Nantes",
+   "device": "tablet",
+   "browser": "edge-chromium",
+   "os": "iOS",
+   "views": 4,
+   "lastAt": "2026-11-16T07:37:00.000Z"
+  },
+  {
+   "country": "MA",
+   "city": "Rabat",
+   "device": "mobile",
+   "browser": "chrome",
+   "os": "Linux",
+   "views": 7,
+   "lastAt": "2026-11-16T07:20:00.000Z"
+  }
+ ],
+ "extras": {
+  "tiles": [
+   {
+    "id": "demandes",
+    "label": "Demandes reçues",
+    "value": 12,
+    "previous": 9,
+    "sub": null,
+    "group": null,
+    "highlight": false
+   }
+  ],
+  "tables": [
+   {
+    "id": "sujets",
+    "title": "Demandes par sujet",
+    "sub": null,
+    "head": "Sujet",
+    "column": "Demandes",
+    "section": "actions",
+    "items": [
+     {
+      "key": "devis",
+      "label": "Devis",
+      "value": 7,
+      "previous": 5
+     }
+    ]
+   }
+  ],
+  "funnel": {
+   "label": "Demandes reçues",
+   "value": 12
+  }
+ },
+ "dashboardUrl": "https://umami.exemple.test/websites/site-demo"
+}

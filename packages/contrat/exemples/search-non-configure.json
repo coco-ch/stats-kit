@@ -1,0 +1,39 @@
+{
+ "version": 1,
+ "status": "not-configured",
+ "error": null,
+ "generatedAt": "2026-11-16T10:30:00.000Z",
+ "property": null,
+ "serviceAccount": null,
+ "days": 28,
+ "start": "2026-10-18",
+ "end": "2026-11-14",
+ "previousStart": "2026-09-20",
+ "previousEnd": "2026-10-17",
+ "totals": {
+  "clicks": 0,
+  "impressions": 0,
+  "ctr": 0,
+  "position": 0
+ },
+ "previous": {
+  "clicks": 0,
+  "impressions": 0,
+  "ctr": 0,
+  "position": 0
+ },
+ "series": [],
+ "previousSeries": [],
+ "queries": [],
+ "previousQueries": [],
+ "pages": [],
+ "previousPages": [],
+ "countries": [],
+ "previousCountries": [],
+ "devices": [],
+ "previousDevices": [],
+ "appearance": [],
+ "queryPages": [],
+ "sitemaps": null,
+ "brandTerms": []
+}

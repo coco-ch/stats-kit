@@ -1,0 +1,73 @@
+{
+ "version": 1,
+ "status": "ok",
+ "error": null,
+ "checkedAt": "2026-11-16T10:30:00.000Z",
+ "total": 9,
+ "indexed": 7,
+ "pages": [
+  {
+   "url": "https://www.exemple.test/fr",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/fr/services",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/fr/contact",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/fr/tarifs",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/fr/realisations",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/fr/produits/table-chene",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/fr/plan-du-site",
+   "verdict": "NEUTRAL",
+   "state": "Détectée, actuellement non indexée",
+   "lastCrawl": null,
+   "indexed": false
+  },
+  {
+   "url": "https://www.exemple.test/en",
+   "verdict": "PASS",
+   "state": "Envoyée et indexée",
+   "lastCrawl": "2026-11-14T06:12:00Z",
+   "indexed": true
+  },
+  {
+   "url": "https://www.exemple.test/de",
+   "verdict": "NEUTRAL",
+   "state": "Détectée, actuellement non indexée",
+   "lastCrawl": null,
+   "indexed": false
+  }
+ ]
+}

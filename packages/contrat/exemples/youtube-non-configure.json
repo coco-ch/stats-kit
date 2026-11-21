@@ -1,0 +1,30 @@
+{
+ "version": 1,
+ "status": "not-configured",
+ "error": null,
+ "generatedAt": "2026-11-16T10:30:00.000Z",
+ "channelUrl": null,
+ "channel": null,
+ "videos": [],
+ "days": 28,
+ "start": "",
+ "end": "",
+ "totals": {
+  "views": 0,
+  "minutes": 0,
+  "gained": 0,
+  "lost": 0,
+  "averageViewDuration": 0
+ },
+ "previous": {
+  "views": 0,
+  "minutes": 0,
+  "gained": 0,
+  "lost": 0,
+  "averageViewDuration": 0
+ },
+ "series": [],
+ "traffic": [],
+ "analyticsError": null,
+ "site": null
+}
