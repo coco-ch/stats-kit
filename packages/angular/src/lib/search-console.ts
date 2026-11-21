@@ -2,16 +2,15 @@
  * "Google" page (Search Console): tiles, impressions and clicks per day with the previous period, queries (all, brand,
  * non-brand), queries × pages, opportunities and anomalies, pages, countries, devices, appearance, sitemaps, indexing.
  */
-import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DOCUMENT, PLATFORM_ID, computed, inject, input, signal, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, computed, inject, input, signal } from '@angular/core';
 import {
   byKey, cannibalization, countryName, csvSeparator, delta, fill, formatNumber, formatPercent, gap, isBrand, lostPages, lowCtrPages, movers, newQueries, pathOf, potential,
   shortDate, sparkPath, toCsv,
   type IndexationResponse, type SearchOverview, type SearchRow, type TextOverrides,
 } from 'stats-kit/contract';
 import { SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocks';
-import { StatsKitApi, download, injectOptions, resolveTexts } from './config';
-import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
+import { StatsKitApi, download, injectOptions, loadOnSource, resolveTexts } from './config';
+import { LAYOUT, TOKENS, resolvedMode, type HeadingLevel, type ThemeChoice } from './theme';
 
 type Scope = 'all' | 'brand' | 'nonbrand';
 
@@ -24,8 +23,11 @@ type Scope = 'all' | 'brand' | 'nonbrand';
   template: `
     <div class="sk-page">
       <header class="sk-head">
-        <h1>{{ T().search.title }}</h1>
-        <p class="sk-lead">{{ T().search.lead }}</p>
+        @switch (level()) {
+          @case ('h1') { <h1 class="sk-title">{{ T().search.title }}</h1> }
+          @case ('h2') { <h2 class="sk-title">{{ T().search.title }}</h2> }
+        }
+        @if (level() !== 'none') { <p class="sk-lead">{{ T().search.lead }}</p> }
         <div class="sk-toolbar">
           <div class="sk-seg" role="group" [attr.aria-label]="T().periods.label">
             @for (p of presets(); track p) { <button type="button" [attr.aria-pressed]="days() === p" (click)="choose(p)">{{ fill(T().periods.days, { n: p }) }}</button> }
@@ -113,23 +115,26 @@ type Scope = 'all' | 'brand' | 'nonbrand';
     </div>
   `,
 })
-export class SkSearchConsole implements OnInit {
+export class SkSearchConsole {
   private readonly api = inject(StatsKitApi);
   private readonly doc = inject(DOCUMENT);
   private readonly options = injectOptions();
-  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  /** API address (default: the one of `provideStatsKit`). Changing it reloads the page: no need to recreate it. */
   readonly apiUrl = input<string | null>(null);
   readonly locale = input<string | null>(null);
   readonly texts = input<TextOverrides | null>(null);
   readonly presets = input<number[]>([7, 28, 90, 365]);
   readonly initialDays = input(28);
   readonly theme = input<ThemeChoice>('auto');
+  /** Page title: `h1`, `h2` (inside a page that has its own `h1`) or `none` (default: the `heading` option, then `h1`). */
+  readonly heading = input<HeadingLevel | null>(null);
 
   protected readonly mode = resolvedMode(this.theme);
   protected readonly T = computed(() => resolveTexts(this.options, this.locale(), this.texts()));
   protected readonly fill = fill;
-  private readonly base = computed(() => this.apiUrl() ?? this.options.apiUrl);
+  private readonly base = computed(() => this.apiUrl() || this.options.apiUrl);
+  protected readonly level = computed<HeadingLevel>(() => this.heading() ?? this.options.heading ?? 'h1');
 
   protected readonly days = signal(28);
   protected readonly loading = signal(true);
@@ -139,10 +144,13 @@ export class SkSearchConsole implements OnInit {
   protected readonly checking = signal(false);
   readonly scope = signal<Scope>('all');
 
-  ngOnInit(): void {
-    if (!this.browser) return;
-    this.days.set(this.initialDays());
-    void this.load();
+  constructor() {
+    // first load, then a new one each time the source changes (server rendering: nothing to load)
+    loadOnSource(this.base, (first) => {
+      if (first) this.days.set(this.initialDays());
+      else (this.data.set(null), this.indexation.set(null));
+      void this.load();
+    });
   }
 
   protected readonly ok = computed(() => this.data()?.status === 'ok');
@@ -158,11 +166,15 @@ export class SkSearchConsole implements OnInit {
     void this.load();
   }
   async load(): Promise<void> {
+    const base = this.base();
     this.loading.set(true);
     this.failed.set(false);
     try {
-      this.data.set(await this.api.get<SearchOverview>(this.base(), '/search', { days: this.days() }));
+      const d = await this.api.get<SearchOverview>(base, '/search', { days: this.days() });
+      if (base !== this.base()) return; // answer of the previous source: the new one is loading
+      this.data.set(d);
     } catch {
+      if (base !== this.base()) return;
       this.data.set(null);
       this.failed.set(true);
     }

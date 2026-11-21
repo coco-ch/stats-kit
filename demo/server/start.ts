@@ -1,16 +1,21 @@
 /*
  * Demo server: serves the built application (dist/demo/browser) and mounts the library routes on fake services. Nothing leaves
  * the machine; "sending" the report is only logged.
- *   PORT (5317 by default), DEMO_EMPTY=1: no source connected ("not configured" states).
+ *   PORT (5317 by default), DEMO_EMPTY=1: no source connected ("not configured" states),
+ *   DEMO_BASE=/console/: the whole administration served under a sub-path (as behind a reverse proxy), `<base href>` included.
+ * Two sites: "Example Workshop" (`api/admin/audience`, the address of provideStatsKit) and "Example Shop" (`api/admin/shop`),
+ * chosen with the site selector of the demo, which changes the `apiUrl` input of the pages.
  */
 import express from 'express';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createStatsKit, type StatsKitConfig } from 'stats-kit/server';
 import { fakeFetch, fakeSources } from '../fake/services.ts';
 
 const port = Number(process.env['PORT'] || 5317);
 const empty = process.env['DEMO_EMPTY'] === '1';
+/** Sub-path of the administration ("/" or "/console/"). */
+const base = `/${(process.env['DEMO_BASE'] ?? '').replace(/^\/+|\/+$/g, '')}/`.replace('//', '/');
 const browser = fileURLToPath(new URL('../../dist/demo/browser/', import.meta.url));
 
 /** "Sent" messages (read by the end-to-end tests). */
@@ -70,18 +75,27 @@ export async function demoApp() {
     },
   });
 
+  // second site: same sources, no site data nor goals (its pages differ from the first one)
+  const shop = createStatsKit({ siteName: 'Example Shop', timeZone: 'Europe/Paris', ...sources, fetch: fakeFetch() });
+
+  const site = express.Router();
+  site.get('/api/demo/outbox', (_req, res) => res.json(outbox));
+  site.use('/api/admin/audience', kit.middleware());
+  site.use('/api/admin/shop', shop.middleware());
+  if (existsSync(browser)) {
+    const index = readFileSync(`${browser}index.html`, 'utf8').replace('<base href="/">', `<base href="${base}">`);
+    const page = (_req: express.Request, res: express.Response) => void res.type('html').send(index);
+    site.get(['/', '/index.html'], page);
+    site.use(express.static(browser, { index: false }));
+    site.get(/^\/(?!api\/).*/, page);
+  }
   const app = express();
   app.disable('x-powered-by');
-  app.get('/api/demo/outbox', (_req, res) => res.json(outbox));
-  app.use('/api/admin/audience', kit.middleware());
-  if (existsSync(browser)) {
-    app.use(express.static(browser));
-    app.get(/^\/(?!api\/).*/, (_req, res) => res.sendFile('index.html', { root: browser }));
-  }
+  app.use(base, site);
   return app;
 }
 
 if (import.meta.url === `file:///${process.argv[1]?.replace(/\\/g, '/')}` || process.argv[1]?.endsWith('start.ts')) {
   const app = await demoApp();
-  app.listen(port, '127.0.0.1', () => console.log(`stats-kit demo on http://localhost:${port}${existsSync(browser) ? '' : ' (application not built: npm run demo:build)'}`));
+  app.listen(port, '127.0.0.1', () => console.log(`stats-kit demo on http://localhost:${port}${base}${existsSync(browser) ? '' : ' (application not built: npm run demo:build)'}`));
 }

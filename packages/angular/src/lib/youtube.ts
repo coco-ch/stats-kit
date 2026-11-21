@@ -2,12 +2,11 @@
  * "YouTube" page: the channel (header, links), channel and period tiles, what the channel brings to the site (visits through a
  * tracked link, landing pages, requests), views and minutes per day with the previous period, traffic sources, videos.
  */
-import { isPlatformBrowser } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DOCUMENT, PLATFORM_ID, computed, inject, input, signal, type OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DOCUMENT, computed, inject, input, signal } from '@angular/core';
 import { csvSeparator, delta, fill, formatDuration, formatNumber, gap, lastDays, shortDate, sparkPath, toCsv, type TextOverrides, type YoutubeOverview } from 'stats-kit/contract';
 import { SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocks';
-import { StatsKitApi, download, injectOptions, resolveTexts } from './config';
-import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
+import { StatsKitApi, download, injectOptions, loadOnSource, resolveTexts } from './config';
+import { LAYOUT, TOKENS, resolvedMode, type HeadingLevel, type ThemeChoice } from './theme';
 
 @Component({
   selector: 'sk-youtube',
@@ -23,8 +22,11 @@ import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
   template: `
     <div class="sk-page">
       <header class="sk-head">
-        <h1>{{ T().youtube.title }}</h1>
-        <p class="sk-lead">{{ T().youtube.lead }}</p>
+        @switch (level()) {
+          @case ('h1') { <h1 class="sk-title">{{ T().youtube.title }}</h1> }
+          @case ('h2') { <h2 class="sk-title">{{ T().youtube.title }}</h2> }
+        }
+        @if (level() !== 'none') { <p class="sk-lead">{{ T().youtube.lead }}</p> }
         <div class="sk-toolbar">
           <div class="sk-seg" role="group" [attr.aria-label]="T().periods.label">
             @for (p of presets(); track p) { <button type="button" [attr.aria-pressed]="days() === p" (click)="choose(p)">{{ fill(T().periods.days, { n: p }) }}</button> }
@@ -83,32 +85,38 @@ import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
     </div>
   `,
 })
-export class SkYoutube implements OnInit {
+export class SkYoutube {
   private readonly api = inject(StatsKitApi);
   private readonly doc = inject(DOCUMENT);
   private readonly options = injectOptions();
-  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  /** API address (default: the one of `provideStatsKit`). Changing it reloads the page: no need to recreate it. */
   readonly apiUrl = input<string | null>(null);
   readonly locale = input<string | null>(null);
   readonly texts = input<TextOverrides | null>(null);
   readonly presets = input<number[]>([7, 28, 90]);
   readonly initialDays = input(28);
   readonly theme = input<ThemeChoice>('auto');
+  /** Page title: `h1`, `h2` (inside a page that has its own `h1`) or `none` (default: the `heading` option, then `h1`). */
+  readonly heading = input<HeadingLevel | null>(null);
 
   protected readonly mode = resolvedMode(this.theme);
   protected readonly T = computed(() => resolveTexts(this.options, this.locale(), this.texts()));
   protected readonly fill = fill;
-  private readonly base = computed(() => this.apiUrl() ?? this.options.apiUrl);
+  private readonly base = computed(() => this.apiUrl() || this.options.apiUrl);
+  protected readonly level = computed<HeadingLevel>(() => this.heading() ?? this.options.heading ?? 'h1');
   protected readonly days = signal(28);
   protected readonly loading = signal(true);
   protected readonly failed = signal(false);
   readonly data = signal<YoutubeOverview | null>(null);
 
-  ngOnInit(): void {
-    if (!this.browser) return;
-    this.days.set(this.initialDays());
-    void this.load();
+  constructor() {
+    // first load, then a new one each time the source changes (server rendering: nothing to load)
+    loadOnSource(this.base, (first) => {
+      if (first) this.days.set(this.initialDays());
+      else this.data.set(null);
+      void this.load();
+    });
   }
 
   protected choose(days: number): void {
@@ -116,11 +124,15 @@ export class SkYoutube implements OnInit {
     void this.load();
   }
   async load(): Promise<void> {
+    const base = this.base();
     this.loading.set(true);
     this.failed.set(false);
     try {
-      this.data.set(await this.api.get<YoutubeOverview>(this.base(), '/youtube', { days: this.days() }));
+      const d = await this.api.get<YoutubeOverview>(base, '/youtube', { days: this.days() });
+      if (base !== this.base()) return; // answer of the previous source: the new one is loading
+      this.data.set(d);
     } catch {
+      if (base !== this.base()) return;
       this.data.set(null);
       this.failed.set(true);
     }

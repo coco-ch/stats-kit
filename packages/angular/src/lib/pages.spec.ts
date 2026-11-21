@@ -386,6 +386,151 @@ describe('YouTube page', () => {
   });
 });
 
+describe('source address and page title (0.2.1)', () => {
+  const youtubeOff = youtubeOffJson as unknown as YoutubeOverview;
+  const searchOff = searchOffJson as unknown as SearchOverview;
+  const overviewOff = overviewOffJson as unknown as StatsOverview;
+
+  it('Statistics: a new apiUrl reloads the page and its map, without recreating it', async () => {
+    const { f, http, el } = mount(SkStatistics, { apiUrl: '/api/site/a', liveMs: 0, refreshMs: 0, initialDays: 7 });
+    f.detectChanges();
+    http.expectOne('/api/site/a/overview?days=7').flush(overview);
+    await tick(f);
+    http.expectOne('/api/site/a/world.json').flush({ features: [] }); // the map follows the page's source, not provideStatsKit
+    f.componentRef.setInput('apiUrl', '/api/site/b');
+    await tick(f);
+    expect(text(el)).toContain('Loading statistics');
+    http.expectOne('/api/site/b/overview?days=7').flush(overview); // the chosen period is kept
+    await tick(f);
+    http.expectOne('/api/site/b/world.json').flush({ features: [] });
+    expect(text(el)).toContain('Where visits come from');
+    // a late answer of the previous source is ignored
+    f.componentRef.setInput('apiUrl', '/api/site/c');
+    await tick(f);
+    const late = http.expectOne('/api/site/c/overview?days=7');
+    f.componentRef.setInput('apiUrl', '/api/site/d');
+    await tick(f);
+    late.flush(overview);
+    await tick(f);
+    expect(text(el)).toContain('Loading statistics');
+    const failing = http.expectOne('/api/site/d/overview?days=7');
+    f.componentRef.setInput('apiUrl', null); // back to the address of provideStatsKit
+    await tick(f);
+    failing.flush('', { status: 500, statusText: 'Error' });
+    await tick(f);
+    expect(el.querySelector('[role=alert]')).toBeNull();
+    http.expectOne(`${API}/overview?days=7`).flush(overviewOff);
+    await tick(f);
+    expect(f.componentInstance.data()?.status).toBe('not-configured');
+    http.verify();
+  });
+
+  it('Statistics: late live count of the previous source ignored', async () => {
+    vi.useFakeTimers({ toFake: ['setInterval'] });
+    const { f, http } = mount(SkStatistics, { apiUrl: '/api/site/a', liveMs: 1000, refreshMs: 0 });
+    f.detectChanges();
+    http.expectOne('/api/site/a/overview?days=30').flush(overview);
+    await tick(f);
+    worlds(http);
+    vi.advanceTimersByTime(1000);
+    const live = http.expectOne('/api/site/a/live');
+    f.componentRef.setInput('apiUrl', '/api/site/b');
+    await tick(f);
+    live.flush({ version: 1, active: 99, at: '' });
+    await tick(f);
+    expect(f.nativeElement.textContent).not.toContain('99 visitors');
+    http.expectOne('/api/site/b/overview?days=30').flush(overview);
+    await tick(f);
+    worlds(http);
+  });
+
+  it('worldUrl option of provideStatsKit, then the input', async () => {
+    const { f, http } = mount(SkStatistics, { liveMs: 0, refreshMs: 0 }, 'browser', { worldUrl: 'assets/world.json' });
+    f.detectChanges();
+    http.expectOne(`${API}/overview?days=30`).flush(overview);
+    await tick(f);
+    http.expectOne('assets/world.json').flush({ features: [] });
+    f.componentRef.setInput('worldUrl', 'maps/other.json');
+    await tick(f);
+    http.expectOne('maps/other.json').flush({ features: [] });
+  });
+
+  it('page title: h1 by default, h2, or hidden, also from provideStatsKit', async () => {
+    const { f, http, el } = mount(SkStatistics, { liveMs: 0, refreshMs: 0 });
+    f.detectChanges();
+    http.expectOne(`${API}/overview?days=30`).flush(overviewOff);
+    await tick(f);
+    expect(el.querySelector('h1.sk-title')?.textContent).toBe('Statistics');
+    f.componentRef.setInput('heading', 'h2');
+    await tick(f);
+    expect([el.querySelector('h1'), el.querySelector('.sk-head h2.sk-title')?.textContent]).toEqual([null, 'Statistics']);
+    f.componentRef.setInput('heading', 'none');
+    await tick(f);
+    expect([el.querySelector('.sk-title'), el.querySelector('.sk-lead'), el.querySelectorAll('.sk-seg button').length > 0]).toEqual([null, null, true]);
+    const g = mount(SkSearchConsole, {}, 'browser', { heading: 'h2' });
+    g.f.detectChanges();
+    g.http.expectOne(`${API}/search?days=28`).flush(searchOff);
+    await tick(g.f);
+    expect([g.el.querySelector('h1'), g.el.querySelector('h2.sk-title')?.textContent, !!g.el.querySelector('.sk-lead')]).toEqual([null, 'Google', true]);
+    g.f.componentRef.setInput('heading', 'none');
+    await tick(g.f);
+    expect([g.el.querySelector('.sk-title'), g.el.querySelector('.sk-lead')]).toEqual([null, null]);
+    const y = mount(SkYoutube, { heading: 'none' });
+    y.f.detectChanges();
+    y.http.expectOne(`${API}/youtube?days=28`).flush(youtubeOffJson);
+    await tick(y.f);
+    expect([y.el.querySelector('.sk-title'), y.el.querySelector('.sk-lead')]).toEqual([null, null]);
+    y.f.componentRef.setInput('heading', 'h2');
+    await tick(y.f);
+    expect(y.el.querySelector('h2.sk-title')?.textContent).toBe('YouTube');
+    y.f.componentRef.setInput('heading', 'h1');
+    await tick(y.f);
+    expect(y.el.querySelector('h1.sk-title')?.textContent).toBe('YouTube');
+    expect(youtubeOff.status).toBe('not-configured');
+  });
+
+  it('Google and YouTube: a new apiUrl reloads, a late answer of the previous source is ignored', async () => {
+    const g = mount(SkSearchConsole, { apiUrl: '/api/g1' });
+    g.f.detectChanges();
+    g.http.expectOne('/api/g1/search?days=28').flush(search);
+    await tick(g.f);
+    g.f.componentRef.setInput('apiUrl', '/api/g2');
+    await tick(g.f);
+    const g2 = g.http.expectOne('/api/g2/search?days=28');
+    g.f.componentRef.setInput('apiUrl', '/api/g3');
+    await tick(g.f);
+    g2.flush(search);
+    const g3 = g.http.expectOne('/api/g3/search?days=28');
+    g.f.componentRef.setInput('apiUrl', '/api/g4');
+    await tick(g.f);
+    g3.flush('', { status: 500, statusText: 'Error' });
+    await tick(g.f);
+    expect(g.el.querySelector('.sk-status--err')).toBeNull();
+    g.http.expectOne('/api/g4/search?days=28').flush(searchOff);
+    await tick(g.f);
+    expect(g.f.componentInstance.data()?.status).toBe('not-configured');
+    expect(g.f.componentInstance.indexation()).toBeNull();
+
+    const y = mount(SkYoutube, { apiUrl: '/api/y1' });
+    y.f.detectChanges();
+    y.http.expectOne('/api/y1/youtube?days=28').flush(youtube);
+    await tick(y.f);
+    y.f.componentRef.setInput('apiUrl', '/api/y2');
+    await tick(y.f);
+    const y2 = y.http.expectOne('/api/y2/youtube?days=28');
+    y.f.componentRef.setInput('apiUrl', '/api/y3');
+    await tick(y.f);
+    y2.flush(youtube);
+    const y3 = y.http.expectOne('/api/y3/youtube?days=28');
+    y.f.componentRef.setInput('apiUrl', '/api/y4');
+    await tick(y.f);
+    y3.flush('', { status: 500, statusText: 'Error' });
+    y.http.expectOne('/api/y4/youtube?days=28').flush(youtubeOff);
+    await tick(y.f);
+    expect(y.f.componentInstance.data()?.status).toBe('not-configured');
+  });
+});
+
 describe('languages', () => {
   /** Visible text and the texts read by assistive technologies or shown on hover. */
   const everything = (el: HTMLElement) =>

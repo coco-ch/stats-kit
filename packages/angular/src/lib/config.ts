@@ -1,8 +1,10 @@
 /** Shared configuration of the components: API address, language, site texts. */
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, InjectionToken, LOCALE_ID, inject, type Provider } from '@angular/core';
+import { Injectable, InjectionToken, LOCALE_ID, PLATFORM_ID, effect, inject, untracked, type Provider } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { createTexts, type TextOverrides, type Texts } from 'stats-kit/contract';
+import type { HeadingLevel } from './theme';
 
 export interface StatsKitOptions {
   /**
@@ -10,6 +12,15 @@ export interface StatsKitOptions {
    * address: ad blockers block these calls.
    */
   apiUrl: string;
+  /**
+   * Address of the base map of the world map (GeoJSON). Default: `{apiUrl}/world.json`, where `apiUrl` is the one of the
+   * component (its `apiUrl` input, otherwise this option), so the map follows the source it shows. A relative address
+   * ("api/admin/audience", without a leading slash) is resolved against the page (`<base href>`): use it when the
+   * administration is served under a sub-path.
+   */
+  worldUrl?: string;
+  /** Page title of the components (`h1` by default, `h2`, or `none`); each component can override it with its `heading` input. */
+  heading?: HeadingLevel;
   /**
    * Language of the texts: "en", "fr", "de", "es", "it", "pt", "nl", or a tag with a region ("fr-CH", "en-US") for number and
    * date formats. Default: the application's `LOCALE_ID`, then English.
@@ -37,6 +48,28 @@ export function resolveTexts(o: StatsKitOptions, locale?: string | null, overrid
   const lang = locale ?? o.locale ?? 'en';
   const base = createTexts(lang, o.texts, o.baseTexts);
   return overrides ? createTexts(lang, overrides, base) : base;
+}
+
+/** Address of the base map: explicit address, then the `worldUrl` option, then `{apiUrl}/world.json` (apiUrl of the component). */
+export function worldAddress(o: StatsKitOptions, apiUrl?: string | null, worldUrl?: string | null): string {
+  return worldUrl || o.worldUrl || `${(apiUrl || o.apiUrl).replace(/\/+$/, '')}/world.json`;
+}
+
+/**
+ * Runs `load` in the browser for the first source address, then again each time the address changes (the `apiUrl` input of a page
+ * bound to a site selector, for example): the component reloads its data instead of having to be recreated. `first` is true on
+ * the first load only.
+ */
+export function loadOnSource(base: () => string, load: (first: boolean) => void): void {
+  const browser = isPlatformBrowser(inject(PLATFORM_ID));
+  let last: string | null = null;
+  effect(() => {
+    const b = base();
+    if (!browser || b === last) return;
+    const first = last === null;
+    last = b;
+    untracked(() => load(first));
+  });
 }
 
 /** Calls to the library API (HttpClient: the site's interceptors, for authentication for example, apply). */

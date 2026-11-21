@@ -12,8 +12,8 @@ import {
 } from 'stats-kit/contract';
 import { SkHeatmap, SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocks';
 import { SkWorldMap } from './world-map';
-import { StatsKitApi, download, injectOptions, resolveTexts } from './config';
-import { LAYOUT, TOKENS, resolvedMode, type ThemeChoice } from './theme';
+import { StatsKitApi, download, injectOptions, loadOnSource, resolveTexts } from './config';
+import { LAYOUT, TOKENS, resolvedMode, type HeadingLevel, type ThemeChoice } from './theme';
 
 interface Block { id: string; section: Section; title: string; sub?: string; head: string; cols: Col[]; rows: MRow[]; limit?: number }
 
@@ -70,8 +70,11 @@ const today = () => new Date().toISOString().slice(0, 10);
   template: `
     <div class="sk-page">
       <header class="sk-head">
-        <h1>{{ T().stats.title }}</h1>
-        @if (T().stats.lead) { <p class="sk-lead">{{ T().stats.lead }}</p> }
+        @switch (level()) {
+          @case ('h1') { <h1 class="sk-title">{{ T().stats.title }}</h1> }
+          @case ('h2') { <h2 class="sk-title">{{ T().stats.title }}</h2> }
+        }
+        @if (level() !== 'none' && T().stats.lead) { <p class="sk-lead">{{ T().stats.lead }}</p> }
         <div class="sk-toolbar">
           <div class="sk-group">
             <div class="sk-seg" role="group" [attr.aria-label]="T().periods.label">
@@ -158,7 +161,7 @@ const today = () => new Date().toISOString().slice(0, 10);
                 <h2>{{ T().stats.mapTitle }}</h2>
                 @if (mapMax()) { <span class="sk-legend" aria-hidden="true"><span>1</span><i></i><span>{{ fill(T().stats.mapLegend, { n: fmt(mapMax()) }) }}</span></span> }
               </div>
-              <sk-world-map [texts]="T()" [countries]="d.breakdowns.countries" [worldUrl]="worldUrl()" />
+              <sk-world-map [texts]="T()" [countries]="d.breakdowns.countries" [apiUrl]="base()" [worldUrl]="worldUrl()" />
             </section>
             <sk-metric-table [texts]="T()" [title]="T().stats.countriesTitle" [head]="T().stats.colCountry" [rows]="countryRows()" [cols]="visitsDelta()" [limit]="12" />
           </div>
@@ -208,7 +211,7 @@ export class SkStatistics implements OnInit {
   private readonly doc = inject(DOCUMENT);
   private readonly options = injectOptions();
 
-  /** API address (default: the one of `provideStatsKit`). */
+  /** API address (default: the one of `provideStatsKit`). Changing it reloads the page (site selector): no need to recreate it. */
   readonly apiUrl = input<string | null>(null);
   readonly locale = input<string | null>(null);
   readonly texts = input<TextOverrides | null>(null);
@@ -222,15 +225,18 @@ export class SkStatistics implements OnInit {
   /** Refresh of the live count and of the page (milliseconds; 0 not to refresh). */
   readonly liveMs = input(30_000);
   readonly refreshMs = input(120_000);
-  /** Address of the base map (default: `{apiUrl}/world.json`). */
+  /** Address of the base map (default: the `worldUrl` option, then `{apiUrl}/world.json` with the apiUrl of this page). */
   readonly worldUrl = input<string | null>(null);
+  /** Page title: `h1`, `h2` (inside a page that has its own `h1`) or `none` (default: the `heading` option, then `h1`). */
+  readonly heading = input<HeadingLevel | null>(null);
 
   protected readonly mode = resolvedMode(this.theme);
   protected readonly T = computed(() => resolveTexts(this.options, this.locale(), this.texts()));
   protected readonly fill = fill;
   protected readonly plural = plural;
   protected readonly today = today();
-  private readonly base = computed(() => this.apiUrl() ?? this.options.apiUrl);
+  protected readonly base = computed(() => this.apiUrl() || this.options.apiUrl);
+  protected readonly level = computed<HeadingLevel>(() => this.heading() ?? this.options.heading ?? 'h1');
 
   protected readonly days = signal(30);
   protected readonly custom = signal(false);
@@ -249,10 +255,17 @@ export class SkStatistics implements OnInit {
   private readonly destroy = inject(DestroyRef);
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  constructor() {
+    // first load, then a new one each time the source changes (server rendering: nothing to load, the page fills in the browser)
+    loadOnSource(this.base, (first) => {
+      if (first) this.days.set(this.initialDays());
+      else (this.data.set(null), this.active.set(null), this.message.set(null));
+      void this.run();
+    });
+  }
+
   ngOnInit(): void {
-    if (!this.browser) return; // server rendering: nothing to load, the page fills in the browser
-    this.days.set(this.initialDays());
-    void this.run();
+    if (!this.browser) return;
     const timers: ReturnType<typeof setInterval>[] = [];
     if (this.liveMs() > 0) timers.push(setInterval(() => { this.now.set(Date.now()); if (this.canRefresh()) void this.refreshLive(); }, this.liveMs()));
     if (this.refreshMs() > 0) timers.push(setInterval(() => { if (this.canRefresh()) void this.fetch(true); }, this.refreshMs()));
@@ -452,29 +465,35 @@ export class SkStatistics implements OnInit {
 
   /** Loads the period (loading screen). */
   async run(): Promise<void> {
+    const base = this.base();
     this.loading.set(true);
     this.failed.set(false);
     await this.fetch(false);
-    this.loading.set(false);
+    if (base === this.base()) this.loading.set(false); // otherwise the load of the new source is still running
   }
 
   /** Reloads; silently, a failure keeps the display and reports it. */
   private async fetch(silent: boolean): Promise<void> {
+    const base = this.base();
     try {
-      const d = await this.api.get<StatsOverview>(this.base(), '/overview', this.query());
+      const d = await this.api.get<StatsOverview>(base, '/overview', this.query());
+      if (base !== this.base()) return; // answer of the previous source
       this.data.set(d);
       this.active.set(d.active);
       this.stale.set(d.active === null && d.status === 'ok');
       this.now.set(Date.now());
     } catch {
+      if (base !== this.base()) return;
       if (silent) this.stale.set(true);
       else (this.data.set(null), this.failed.set(true));
     }
   }
 
   private async refreshLive(): Promise<void> {
+    const base = this.base();
     try {
-      const r = await this.api.get<LiveResponse>(this.base(), '/live');
+      const r = await this.api.get<LiveResponse>(base, '/live');
+      if (base !== this.base()) return;
       this.active.set(r.active);
       this.stale.set(r.active === null);
     } catch {

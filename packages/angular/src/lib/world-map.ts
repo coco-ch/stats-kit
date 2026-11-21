@@ -1,11 +1,11 @@
 /*
  * "Where visits come from" world map in SVG, without a mapping library: countries coloured by their visits, dots on small
  * countries, zoom buttons and panning with the mouse or a finger, tooltip. Same projection as the PNG map of the report. The base
- * map (GeoJSON) is served by the library server (`{apiUrl}/world.json`).
+ * map (GeoJSON) is served by the library server (`{apiUrl}/world.json`, apiUrl of the page that shows the map).
  */
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal } from '@angular/core';
 import { CENTROIDS, countryName, featurePath, fill, formatNumber, intensity, mixHex, project, MAP_RATIO, type Item, type Texts, type World } from 'stats-kit/contract';
-import { StatsKitApi, injectOptions, resolveTexts } from './config';
+import { StatsKitApi, injectOptions, resolveTexts, worldAddress } from './config';
 
 /** List in the locale ("France, Spain and Italy"), with a plain fallback where Intl.ListFormat is missing. */
 const list = (locale: string, items: string[]): string => (typeof Intl.ListFormat === 'function' ? new Intl.ListFormat(locale, { type: 'unit' }).format(items) : items.join(', '));
@@ -67,8 +67,10 @@ export class SkWorldMap {
 
   /** Visits by country (key = ISO alpha-2 code). */
   readonly countries = input.required<Item[]>();
-  /** Address of the base map (default: `{apiUrl}/world.json`). */
+  /** Address of the base map (default: the `worldUrl` option, then `{apiUrl}/world.json`). */
   readonly worldUrl = input<string | null>(null);
+  /** API address of the source shown (default: the one of `provideStatsKit`); the base map is read under it. */
+  readonly apiUrl = input<string | null>(null);
   /** Displayed name of a country (default: localised name). */
   readonly label = input<(code: string) => string>((code) => countryName(this.T(), code));
   /** Colours of the visited countries: few → many (default: --sk-map-lo / --sk-map-hi variables read on the page). */
@@ -83,7 +85,7 @@ export class SkWorldMap {
 
   constructor() {
     effect(() => {
-      const url = this.worldUrl() ?? `${this.options.apiUrl.replace(/\/+$/, '')}/world.json`;
+      const url = worldAddress(this.options, this.apiUrl(), this.worldUrl());
       this.api.world(url).then((w) => this.world.set(w as World), () => this.world.set({ features: [] }));
     });
   }
