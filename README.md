@@ -18,10 +18,10 @@ Le paquet s'installe directement depuis Git. Deux possibilités, au choix :
 
 ```sh
 # Version publiée : l'étiquette contient les paquets déjà construits (installation immédiate, recommandé)
-npm i github:coco-ch/stats-kit#v0.1.1
+npm i github:manueldelarque/stats-kit#v0.1.1
 
 # Branche principale : les paquets sont construits à l'installation (script « prepare », une à deux minutes)
-npm i github:coco-ch/stats-kit
+npm i github:manueldelarque/stats-kit
 ```
 
 Dans un même ensemble de dépôts, un chemin fonctionne aussi : `npm i ../stats-kit` (lancer d'abord `npm install` dans `stats-kit`, qui construit les paquets). Avec un lien symbolique, Angular peut demander `"preserveSymlinks": true` dans les options de construction.
