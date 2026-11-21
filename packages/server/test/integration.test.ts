@@ -30,6 +30,18 @@ describe('Umami connector', () => {
     expect(logins).toBe(2);
     u.reset();
   });
+  it('warns, without any secret, when the connector uses the default account of a new Umami', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    umamiClient(umamiCfg, fake);
+    umamiClient({ url: 'https://u.example.test', websiteId: 'w', apiKey: 'admin' }, fake);
+    expect(warn).not.toHaveBeenCalled();
+    umamiClient({ url: 'https://u.example.test', websiteId: 'w', username: 'admin', password: 'umami' }, fake);
+    expect(warn).toHaveBeenCalledOnce();
+    const logged = String(warn.mock.calls[0][0]);
+    expect(logged).toContain('default account');
+    expect(logged).not.toMatch(/umami'|"umami"|password:|admin/);
+    warn.mockRestore();
+  });
   it('refuses a wrong account', async () => {
     await expect(umamiClient({ ...umamiCfg, password: 'wrong' }, fake).get('stats')).rejects.toThrow('umami login 401');
   });
@@ -185,6 +197,17 @@ describe('YouTube', () => {
     expect(handle.channel?.url).toBe('https://www.youtube.com/@channel');
     const raw = await youtubeClient({ ...sources.youtube, channelId: undefined, apiUrl: undefined, analyticsUrl: undefined, tokenUrl: undefined }, async (url) => new Response(url.includes('oauth2') ? '{"access_token":"t","expires_in":60}' : url.includes('/channels') ? '{"items":[{"id":"UCz","contentDetails":{"relatedPlaylists":{"uploads":"U"}}}]}' : url.includes('/videos') ? '{"items":[{"id":"v1"}]}' : url.includes('/playlistItems') ? '{"items":[{"contentDetails":{"videoId":"v1"}},{}]}' : '{}')).overview(7, undefined, NOW);
     expect(raw.videos[0]).toMatchObject({ id: 'v1', title: 'v1', visibility: 'public', views: 0, likes: null, duration: 0 });
+    // Analytics refused: the partial answer is not kept, YouTube is asked again at the next call
+    let refuse = true, channelCalls = 0;
+    const flaky = youtubeClient(sources.youtube, tweak((url) => {
+      if (url.includes('/channels')) channelCalls++;
+      return refuse && url.includes('/v2/reports') ? new Response('quota', { status: 403 }) : null;
+    }));
+    expect((await flaky.overview(28, undefined, NOW)).analyticsError).toBeTruthy();
+    refuse = false;
+    expect((await flaky.overview(28, undefined, NOW)).analyticsError).toBeNull();
+    await flaky.overview(28, undefined, NOW);
+    expect(channelCalls).toBe(2);
     expect(await youtubeClient(sources.youtube, tweak((url) => (url.includes('dimensions=video') && url.includes('maxResults=1') ? new Response('{"rows":[]}') : null))).topVideo('2026-11-01', '2026-11-07')).toBeNull();
   });
 });
@@ -297,6 +320,21 @@ describe('kit and HTTP routes', () => {
     expect((await kit.report({ from: '2026-11-01', to: '2026-11-07' })).subject).toContain('1 Nov');
     const noTop = createStatsKit(base({ fetch: tweak((url) => (url.includes('maxResults=1') ? new Response('', { status: 500 }) : null)) }));
     expect((await noTop.report()).html).not.toContain('Most viewed video');
+  });
+  it('overview in error: not kept in cache, read again at the next call', async () => {
+    let down = true, calls = 0;
+    const kit = createStatsKit(base({ fetch: tweak((url) => {
+      if (url.includes('/stats')) calls++;
+      return down && url.includes('/stats') ? new Response('down', { status: 503 }) : null;
+    }) }));
+    const first = await kit.overview({ days: 7 });
+    expect(first.status).toBe('error');
+    down = false;
+    const second = await kit.overview({ days: 7 });
+    expect(second.status).toBe('ok');
+    const n = calls;
+    expect((await kit.overview({ days: 7 })).generatedAt).toBe(second.generatedAt); // a good answer stays in cache
+    expect(calls).toBe(n);
   });
   it('missing sources: "not configured" responses, sending refused (503), base map removed', async () => {
     const kit = createStatsKit({ siteName: 'Empty', world: null, umami: null, now: () => NOW });

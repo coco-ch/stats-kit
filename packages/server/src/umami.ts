@@ -71,7 +71,15 @@ export interface UmamiClient {
   reset(): void;
 }
 
+/**
+ * True when the connector signs in with the account a new self-hosted Umami is installed with (admin / umami): anyone can then
+ * sign in to it. The library only warns (see "Securing a new Umami" in the README): it never changes a password itself.
+ */
+export const umamiDefaultAccount = (c: UmamiConfig): boolean => !c.apiKey && c.username === 'admin' && c.password === 'umami';
+
 export function umamiClient(config: UmamiConfig, fetchFn: Fetch = fetch): UmamiClient {
+  // the warning names neither the password nor the account it was given
+  if (umamiDefaultAccount(config)) console.warn('[stats-kit] Umami: the connector signs in with the default account of a new Umami. Change its password and use a read-only account (README, "Securing a new Umami").');
   const base = config.url.replace(/\/+$/, '');
   const api = config.apiKey ? base : `${base}/api`;
   const timeout = config.timeoutMs ?? 15_000;

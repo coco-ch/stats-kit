@@ -127,7 +127,8 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
   const overview = (q: RangeQuery = {}): Promise<StatsOverview> => {
     const range = resolveRange(q, tz, now());
     const key = typeof q.from === 'string' ? `r:${range.from}:${range.to}` : `d:${range.days}`;
-    return cache.get(`overview:${key}`, ttl, () => buildOverview(umami, range, { ...config, timeZone: tz, dashboardUrl }, now()));
+    // an answer in error (Umami unreachable, refused sign-in…) is not kept: the next call asks Umami again
+    return cache.get(`overview:${key}`, ttl, () => buildOverview(umami, range, { ...config, timeZone: tz, dashboardUrl }, now()), (o) => o.status !== 'error');
   };
 
   const live = async (): Promise<LiveResponse> => {

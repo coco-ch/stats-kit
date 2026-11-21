@@ -69,6 +69,30 @@ describe('HTTP tools', () => {
     await expect(c.get('err', 10, async () => { throw new Error('no'); })).rejects.toThrow('no');
     expect(new Cache().constructor).toBe(Cache);
   });
+  it('cache: an answer in error is not kept, it is read again at the next call', async () => {
+    let t = 0;
+    const c = new Cache(() => t);
+    let fail = true;
+    const load = vi.fn(async () => ({ status: fail ? 'error' : 'ok', n: load.mock.calls.length }));
+    const keep = (v: { status: string }) => v.status !== 'error';
+    expect(await c.get('k', 100, load, keep)).toEqual({ status: 'error', n: 1 });
+    expect(await c.get('k', 100, load, keep)).toEqual({ status: 'error', n: 2 }); // read again, not served from the cache
+    fail = false;
+    expect(await c.get('k', 100, load, keep)).toEqual({ status: 'ok', n: 3 });
+    expect(await c.get('k', 100, load, keep)).toEqual({ status: 'ok', n: 3 }); // a good answer is kept
+    t = 200;
+    fail = true;
+    expect(await c.get('k', 100, load, keep)).toEqual({ status: 'error', n: 4 }); // expired good answer replaced by the error, not kept
+    fail = false;
+    expect(await c.get('k', 100, load, keep)).toEqual({ status: 'ok', n: 5 });
+    // a failed load (exception) is not kept either
+    let boom = true;
+    const thrower = vi.fn(async () => { if (boom) throw new Error('down'); return 'up'; });
+    await expect(c.get('e', 100, thrower)).rejects.toThrow('down');
+    boom = false;
+    expect(await c.get('e', 100, thrower)).toBe('up');
+    expect(thrower).toHaveBeenCalledTimes(2);
+  });
   it('token: kept, renewed before expiry, forgotten', async () => {
     let t = 0;
     const f = vi.fn(async () => ({ value: `j${f.mock.calls.length}`, expiresInMs: 120_000 }));

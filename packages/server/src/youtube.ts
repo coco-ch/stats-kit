@@ -171,7 +171,7 @@ export function youtubeClient(config: YoutubeConfig, fetchFn: Fetch = fetch): Yo
       }).sort((a, b) => (b.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
       const traffic = sources.map((r) => ({ source: String(r['insightTrafficSourceType']), views: Number(r['views'] ?? 0), minutes: Number(r['estimatedMinutesWatched'] ?? 0) }));
       return { channel, videos, series, traffic, analyticsError };
-    });
+    }, (d) => !d.analyticsError); // YouTube Analytics refused: shown this time, asked again at the next call
 
   async function overview(days: number, site?: SiteCounter, now = Date.now()): Promise<YoutubeOverview> {
     const n = Math.min(90, Math.max(1, Math.floor(days) || 28));

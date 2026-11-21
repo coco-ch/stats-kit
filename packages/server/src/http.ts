@@ -16,7 +16,10 @@ export class SourceError extends Error {
 /** Short message of an error, without stack. */
 export const errorMessage = (e: unknown): string => (e instanceof Error ? e.message : String(e)).slice(0, 300);
 
-/** In-memory cache with a time to live; a key requested twice at the same time loads once. */
+/**
+ * In-memory cache with a time to live; a key requested twice at the same time loads once. A load that fails is never kept, nor a
+ * value refused by `keep` (an answer that reports an error): the next call reads the source again.
+ */
 export class Cache {
   private readonly entries = new Map<string, { at: number; value: unknown }>();
   private readonly pending = new Map<string, Promise<unknown>>();
@@ -25,13 +28,17 @@ export class Cache {
     this.now = now;
   }
 
-  async get<T>(key: string, ttlMs: number, load: () => Promise<T>): Promise<T> {
+  async get<T>(key: string, ttlMs: number, load: () => Promise<T>, keep: (value: T) => boolean = () => true): Promise<T> {
     const hit = this.entries.get(key);
     if (hit && this.now() - hit.at < ttlMs) return hit.value as T;
     const running = this.pending.get(key);
     if (running) return running as Promise<T>;
     const p = load()
       .then((value) => {
+        if (!keep(value)) {
+          this.entries.delete(key);
+          return value;
+        }
         this.entries.set(key, { at: this.now(), value });
         // beyond 200 entries, forget the oldest
         if (this.entries.size > 200) this.entries.delete(this.entries.keys().next().value as string);
