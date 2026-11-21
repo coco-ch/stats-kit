@@ -18,7 +18,7 @@ Le paquet s'installe directement depuis Git. Deux possibilités, au choix :
 
 ```sh
 # Version publiée : l'étiquette contient les paquets déjà construits (installation immédiate, recommandé)
-npm i github:coco-ch/stats-kit#v0.1.0
+npm i github:coco-ch/stats-kit#v0.1.1
 
 # Branche principale : les paquets sont construits à l'installation (script « prepare », une à deux minutes)
 npm i github:coco-ch/stats-kit

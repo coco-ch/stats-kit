@@ -1,6 +1,6 @@
 {
   "name": "stats-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Statistiques de fréquentation pour l'administration d'un site : connecteurs Umami, Google Search Console et YouTube, rapport hebdomadaire par e-mail, composants Angular.",
   "license": "MIT",
   "type": "module",
@@ -32,7 +32,7 @@
     },
     "./serveur/monde.json": "./packages/serveur/assets/world-110m.json",
     "./angular": {
-      "types": "./packages/angular/dist/index.d.ts",
+      "types": "./packages/angular/dist/types/stats-kit-angular.d.ts",
       "default": "./packages/angular/dist/fesm2022/stats-kit-angular.mjs"
     },
     "./package.json": "./package.json"
