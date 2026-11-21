@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.2.1
+
+Fixes found while plugging the library into a multi-site administration console. Backward compatible: nothing to change to upgrade.
+
+### Fixed
+
+- **World map**: the base map was read under the `apiUrl` of `provideStatsKit`, even when the page had its own `apiUrl` input, so the map stayed empty without an explicit `worldUrl`. It is now read at `{apiUrl}/world.json` with the address of the page that shows it; `sk-world-map` takes an `apiUrl` input. New `worldUrl` option of `provideStatsKit`. A relative `apiUrl` (without a leading slash) is resolved against `<base href>`, so an administration served under a sub-path works without any setting.
+- **Changing the source address**: `<sk-statistics>`, `<sk-search-console>` and `<sk-youtube>` reload their data when their `apiUrl` input changes (site selector) instead of having to be recreated; the period is kept, a late answer of the previous source is ignored.
+- **Errors kept in cache**: an overview in error (Umami unreachable, sign-in refused) stayed in the server cache for its time to live (2 minutes), and a YouTube answer with YouTube Analytics refused for an hour. They are no longer kept: the next call reads the source again. `Cache.get(key, ttl, load, keep?)` takes an optional predicate for that.
+
+### Added
+
+- `heading` input on the three pages (`h1` by default, `h2`, or `none` to hide the title and the lead when the host page has its own), and `heading` option of `provideStatsKit`. Type `HeadingLevel`.
+- Umami: warning at start-up, without any secret, when the connector uses the default account of a new Umami; `umamiDefaultAccount()`; README section "Securing a new Umami" (the library does not change the password itself, the section says why).
+- Demo: two sites with a site selector, `?heading=` parameter, `DEMO_BASE` to serve it under a sub-path; end-to-end tests under `/console/`.
+
+### Not in this release (roadmap)
+
+- Selector of several sites inside the components (today: one `apiUrl` per site, bound to the host's selector).
+- Configurable funnel (steps chosen by the site: pages, events).
+- YouTube connector with an API key only (public figures, without the owner's OAuth authorisation).
+- Site-specific blocks in the e-mail report.
+
+
 ## 0.2.0
 
 The repository is now entirely in English, and the labels are available in several languages.

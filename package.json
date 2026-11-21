@@ -1,6 +1,6 @@
 {
   "name": "stats-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Website traffic statistics for a site administration: Umami, Google Search Console and YouTube connectors, weekly e-mail report, Angular components, labels in several languages.",
   "license": "MIT",
   "type": "module",

@@ -19,7 +19,7 @@ The package installs straight from Git. Two options:
 
 ```sh
 # Released version: the tag contains the packages already built (immediate installation, recommended)
-npm i github:manueldelarque/stats-kit#v0.2.0
+npm i github:manueldelarque/stats-kit#v0.2.1
 
 # Main branch: the packages are built at installation ("prepare" script, one to two minutes)
 npm i github:manueldelarque/stats-kit
@@ -86,9 +86,14 @@ Calls go through `HttpClient`: the site's interceptors (authentication token…)
 
 | Component | Inputs |
 |---|---|
-| `<sk-statistics>` | `apiUrl`, `locale`, `texts`, `theme` (`auto`, `light`, `dark`), `presets` (`[1, 7, 30, 90]`), `initialDays`, `report` (report buttons), `liveMs`, `refreshMs`, `worldUrl` |
-| `<sk-search-console>` | `apiUrl`, `locale`, `texts`, `theme`, `presets` (`[7, 28, 90, 365]`), `initialDays` |
-| `<sk-youtube>` | `apiUrl`, `locale`, `texts`, `theme`, `presets` (`[7, 28, 90]`), `initialDays` |
+| `<sk-statistics>` | `apiUrl`, `locale`, `texts`, `theme` (`auto`, `light`, `dark`), `heading`, `presets` (`[1, 7, 30, 90]`), `initialDays`, `report` (report buttons), `liveMs`, `refreshMs`, `worldUrl` |
+| `<sk-search-console>` | `apiUrl`, `locale`, `texts`, `theme`, `heading`, `presets` (`[7, 28, 90, 365]`), `initialDays` |
+| `<sk-youtube>` | `apiUrl`, `locale`, `texts`, `theme`, `heading`, `presets` (`[7, 28, 90]`), `initialDays` |
+
+- **Several sites, one page**: bind `apiUrl` to a site selector (`<sk-statistics [apiUrl]="'/api/admin/audience/' + siteId()" />`, one kit mounted per site on the server). When the address changes, the page reloads its data and its map by itself, keeps the chosen period, and ignores a late answer of the previous site: no need to recreate it.
+- **Page title** (`heading`): `h1` (default, a page of its own), `h2` (a tab or a part of a page that already has its `h1`, to keep the heading levels in order for screen readers), or `none` (no title nor lead: the host page shows its own; the period buttons and actions stay). The sections of the pages are `h2`. Also available for all components at once: `provideStatsKit({ heading: 'h2', … })`.
+- **World map**: its base map is read at `{apiUrl}/world.json`, with the `apiUrl` of the page that shows it (its input, otherwise the one of `provideStatsKit`), so it follows the selected site. Another address can be given with the `worldUrl` input or the `worldUrl` option of `provideStatsKit` (a static file, a CDN).
+- **Administration served under a sub-path** (`https://example.org/console/`, behind a reverse proxy): give a relative `apiUrl`, without a leading slash (`provideStatsKit({ apiUrl: 'api/admin/audience' })`). The browser resolves it against the page's `<base href="/console/">`, and the base map with it. An address starting with `/` always points to the root of the domain.
 
 The building blocks (`sk-tile-groups`, `sk-metric-table`, `sk-trend-chart`, `sk-world-map`, `sk-heatmap`) can be used alone to compose other pages. The world map is drawn in SVG, without Leaflet: no CommonJS dependency, no external stylesheet, no `allowedCommonJsDependencies` setting.
 
@@ -131,6 +136,22 @@ The styles of a page stay under 16 kB; if the site has a tighter `anyComponentSt
 A source without settings is reported as "not configured"; a source that does not answer is reported as "unavailable" without preventing the rest from showing. Settings can also be passed directly (`umami: { url, websiteId, username, password }`…).
 
 Umami ignores headless browsers: to check real counting, open the site in a real browser.
+
+### Securing a new Umami
+
+A self-hosted Umami is installed with the account `admin` and a well-known default password. Anyone who reaches its address can sign in with it until it is changed. Before connecting the library:
+
+1. Sign in to Umami as `admin`, open **Profile → Change password**, and set a long random password (generate it in your password manager and keep it there). Or with the API, without the passwords appearing in the command line nor in the shell history (they are read from variables set beforehand, for example by your secret manager):
+
+   ```sh
+   # UMAMI_URL, UMAMI_ADMIN_TOKEN (from POST /api/auth/login), UMAMI_OLD_PASSWORD and UMAMI_NEW_PASSWORD set beforehand
+   node -e 'const e = process.env; fetch(e.UMAMI_URL + "/api/me/password", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + e.UMAMI_ADMIN_TOKEN }, body: JSON.stringify({ currentPassword: e.UMAMI_OLD_PASSWORD, newPassword: e.UMAMI_NEW_PASSWORD }) }).then((r) => console.log(r.status))'
+   ```
+
+2. Create a dedicated account for the library (**Settings → Users**, role *View only*), give it access to the website (through a team in recent versions), and put **this** account in `UMAMI_USERNAME` / `UMAMI_PASSWORD`, never `admin`.
+3. Store these values in the hosting's secret variables, not in the repository.
+
+The library does not change the password itself, on purpose: it only reads, with a read-only account, and has no place to keep a new secret safely; a password changed at start-up and then lost (crash before it is stored, two instances starting together) would lock the administrators out of Umami. When the connector is configured with the default account of a new Umami, the server writes a warning at start-up (`[stats-kit] Umami: the connector signs in with the default account…`), which names neither the account nor the password. `umamiDefaultAccount(config)` (from `stats-kit/server`) gives the same check, for a health page for example.
 
 ### Site data
 
@@ -199,7 +220,7 @@ Behaviour changes to check:
 6. **Report**: the map attachment is now `cid:stats-kit-map` / `map.png` (was `stats-kit-carte` / `carte.png`), and `<html lang>` carries the full tag.
 7. **Error messages for developers** (`error` fields of the responses, logs) are in English.
 
-Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.0`. Details: [CHANGELOG.md](CHANGELOG.md).
+Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.1`. Details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 
