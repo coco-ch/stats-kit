@@ -37,24 +37,7 @@
     },
     "./package.json": "./package.json"
   },
-  "scripts": {
-    "prepare": "node scripts/prepare.mjs",
-    "build": "npm run build:contrat && npm run build:serveur && npm run build:angular",
-    "build:contrat": "tsc -p packages/contrat/tsconfig.build.json",
-    "build:serveur": "tsc -p packages/serveur/tsconfig.build.json",
-    "build:angular": "ng build stats-kit-angular",
-    "schema": "node scripts/schema.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --coverage",
-    "test:angular": "ng test stats-kit-angular --watch=false --coverage",
-    "demo:build": "ng build demo",
-    "demo": "node --conditions=stats-kit-source demo/serveur/demarrer.ts",
-    "e2e": "npm run demo:build && playwright test",
-    "captures": "node --conditions=stats-kit-source scripts/captures.ts",
-    "exemples": "node --conditions=stats-kit-source scripts/exemples.ts",
-    "schema:check": "node scripts/schema.mjs --check",
-    "publier": "node scripts/publier-tag.mjs"
-  },
+  "scripts": {},
   "peerDependencies": {
     "@angular/common": ">=21.0.0",
     "@angular/core": ">=21.0.0"
@@ -66,28 +49,5 @@
     "@angular/core": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@angular/build": "^22.2.7",
-    "@angular/cli": "^22.2.7",
-    "@angular/common": "^22.2.6",
-    "@angular/compiler": "^22.2.6",
-    "@angular/compiler-cli": "^22.2.6",
-    "@angular/core": "^22.2.6",
-    "@angular/platform-browser": "^22.2.6",
-    "@playwright/test": "^1.65.1",
-    "@types/express": "^5.0.1",
-    "@types/node": "^26.6.6",
-    "@vitest/coverage-v8": "^5.1.0",
-    "ajv": "^8.20.0",
-    "axe-core": "^4.14.1",
-    "express": "^5.1.0",
-    "jsdom": "^31.0.1",
-    "ng-packagr": "^22.3.0",
-    "rxjs": "~7.8.0",
-    "ts-json-schema-generator": "^2.10.0",
-    "tslib": "^2.9.1",
-    "typescript": "~6.0.2",
-    "vitest": "^5.1.0"
   }
 }

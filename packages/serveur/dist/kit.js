@@ -1,0 +1,163 @@
+/*
+ * Point d'entrée côté serveur : `createStatsKit(réglages)` relie les connecteurs, le cache, le rapport et les routes HTTP.
+ * Aucun framework imposé : `handle()` répond à une requête décrite simplement ; `middleware()` s'accroche à Express ou à
+ * `node:http`.
+ */
+import { readFileSync } from 'node:fs';
+import { textes } from 'stats-kit/contrat';
+import { buildOverview, sourceVisits } from "./apercu.js";
+import { gscClient, gscConfigured, emptySearch, searchPeriod } from "./gsc.js";
+import { Cache, errorMessage } from "./http.js";
+import { buildReport, previewHtml } from "./rapport/rapport.js";
+import { loadWorld, worldFile } from "./rapport/carte-png.js";
+import { resolveRange } from "./temps.js";
+import { umamiClient, umamiConfigured } from "./umami.js";
+import { emptyYoutube, youtubeClient, youtubeConfigured } from "./youtube.js";
+export function createStatsKit(config) {
+    const now = config.now ?? Date.now;
+    const tz = config.timeZone ?? 'UTC';
+    const texts = textes(config.locale ?? 'fr', config.texts, config.baseTexts);
+    const fetchFn = config.fetch ?? ((input, init) => fetch(input, init));
+    const umami = umamiConfigured(config.umami) ? umamiClient(config.umami, fetchFn) : null;
+    const gsc = gscConfigured(config.gsc) ? gscClient(config.gsc, fetchFn) : null;
+    const yt = youtubeConfigured(config.youtube) ? youtubeClient(config.youtube, fetchFn) : null;
+    const cache = new Cache(now);
+    const ttl = config.cacheTtlMs ?? 120_000;
+    const dashboardUrl = umami && config.umami?.dashboardUrl !== false
+        ? (config.umami?.dashboardUrl || `${config.umami.url.replace(/\/+$/, '')}/websites/${config.umami.websiteId}`)
+        : null;
+    let world;
+    let worldText;
+    const getWorld = () => {
+        if (world !== undefined)
+            return world;
+        try {
+            const w = config.world;
+            world = w === null ? null : w && typeof w === 'object' && 'features' in w ? w : loadWorld(w ?? undefined);
+        }
+        catch {
+            world = null; // sans fond de carte, le rapport part sans carte plutôt que de ne pas partir
+        }
+        return world;
+    };
+    const overview = (q = {}) => {
+        const range = resolveRange(q, tz, now());
+        const key = typeof q.from === 'string' ? `r:${range.from}:${range.to}` : `d:${range.days}`;
+        return cache.get(`overview:${key}`, ttl, () => buildOverview(umami, range, { ...config, timeZone: tz, dashboardUrl }, now()));
+    };
+    const live = async () => {
+        let active = null;
+        if (umami) {
+            try {
+                const a = await umami.get('active');
+                active = a.visitors ?? a.x ?? 0;
+            }
+            catch {
+                active = null;
+            }
+        }
+        return { version: 1, active, at: new Date(now()).toISOString() };
+    };
+    const search = (q = {}) => gsc ? gsc.overview(q, now()) : Promise.resolve(emptySearch('not-configured', null, searchPeriod(q, now()), config.gsc, now()));
+    const indexation = async () => gsc ? gsc.indexation(now()) : { version: 1, status: 'not-configured', error: null, checkedAt: new Date(now()).toISOString(), total: 0, indexed: 0, pages: [] };
+    const siteCounter = {
+        visits: umami ? (a, b, source) => sourceVisits(umami, a, b, source, config.pages) : undefined,
+        requests: config.sourceRequests,
+    };
+    const youtube = (days = 28) => yt ? yt.overview(days, siteCounter, now()) : Promise.resolve(emptyYoutube('not-configured', null, days, config.youtube?.channelUrl ?? null, now()));
+    async function report(q = {}, weekly = false) {
+        const r = config.report ?? {};
+        const days = q.days ?? (q.from ? undefined : (r.days ?? 7));
+        const o = await overview({ ...q, days });
+        const withSearch = r.search !== false && gsc ? await search({ days: o.range.days }) : null;
+        const withYoutube = r.youtube !== false && yt ? await youtube(Math.min(90, o.range.days)) : null;
+        let top = null;
+        if (yt && withYoutube?.status === 'ok' && withYoutube.totals.views)
+            top = await yt.topVideo(withYoutube.start, withYoutube.end).catch(() => null);
+        return buildReport({
+            overview: o, search: withSearch, youtube: withYoutube, youtubeTop: top, texts, theme: r.theme ?? { brand: '#2f5bd3' },
+            siteName: config.siteName, statsUrl: r.statsUrl ?? null, weekly, world: getWorld(),
+        });
+    }
+    async function sendReport(q = {}, weekly = false) {
+        const send = config.report?.send;
+        if (!send)
+            return { version: 1, ok: false, recipients: 0, error: 'send-not-configured' };
+        try {
+            const n = await send(await report(q, weekly));
+            return { version: 1, ok: true, recipients: typeof n === 'number' ? n : 0, error: null };
+        }
+        catch (e) {
+            return { version: 1, ok: false, recipients: 0, error: errorMessage(e) };
+        }
+    }
+    const worldJson = () => {
+        if (worldText !== undefined)
+            return worldText;
+        const w = config.world;
+        try {
+            worldText = w === null ? null : w && typeof w === 'object' && 'features' in w ? JSON.stringify(w) : readFileSync(w ?? worldFile(), 'utf8');
+        }
+        catch {
+            worldText = null;
+        }
+        return worldText;
+    };
+    const jsonResponse = (status, body, maxAge = 0) => ({
+        status,
+        headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': maxAge ? `private, max-age=${maxAge}` : 'no-store', 'X-Content-Type-Options': 'nosniff' },
+        body: JSON.stringify(body),
+    });
+    async function handle(req) {
+        const path = req.path.replace(/\/+$/, '') || '/';
+        const q = req.query;
+        const range = { days: q['days'], from: q['from'], to: q['to'] };
+        const method = req.method.toUpperCase();
+        try {
+            if (method === 'GET') {
+                switch (path) {
+                    case '/':
+                    case '/overview': return jsonResponse(200, await overview(range));
+                    case '/live': return jsonResponse(200, await live());
+                    case '/search': return jsonResponse(200, await search(range));
+                    case '/search/indexation': return jsonResponse(200, await indexation());
+                    case '/youtube': return jsonResponse(200, await youtube(Number(q['days']) || 28));
+                    case '/report/preview': {
+                        const m = await report(range);
+                        const body = { version: 1, subject: m.subject, html: previewHtml(m), text: m.text };
+                        return jsonResponse(200, body);
+                    }
+                    case '/world.json': {
+                        const w = worldJson();
+                        return w ? { status: 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=604800' }, body: w } : jsonResponse(404, { error: 'not-found' });
+                    }
+                }
+            }
+            if (method === 'POST' && path === '/report/send') {
+                const r = await sendReport(range);
+                return jsonResponse(r.ok ? 200 : r.error === 'send-not-configured' ? 503 : 502, r);
+            }
+            return jsonResponse(404, { error: 'not-found' });
+        }
+        catch (e) {
+            console.error('[stats-kit]', e);
+            return jsonResponse(500, { error: 'internal-error' });
+        }
+    }
+    const middleware = () => (req, res, next) => {
+        const url = new URL(req.url ?? '/', 'http://localhost');
+        const query = {};
+        url.searchParams.forEach((v, k) => (query[k] = v));
+        handle({ method: req.method ?? 'GET', path: url.pathname, query })
+            .then((r) => {
+            if (r.status === 404 && next)
+                return next(); // route inconnue : on laisse la main au reste de l'application
+            res.statusCode = r.status;
+            for (const [k, v] of Object.entries(r.headers))
+                res.setHeader(k, v);
+            res.end(r.body);
+        })
+            .catch((e) => (next ? next(e) : ((res.statusCode = 500), res.end())));
+    };
+    return { texts, overview, live, search, indexation, youtube, report, sendReport, worldJson, handle, middleware };
+}

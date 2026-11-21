@@ -1,0 +1,26 @@
+{
+  "description": "Composants Angular de stats-kit (paquet construit dans packages/angular/dist, exposé par le paquet racine sous « stats-kit/angular »).",
+  "license": "MIT",
+  "sideEffects": false,
+  "peerDependencies": {
+    "@angular/common": ">=21.0.0",
+    "@angular/core": ">=21.0.0",
+    "rxjs": "^7.4.0"
+  },
+  "name": "@stats-kit/angular",
+  "type": "module",
+  "main": "./fesm2022/stats-kit-angular.mjs",
+  "module": "./fesm2022/stats-kit-angular.mjs",
+  "typings": "./types/stats-kit-angular.d.ts",
+  "types": "./types/stats-kit-angular.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/stats-kit-angular.d.ts",
+      "default": "./fesm2022/stats-kit-angular.mjs"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    }
+  },
+  "version": "0.1.0"
+}
