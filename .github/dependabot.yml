@@ -1,0 +1,45 @@
+# Mises à jour automatiques des dépendances, chaque lundi à 5 h (heure de Paris), majeures comprises. Les PR passent par la CI et sont
+# fusionnées toutes seules quand elle est verte (workflow dependabot-fusion.yml) ; une CI rouge laisse la PR ouverte.
+# Angular dans son propre groupe, les autres mineures et correctifs npm dans un même groupe, les majeures npm une par une,
+# toutes les actions GitHub dans une seule PR.
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Paris
+    labels: [dependencies]
+    commit-message:
+      prefix: chore
+      include: scope
+    open-pull-requests-limit: 5
+    groups:
+      # Angular : tous ses paquets bougent ensemble (ng-packagr suit Angular). Déclaré en premier : un paquet va dans le premier groupe qui le concerne.
+      angular:
+        patterns: ["@angular/*", "@angular-*", "ng-packagr"]
+      npm-mineures-et-correctifs:
+        update-types: [minor, patch]
+    ignore:
+      # La majeure de TypeScript suit la plage acceptée par Angular (peer de @angular/compiler-cli) : elle se fait avec une majeure d'Angular.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Paris
+    labels: [dependencies]
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      # Toutes les actions dans une seule PR, majeures comprises.
+      actions:
+        patterns: ["*"]
