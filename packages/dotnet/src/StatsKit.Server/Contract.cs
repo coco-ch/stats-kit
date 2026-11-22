@@ -84,6 +84,35 @@ public sealed record StatsOverview(
     IReadOnlyList<ItemGroup> Groups, IReadOnlyList<Goal> Goals, Counts Counts, IReadOnlyList<Session> Sessions, Extras? Extras,
     IReadOnlyDictionary<string, List<double>>? EventSeries, string? DashboardUrl);
 
+/// <summary>Search Console totals: clicks, impressions, click-through rate (0 to 1), average position (0 without impressions).</summary>
+public sealed record SearchTotals(double Clicks, double Impressions, double Ctr, double Position);
+
+/// <summary>Row of a Search Console ranking: query, page address, country (ISO alpha-3, lower case)…</summary>
+public sealed record SearchRow(string Key, double Clicks, double Impressions, double Ctr, double Position);
+
+/// <summary>
+/// Performance in Google Search (<c>GET {base}/search</c> of the Node server), the fields the report reads; the other fields of
+/// the contract are ignored when it is read from JSON (<see cref="ContractJson.Deserialize{T}"/>). Days are "YYYY-MM-DD".
+/// </summary>
+public sealed record SearchOverview(
+    string Status, string Start, string End, SearchTotals Totals, SearchTotals Previous, IReadOnlyList<SearchRow> Queries,
+    IReadOnlyList<SearchRow> Pages, IReadOnlyList<SearchRow> PreviousPages, IReadOnlyList<SearchRow> Countries);
+
+/// <summary>YouTube channel (the fields the report reads); <see cref="Subscribers"/> null if the channel hides it.</summary>
+public sealed record YoutubeChannel(string Id, string Title, string Url, double? Subscribers);
+
+/// <summary>YouTube totals of a period: views, minutes watched, subscribers gained and lost.</summary>
+public sealed record YoutubeTotals(double Views, double Minutes, double Gained, double Lost);
+
+/// <summary>What the channel brings to the site: visits through a tracked link and the requests that follow (null: not counted).</summary>
+public sealed record YoutubeSite(double? Visits, double? PreviousVisits, double? Requests, double? PreviousRequests);
+
+/// <summary>YouTube channel and its statistics (<c>GET {base}/youtube</c> of the Node server), the fields the report reads.</summary>
+public sealed record YoutubeOverview(string Status, string Start, string End, YoutubeChannel? Channel, YoutubeTotals Totals, YoutubeTotals Previous, YoutubeSite? Site);
+
+/// <summary>Video of the report: title (or the site's label), address, views over the period.</summary>
+public sealed record ReportVideo(string Title, string Url, double Views);
+
 /// <summary>Response of <c>GET {base}/live</c>: active visitors.</summary>
 public sealed record LiveResponse(int Version, double? Active, string At);
 
@@ -106,4 +135,7 @@ public static class ContractJson
 
     /// <summary>Serializes a response of the contract.</summary>
     public static string Serialize<T>(T value) => JsonSerializer.Serialize(value, Options);
+
+    /// <summary>Reads a response of the contract (JSON of the Node server, for instance its Search Console or YouTube answer).</summary>
+    public static T? Deserialize<T>(string json) => JsonSerializer.Deserialize<T>(json, Options);
 }

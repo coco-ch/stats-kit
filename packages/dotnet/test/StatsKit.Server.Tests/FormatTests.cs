@@ -52,6 +52,10 @@ public class FormatTests
             Each(f["languages"], r => Eq($"language({r[0]})", (string)r[1]!, Format.LanguageName(t, (string)r[0]!)));
         }
         Each(f["upper"], r => Eq($"upper({r[0]})", (string)r[1]!, Format.Upper((string)r[0]!)));
+        Each(f["money"], r => Eq($"money({r[0]}, {r[1]})", (string)r[2]!, Format.Money(t, (double)r[0]!, (string)r[1]!)));
+        Each(f["paths"], r => Eq($"pathOf({r[0]})", (string)r[1]!, Format.PathOf((string)r[0]!)));
+        var merged = Format.MergeLanguages([new("fr-FR", null, 5, 4), new("en_US", null, 3, 1), new("fr", null, 2, null), new("EN", null, 3, 2), new("de", null, 6, 0), new("ca", null, 6, 0)]);
+        Eq("mergeLanguages", f["mergedLanguages"]!.ToJsonString(), ContractJson.Serialize(merged));
         Assert.True(errors.Count == 0, $"{errors.Count} differences:\n" + string.Join("\n", errors.Take(40)));
     }
 

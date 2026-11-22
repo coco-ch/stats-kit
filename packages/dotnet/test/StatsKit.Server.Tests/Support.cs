@@ -52,11 +52,11 @@ public static class Golden
     public static string Dir => Path.Combine(AppContext.BaseDirectory, "Golden");
     public static JsonObject Load(string name) => (JsonObject)JsonNode.Parse(File.ReadAllText(Path.Combine(Dir, name + ".json")))!;
 
-    /// <summary>Hash of the raw pixels of a PNG written by the library (8-bit RGB, filter 0), as the Node script computes it.</summary>
+    /// <summary>Hash of the raw pixels of a PNG written by the library (8-bit RGB or RGBA, filter 0), as the Node script computes it.</summary>
     public static string Pixels(byte[] png)
     {
         int U32(int at) => png[at] << 24 | png[at + 1] << 16 | png[at + 2] << 8 | png[at + 3];
-        int width = U32(16), height = U32(20);
+        int width = U32(16), height = U32(20), bpp = png[25] == 6 ? 4 : 3;
         using var idat = new MemoryStream();
         for (var i = 8; i < png.Length;)
         {
@@ -69,8 +69,8 @@ public static class Golden
         using var raw = new MemoryStream();
         z.CopyTo(raw);
         var bytes = raw.ToArray();
-        var rgb = new byte[width * height * 3];
-        for (var y = 0; y < height; y++) Buffer.BlockCopy(bytes, y * (width * 3 + 1) + 1, rgb, y * width * 3, width * 3);
+        var rgb = new byte[width * height * bpp];
+        for (var y = 0; y < height; y++) Buffer.BlockCopy(bytes, y * (width * bpp + 1) + 1, rgb, y * width * bpp, width * bpp);
         return $"{width}x{height}:{Convert.ToHexStringLower(SHA256.HashData(rgb))}";
     }
 

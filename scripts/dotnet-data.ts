@@ -7,7 +7,7 @@
 //   - Data/centroids.json: country centroids of the map.
 // `node --conditions=stats-kit-source scripts/dotnet-data.ts --check` fails if the committed files are out of date (CI).
 import { readFileSync, writeFileSync } from 'node:fs';
-import { CENTROIDS, LOCALES } from 'stats-kit/contract';
+import { CENTROIDS, CURRENCIES, LOCALES, createTexts, formatMoney } from 'stats-kit/contract';
 
 const dir = new URL('../packages/dotnet/src/StatsKit.Server/Data/', import.meta.url);
 const world = JSON.parse(readFileSync(new URL('../packages/server/assets/world-110m.json', import.meta.url), 'utf8')) as { features: { properties: { iso2: string } }[] };
@@ -46,6 +46,34 @@ function numberData(tag: string) {
     number: { pos: template(plain(5), '5'), plus: template(signed(5), '5'), neg: template(plain(-5), '5') },
     percent: { pos: template(pct(0.5), '50'), plus: template(pct(0.5, true), '50'), neg: template(pct(-0.5), '50') },
   };
+}
+
+/**
+ * Amounts (formatMoney): for each currency written with its symbol, the separators, the grouping, the number of decimals and
+ * the templates of a positive and a negative amount; checked against Intl on sample amounts.
+ */
+function moneyData(tag: string) {
+  const texts = createTexts(tag);
+  const out: Record<string, { group: string; decimal: string; minGroup: number; digits: number; pos: string; neg: string }> = {};
+  for (const code of CURRENCIES) {
+    const f = new Intl.NumberFormat(tag, { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol' });
+    const parts = f.formatToParts(1234567.5);
+    const group = parts.find((p) => p.type === 'group')?.value ?? '';
+    const decimal = parts.find((p) => p.type === 'decimal')?.value ?? '.';
+    const digits = f.resolvedOptions().maximumFractionDigits ?? 2;
+    const tpl = (v: number) => f.formatToParts(v).map((p) => (p.type === 'integer' ? '{n}' : p.type === 'decimal' || p.type === 'fraction' ? '' : p.value)).join('');
+    const d = { group, decimal, minGroup: f.formatToParts(1234).some((p) => p.type === 'group') ? 1 : 2, digits, pos: tpl(5), neg: tpl(-5) };
+    for (const v of [0, 1, 5, 12.5, 30, 99.999, 1234, 1490, 12345.678, 1234567.891, -3.256, -1490, 0.004, 2.675]) {
+      const rounded = Number((Math.abs(v) + 1e-12).toFixed(digits)) * Math.sign(v || 1);
+      const frac = Number.isInteger(rounded) ? 0 : digits;
+      const [int, dec = ''] = Math.abs(rounded).toFixed(frac).split('.');
+      const grouped = group && int.length >= 4 && (d.minGroup === 1 || int.length >= 5) ? int.replace(/\B(?=(\d{3})+(?!\d))/g, group) : int;
+      const built = (v < 0 ? d.neg : d.pos).replace('{n}', dec ? `${grouped}${decimal}${dec}` : grouped);
+      if (built !== formatMoney(texts, v, code)) throw new Error(`${tag} ${code} ${v}: "${built}" differs from "${formatMoney(texts, v, code)}"`);
+    }
+    out[code] = d;
+  }
+  return out;
 }
 
 /** Plural category of the integers 0 to 199 (beyond: the category of 100 + n % 100), and of a million. */
@@ -142,7 +170,7 @@ const check = process.argv.includes('--check');
 const intl = {
   generatedWith: `Node ${process.versions.node}, ICU ${process.versions.icu}, CLDR ${process.versions.cldr}`,
   defaults: Object.fromEntries(defaults.map((d) => [d.code, d.tag])),
-  tags: Object.fromEntries(tags.map((tag) => [tag, { ...numberData(tag), ...pluralData(tag), ...dateData(tag) }])),
+  tags: Object.fromEntries(tags.map((tag) => [tag, { ...numberData(tag), ...pluralData(tag), ...dateData(tag), money: moneyData(tag) }])),
   names: Object.fromEntries(defaults.map((d) => [d.code, namesData(d.tag)])),
   collation: collation(),
 };

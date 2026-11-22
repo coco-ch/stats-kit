@@ -196,7 +196,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "fr-FR": {
    "group": " ",
@@ -382,7 +544,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "de-DE": {
    "group": ".",
@@ -566,7 +890,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "es-ES": {
    "group": ".",
@@ -752,7 +1238,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} XOF",
+     "neg": "-{n} XOF"
+    }
+   }
   },
   "it-IT": {
    "group": ".",
@@ -938,7 +1586,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} NKr",
+     "neg": "-{n} NKr"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "pt-PT": {
    "group": " ",
@@ -1124,7 +1934,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "nl-NL": {
    "group": ".",
@@ -1308,7 +2280,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€ {n}",
+     "neg": "€ -{n}"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "CHF -{n}"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "£ -{n}"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "¥ -{n}"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "¥ -{n}"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "₩ -{n}"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "₽ -{n}"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "R$ -{n}"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr -{n}"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr -{n}"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr -{n}"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "zł -{n}"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "Kč -{n}"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "₹ -{n}"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "MAD -{n}"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "F CFA -{n}"
+    }
+   }
   },
   "ru-RU": {
    "group": " ",
@@ -1494,7 +2628,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "zh-CN": {
    "group": ",",
@@ -1676,7 +2972,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "ja-JP": {
    "group": ",",
@@ -1858,7 +3316,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "￥{n}",
+     "neg": "-￥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "￥{n}",
+     "neg": "-￥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "ko-KR": {
    "group": ",",
@@ -2040,7 +3660,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "en-US": {
    "group": ",",
@@ -2224,7 +4006,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "en-CA": {
    "group": ",",
@@ -2408,7 +4352,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "en-AU": {
    "group": ",",
@@ -2592,7 +4698,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kr {n}",
+     "neg": "-Kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "XOF {n}",
+     "neg": "-XOF {n}"
+    }
+   }
   },
   "en-IE": {
    "group": ",",
@@ -2776,7 +5044,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "en-NZ": {
    "group": ",",
@@ -2960,7 +5390,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "fr-CH": {
    "group": "'",
@@ -3146,7 +5738,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "fr-BE": {
    "group": " ",
@@ -3332,7 +6086,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "fr-CA": {
    "group": " ",
@@ -3518,7 +6434,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} XOF",
+     "neg": "-{n} XOF"
+    }
+   }
   },
   "fr-LU": {
    "group": ".",
@@ -3704,7 +6782,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "de-CH": {
    "group": "'",
@@ -3888,7 +7128,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "EUR {n}",
+     "neg": "EUR-{n}"
+    },
+    "USD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "CHF": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "CHF-{n}"
+    },
+    "GBP": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "£-{n}"
+    },
+    "CAD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "AUD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "JPY": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "¥-{n}"
+    },
+    "CNY": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "¥-{n}"
+    },
+    "KRW": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "₩-{n}"
+    },
+    "RUB": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "₽-{n}"
+    },
+    "BRL": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "R$-{n}"
+    },
+    "MXN": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "SEK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr-{n}"
+    },
+    "NOK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr-{n}"
+    },
+    "DKK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr-{n}"
+    },
+    "PLN": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "zł-{n}"
+    },
+    "CZK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "Kč-{n}"
+    },
+    "INR": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "₹-{n}"
+    },
+    "MAD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "MAD-{n}"
+    },
+    "XOF": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "F CFA-{n}"
+    }
+   }
   },
   "de-AT": {
    "group": " ",
@@ -4072,7 +7474,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€ {n}",
+     "neg": "-€ {n}"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "-£ {n}"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "-¥ {n}"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "-¥ {n}"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "-₩ {n}"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "-₽ {n}"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "-R$ {n}"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "-₹ {n}"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "de-LU": {
    "group": ".",
@@ -4256,7 +7820,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   },
   "it-CH": {
    "group": "'",
@@ -4442,7 +8168,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "€ {n}",
+     "neg": "€-{n}"
+    },
+    "USD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "CHF": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "CHF-{n}"
+    },
+    "GBP": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "£-{n}"
+    },
+    "CAD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "AUD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "JPY": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "¥-{n}"
+    },
+    "CNY": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "¥-{n}"
+    },
+    "KRW": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "₩-{n}"
+    },
+    "RUB": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "₽-{n}"
+    },
+    "BRL": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "R$-{n}"
+    },
+    "MXN": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$-{n}"
+    },
+    "SEK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr-{n}"
+    },
+    "NOK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "NKr {n}",
+     "neg": "NKr-{n}"
+    },
+    "DKK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr-{n}"
+    },
+    "PLN": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "zł-{n}"
+    },
+    "CZK": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "Kč-{n}"
+    },
+    "INR": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "₹-{n}"
+    },
+    "MAD": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "MAD-{n}"
+    },
+    "XOF": {
+     "group": "'",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "F CFA-{n}"
+    }
+   }
   },
   "pt-BR": {
    "group": ".",
@@ -4628,7 +8516,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€ {n}",
+     "neg": "-€ {n}"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "-£ {n}"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "-¥ {n}"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "-¥ {n}"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "-₩ {n}"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "-₽ {n}"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "-R$ {n}"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "-₹ {n}"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "es-MX": {
    "group": ",",
@@ -4814,7 +8864,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "XOF {n}",
+     "neg": "-XOF {n}"
+    }
+   }
   },
   "es-US": {
    "group": ",",
@@ -5000,7 +9212,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "XOF {n}",
+     "neg": "-XOF {n}"
+    }
+   }
   },
   "es-AR": {
    "group": ".",
@@ -5186,7 +9560,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€ {n}",
+     "neg": "-€ {n}"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "-£ {n}"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "-¥ {n}"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "-¥ {n}"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "-₩ {n}"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "-₽ {n}"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "-R$ {n}"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "-$ {n}"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "-₹ {n}"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "XOF {n}",
+     "neg": "-XOF {n}"
+    }
+   }
   },
   "nl-BE": {
    "group": ".",
@@ -5370,7 +9906,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€ {n}",
+     "neg": "€ -{n}"
+    },
+    "USD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "CHF": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "CHF -{n}"
+    },
+    "GBP": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£ {n}",
+     "neg": "£ -{n}"
+    },
+    "CAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "AUD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "JPY": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥ {n}",
+     "neg": "¥ -{n}"
+    },
+    "CNY": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥ {n}",
+     "neg": "¥ -{n}"
+    },
+    "KRW": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩ {n}",
+     "neg": "₩ -{n}"
+    },
+    "RUB": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽ {n}",
+     "neg": "₽ -{n}"
+    },
+    "BRL": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R$ {n}",
+     "neg": "R$ -{n}"
+    },
+    "MXN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "$ {n}",
+     "neg": "$ -{n}"
+    },
+    "SEK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr -{n}"
+    },
+    "NOK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr -{n}"
+    },
+    "DKK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "kr -{n}"
+    },
+    "PLN": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "zł -{n}"
+    },
+    "CZK": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "Kč -{n}"
+    },
+    "INR": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹ {n}",
+     "neg": "₹ -{n}"
+    },
+    "MAD": {
+     "group": ".",
+     "decimal": ",",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "MAD -{n}"
+    },
+    "XOF": {
+     "group": ".",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "F CFA -{n}"
+    }
+   }
   },
   "zh-TW": {
    "group": ",",
@@ -5552,7 +10250,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "zh-HK": {
    "group": ",",
@@ -5734,7 +10594,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "€{n}",
+     "neg": "-€{n}"
+    },
+    "USD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "CHF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "CHF {n}",
+     "neg": "-CHF {n}"
+    },
+    "GBP": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "£{n}",
+     "neg": "-£{n}"
+    },
+    "CAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "AUD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "JPY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "CNY": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "¥{n}",
+     "neg": "-¥{n}"
+    },
+    "KRW": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "₩{n}",
+     "neg": "-₩{n}"
+    },
+    "RUB": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₽{n}",
+     "neg": "-₽{n}"
+    },
+    "BRL": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "R${n}",
+     "neg": "-R${n}"
+    },
+    "MXN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "${n}",
+     "neg": "-${n}"
+    },
+    "SEK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "NOK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "DKK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "kr {n}",
+     "neg": "-kr {n}"
+    },
+    "PLN": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "zł {n}",
+     "neg": "-zł {n}"
+    },
+    "CZK": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "Kč {n}",
+     "neg": "-Kč {n}"
+    },
+    "INR": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "₹{n}",
+     "neg": "-₹{n}"
+    },
+    "MAD": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 2,
+     "pos": "MAD {n}",
+     "neg": "-MAD {n}"
+    },
+    "XOF": {
+     "group": ",",
+     "decimal": ".",
+     "minGroup": 1,
+     "digits": 0,
+     "pos": "F CFA {n}",
+     "neg": "-F CFA {n}"
+    }
+   }
   },
   "ru-UA": {
    "group": " ",
@@ -5920,7 +10942,169 @@
     "29",
     "30",
     "31"
-   ]
+   ],
+   "money": {
+    "EUR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} €",
+     "neg": "-{n} €"
+    },
+    "USD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "CHF": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} CHF",
+     "neg": "-{n} CHF"
+    },
+    "GBP": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} £",
+     "neg": "-{n} £"
+    },
+    "CAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "AUD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "JPY": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "CNY": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ¥",
+     "neg": "-{n} ¥"
+    },
+    "KRW": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} ₩",
+     "neg": "-{n} ₩"
+    },
+    "RUB": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₽",
+     "neg": "-{n} ₽"
+    },
+    "BRL": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} R$",
+     "neg": "-{n} R$"
+    },
+    "MXN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} $",
+     "neg": "-{n} $"
+    },
+    "SEK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "NOK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "DKK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} kr",
+     "neg": "-{n} kr"
+    },
+    "PLN": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} zł",
+     "neg": "-{n} zł"
+    },
+    "CZK": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} Kč",
+     "neg": "-{n} Kč"
+    },
+    "INR": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} ₹",
+     "neg": "-{n} ₹"
+    },
+    "MAD": {
+     "group": " ",
+     "decimal": ",",
+     "minGroup": 2,
+     "digits": 2,
+     "pos": "{n} MAD",
+     "neg": "-{n} MAD"
+    },
+    "XOF": {
+     "group": " ",
+     "decimal": ".",
+     "minGroup": 2,
+     "digits": 0,
+     "pos": "{n} F CFA",
+     "neg": "-{n} F CFA"
+    }
+   }
   }
  },
  "names": {

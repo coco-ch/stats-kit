@@ -81,6 +81,65 @@ public sealed class ReportOptions
     /// function is logged and the report is sent without these cards.
     /// </summary>
     public Func<StatsOverview, CancellationToken, Task<IReadOnlyList<ReportBlock>>>? Blocks { get; set; }
+    /// <summary>Google page of the administration: link at the end of the Google block of the report.</summary>
+    public string? SearchUrl { get; set; }
+    /// <summary>YouTube page of the administration: link at the end of the YouTube block of the report.</summary>
+    public string? YoutubeUrl { get; set; }
+    /// <summary>
+    /// Google Search Console and YouTube figures of the report's period, given by the site (the .NET server does not connect to
+    /// them itself: the site reads them, for instance from a Node stats-kit server, <c>ContractJson.Deserialize&lt;SearchOverview&gt;</c>).
+    /// Null, or a null field: no Google or YouTube block (nothing empty in the message). A failure is logged and the report leaves without them.
+    /// </summary>
+    public Func<Range, CancellationToken, Task<ReportSources?>>? Sources { get; set; }
+    /// <summary>
+    /// Text overrides read again at every report (texts edited in the site's administration: subject, title, introduction,
+    /// footer…), by path, applied over <see cref="StatsKitOptions.Texts"/>. The pages keep the texts given at start-up.
+    /// </summary>
+    public Func<CancellationToken, Task<IReadOnlyDictionary<string, string>?>>? Texts { get; set; }
+}
+
+/// <summary>Google and YouTube figures of a report (see <see cref="ReportOptions.Sources"/>).</summary>
+/// <param name="Videos">Most viewed videos of the period, most viewed first.</param>
+public sealed record ReportSources(SearchOverview? Search = null, YoutubeOverview? Youtube = null, IReadOnlyList<ReportVideo>? Videos = null);
+
+/// <summary>Colours of the PNG world map, "#rrggbb" (default: derived from the brand colour).</summary>
+public sealed class MapTheme
+{
+    /// <summary>Sea.</summary>
+    public string? Background { get; set; }
+    /// <summary>Countries without visits.</summary>
+    public string? Land { get; set; }
+    /// <summary>Borders.</summary>
+    public string? Border { get; set; }
+    /// <summary>Few visits.</summary>
+    public string? Low { get; set; }
+    /// <summary>Many visits.</summary>
+    public string? High { get; set; }
+}
+
+/// <summary>Colours of the report in dark mode, "#rrggbb", for the mail clients that apply a style sheet (default: dark neutral backgrounds, light texts).</summary>
+public sealed class DarkTheme
+{
+    /// <summary>Page background.</summary>
+    public string? Page { get; set; }
+    /// <summary>Card background.</summary>
+    public string? Card { get; set; }
+    /// <summary>Borders.</summary>
+    public string? Line { get; set; }
+    /// <summary>Background of the highlighted blocks.</summary>
+    public string? Soft { get; set; }
+    /// <summary>Titles and figures.</summary>
+    public string? Ink { get; set; }
+    /// <summary>Text.</summary>
+    public string? Text { get; set; }
+    /// <summary>Secondary text.</summary>
+    public string? Muted { get; set; }
+    /// <summary>Links and bars.</summary>
+    public string? Accent { get; set; }
+    /// <summary>Rise.</summary>
+    public string? Up { get; set; }
+    /// <summary>Fall.</summary>
+    public string? Down { get; set; }
 }
 
 /// <summary>Colours, fonts and logo of the e-mail report. Only <see cref="Brand"/> matters: the other shades derive from it.</summary>
@@ -126,6 +185,10 @@ public sealed class ReportTheme
     public string? Display { get; set; }
     /// <summary>Header logo.</summary>
     public ReportLogo? Logo { get; set; }
+    /// <summary>Colours of the PNG world map (default: derived from <see cref="Brand"/>).</summary>
+    public MapTheme? Map { get; set; }
+    /// <summary>Colours in dark mode (default: dark neutral backgrounds, light texts, the brand lightened for links).</summary>
+    public DarkTheme? Dark { get; set; }
 }
 
 /// <summary>Header logo: PNG attached to the message (<see cref="Png"/>) or online image (<see cref="Url"/>).</summary>

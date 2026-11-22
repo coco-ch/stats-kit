@@ -102,7 +102,28 @@ public sealed class StatsKitServer
                 _logger.LogError(e, "[stats-kit] report blocks");
             }
         }
-        return ReportBuilder.Build(o, Texts, r.Theme, _options.SiteName, r.StatsUrl, weekly, _options.WorldMap, r.Glance, blocks);
+        ReportSources? sources = null;
+        if (r.Sources is not null)
+        {
+            try
+            {
+                sources = await r.Sources(o.Range, ct).ConfigureAwait(false);
+            }
+            catch (Exception e) when (!ct.IsCancellationRequested)
+            {
+                _logger.LogError(e, "[stats-kit] report sources");
+            }
+        }
+        var texts = Texts;
+        if (r.Texts is not null && await r.Texts(ct).ConfigureAwait(false) is { Count: > 0 } extra)
+        {
+            // texts read again at every report, over those given at start-up
+            var merged = new Dictionary<string, string>(_options.Texts);
+            foreach (var (path, value) in extra) merged[path] = value;
+            texts = Texts.Create(_options.Locale, merged, _options.BaseTexts);
+        }
+        return ReportBuilder.Build(o, texts, r.Theme, _options.SiteName, r.StatsUrl, weekly, _options.WorldMap, r.Glance, blocks,
+            sources?.Search, sources?.Youtube, sources?.Videos, r.SearchUrl, r.YoutubeUrl);
     }
 
     /// <summary>Builds the report and hands it to <see cref="ReportOptions.Send"/>.</summary>

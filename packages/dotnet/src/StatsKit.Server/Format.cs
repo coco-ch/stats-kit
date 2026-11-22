@@ -15,7 +15,9 @@ public static partial class Format
     private sealed record TagData(
         string Group, string Decimal, int MinGroup, string[] Number, string[] Percent, string[] Plural, string PluralMillion,
         Dictionary<string, Dictionary<string, string>> Units, string[] Dm, string[] Dmy, string[] LongMonths, string[] LongWeekdays,
-        string[] ShortMonths, string[] ShortWeekdays, string[] WeekdaysLong, string[] WeekdaysShort, string[] Hours, string[] Day);
+        string[] ShortMonths, string[] ShortWeekdays, string[] WeekdaysLong, string[] WeekdaysShort, string[] Hours, string[] Day, Dictionary<string, MoneyData> Money);
+
+    private sealed record MoneyData(string Group, string Decimal, int MinGroup, int Digits, string Pos, string Neg);
 
     private sealed record NameData(Dictionary<string, string> Regions, Dictionary<string, string> Languages, string Pattern, Dictionary<string, string> Dialects);
 
@@ -45,7 +47,8 @@ public static partial class Format
                 ((JsonObject)t["units"]!).ToDictionary(u => u.Key, u => Map(u.Value)),
                 Strings(t["dm"]), Strings(t["dmy"]), Strings(t["long"]!["months"]), Strings(t["long"]!["weekdays"]),
                 Strings(t["dmShort"]!["months"]), Strings(t["dmShort"]!["weekdays"]),
-                Strings(t["weekdays"]!["long"]), Strings(t["weekdays"]!["short"]), Strings(t["hours"]), Strings(t["day"]));
+                Strings(t["weekdays"]!["long"]), Strings(t["weekdays"]!["short"]), Strings(t["hours"]), Strings(t["day"]),
+                t["money"] is JsonObject money ? money.ToDictionary(m => m.Key, m => new MoneyData((string)m.Value!["group"]!, (string)m.Value!["decimal"]!, (int)m.Value!["minGroup"]!, (int)m.Value!["digits"]!, (string)m.Value!["pos"]!, (string)m.Value!["neg"]!)) : []);
             return TagCache[locale] = data;
         }
     }
@@ -72,24 +75,74 @@ public static partial class Format
     }
 
     /// <summary>Digits of a positive rounded value, grouped as the locale does.</summary>
-    private static string Digits(TagData t, decimal value, int digits)
+    private static string Digits(TagData t, decimal value, int digits) => Digits(t.Group, t.Decimal, t.MinGroup, value, digits);
+
+    private static string Digits(string group, string decimalSeparator, int minGroup, decimal value, int digits)
     {
         var text = value.ToString("F" + digits, CultureInfo.InvariantCulture);
         var dot = text.IndexOf('.');
         var integer = dot < 0 ? text : text[..dot];
         var fraction = dot < 0 ? "" : text[(dot + 1)..];
-        if (t.Group.Length > 0 && integer.Length >= 4 && (t.MinGroup == 1 || integer.Length >= 5))
+        if (group.Length > 0 && integer.Length >= 4 && (minGroup == 1 || integer.Length >= 5))
         {
             var sb = new StringBuilder();
             for (var i = 0; i < integer.Length; i++)
             {
-                if (i > 0 && (integer.Length - i) % 3 == 0) sb.Append(t.Group);
+                if (i > 0 && (integer.Length - i) % 3 == 0) sb.Append(group);
                 sb.Append(integer[i]);
             }
             integer = sb.ToString();
         }
-        return fraction.Length > 0 ? integer + t.Decimal + fraction : integer;
+        return fraction.Length > 0 ? integer + decimalSeparator + fraction : integer;
     }
+
+    /// <summary>
+    /// Currencies written with their symbol by <see cref="Money(Texts, double, string)"/> ("12,50 $", "1 490 €", "CHF 30"); any other code is written after
+    /// the amount ("12.50 XYZ"). The same list as the Node server.
+    /// </summary>
+    public static readonly IReadOnlyList<string> Currencies = ["EUR", "USD", "CHF", "GBP", "CAD", "AUD", "JPY", "CNY", "KRW", "RUB", "BRL", "MXN", "SEK", "NOK", "DKK", "PLN", "CZK", "INR", "MAD", "XOF"];
+
+    /// <summary>
+    /// Amount of money in the locale of the texts: "$12.50", "12,50 $", "1 490 €" (a whole amount has no decimals). For the site's
+    /// own figures in the report: <c>Format.Money(kit.Texts, 12.5m, "USD")</c>.
+    /// </summary>
+    public static string Money(Texts texts, double amount, string currency)
+    {
+        if (!double.IsFinite(amount)) return "—";
+        var code = currency.Trim().ToUpperInvariant();
+        if (!Tag(texts.Locale).Money.TryGetValue(code, out var m))
+        {
+            var cents = Js.Round(amount * 100) / 100;
+            return $"{Number(texts, cents, cents == Math.Floor(cents) ? 0 : 2)} {code}".Trim();
+        }
+        var rounded = Math.Round(Js.Exact(amount), m.Digits, MidpointRounding.AwayFromZero);
+        var digits = rounded == decimal.Truncate(rounded) ? 0 : m.Digits;
+        return (amount < 0 ? m.Neg : m.Pos).Replace("{n}", Digits(m.Group, m.Decimal, m.MinGroup, Math.Abs(rounded), digits));
+    }
+
+    /// <inheritdoc cref="Money(Texts, double, string)"/>
+    public static string Money(Texts texts, decimal amount, string currency) => Money(texts, (double)amount, currency);
+
+    /// <summary>
+    /// Languages by their main code ("fr-FR", "fr-CH" and "fr" → "fr"), numbers summed: the browser languages of the visitors,
+    /// each visitor counted once. Sorted by decreasing value, then by code.
+    /// </summary>
+    public static IReadOnlyList<Item> MergeLanguages(IEnumerable<Item> items)
+    {
+        var merged = new OrderedDictionary<string, Item>();
+        foreach (var i in items)
+        {
+            var key = i.Key.Split('-', '_')[0].ToLowerInvariant();
+            merged[key] = merged.TryGetValue(key, out var m)
+                ? m with { Value = m.Value + i.Value, Previous = m.Previous is null || i.Previous is null ? null : m.Previous + i.Previous }
+                : new Item(key, null, i.Value, i.Previous);
+        }
+        return [.. merged.Values.OrderByDescending(i => i.Value).ThenBy(i => i.Key, Collation.Comparer)];
+    }
+
+    /// <summary>Path of an address ("https://example.org/fr/contact" → "/fr/contact"), the address itself if it cannot be read.</summary>
+    public static string PathOf(string url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var u) && u.Scheme is "http" or "https" ? u.AbsolutePath + u.Query : url;
 
     private static string Signed(string[] templates, double v, decimal rounded, string digits, bool signed)
     {

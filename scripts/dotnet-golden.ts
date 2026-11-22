@@ -7,16 +7,16 @@
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { inflateSync } from 'node:zlib';
-import { LOCALES, countryName, createTexts, formatDuration, formatNumber, formatPercent, hourName, languageName, longDay, shortDate, slotLabel, weekdayName, type Extras } from 'stats-kit/contract';
-import { createStatsKit, reportDue, type Fetch, type KitResponse, type StatsKitConfig, type WeeklySchedule } from 'stats-kit/server';
-import { FAKE, fakeFetch } from '../demo/fake/services.ts';
+import { LOCALES, countryName, createTexts, formatMoney, mergeLanguages, pathOf, formatDuration, formatNumber, formatPercent, hourName, languageName, longDay, shortDate, slotLabel, weekdayName, type Extras } from 'stats-kit/contract';
+import { createStatsKit, reportDue, youtubeClient, type Fetch, type KitResponse, type StatsKitConfig, type WeeklySchedule } from 'stats-kit/server';
+import { FAKE, fakeFetch, fakeSources } from '../demo/fake/services.ts';
 
 const NOW = Date.parse('2026-11-16T10:30:00Z');
 const dir = new URL('../packages/dotnet/test/StatsKit.Server.Tests/Golden/', import.meta.url);
 
-/** Raw RGB pixels of a PNG written by the library (8-bit RGB, filter 0 on every row): hash and size. */
+/** Raw pixels of a PNG written by the library (8-bit RGB or RGBA, filter 0 on every row): hash and size. */
 export function pngPixels(png: Buffer): string {
-  const width = png.readUInt32BE(16), height = png.readUInt32BE(20);
+  const width = png.readUInt32BE(16), height = png.readUInt32BE(20), bpp = png[25] === 6 ? 4 : 3;
   const idat: Buffer[] = [];
   for (let i = 8; i < png.length;) {
     const len = png.readUInt32BE(i), type = png.toString('ascii', i + 4, i + 8);
@@ -24,8 +24,8 @@ export function pngPixels(png: Buffer): string {
     i += 12 + len;
   }
   const raw = inflateSync(Buffer.concat(idat));
-  const rgb = Buffer.alloc(width * height * 3);
-  for (let y = 0; y < height; y++) raw.copy(rgb, y * width * 3, y * (width * 3 + 1) + 1, (y + 1) * (width * 3 + 1));
+  const rgb = Buffer.alloc(width * height * bpp);
+  for (let y = 0; y < height; y++) raw.copy(rgb, y * width * bpp, y * (width * bpp + 1) + 1, (y + 1) * (width * bpp + 1));
   return `${width}x${height}:${createHash('sha256').update(rgb).digest('hex')}`;
 }
 
@@ -70,7 +70,8 @@ const full = (locale: string, fetch: Fetch): StatsKitConfig => ({
   events: { labels: { 'phone-click': 'Click to call' } },
   goals: [{ id: 'calls', label: 'Clicks to call', events: ['phone-click'] }],
   extras: async () => extras,
-  report: { theme: { brand: '#b87333', head: '#1a1a1d', display: 'Georgia,serif' }, statsUrl: 'https://www.example.test/admin/statistics', send: async () => 2,
+  report: { theme: { brand: '#b87333', head: '#1a1a1d', display: 'Georgia,serif', map: { land: '#e4ded3' }, dark: { accent: '#e0a46b' } }, statsUrl: 'https://www.example.test/admin/statistics', send: async () => 2,
+    searchUrl: 'https://www.example.test/admin/google', youtubeUrl: 'https://www.example.test/admin/youtube',
     blocks: async () => [
       { title: 'Costs', hint: 'Over the period', figures: [{ value: '12.50 EUR', label: 'AI usage', sub: '7 days' }, { value: '30.00 EUR', label: 'Subscriptions / month' }, { value: '3', label: 'Invoices' }, { value: '1', label: 'Alerts', sub: 'to check' }], lines: ['Anthropic: 9.25 EUR', 'OpenAI: 3.25 EUR'] },
       { title: 'News', lines: ['Concert on Saturday "Brass & Winds" <live>'] },
@@ -80,7 +81,11 @@ const full = (locale: string, fetch: Fetch): StatsKitConfig => ({
 type Req = { method: string; path: string; query: Record<string, string> };
 const get = (path: string, query: Record<string, string> = {}): Req => ({ method: 'GET', path, query });
 
-async function scenario(name: string, config: (fetch: Fetch) => StatsKitConfig, requests: Req[], base: Fetch = fakeFetch({ now: () => NOW })) {
+/** Search Console and YouTube connected (the .NET server is given their figures: Golden/<name>.json, "sources", by days). */
+const fakeSrc = await fakeSources();
+const withSources = (c: StatsKitConfig): StatsKitConfig => ({ ...c, gsc: fakeSrc.gsc, youtube: fakeSrc.youtube, sourceRequests: async () => ({ total: 2, bySubject: [] }) });
+
+async function scenario(name: string, config: (fetch: Fetch) => StatsKitConfig, requests: Req[], base: Fetch = fakeFetch({ now: () => NOW }), sourceDays: number[] = []) {
   const rec = recorder(base);
   const kit = createStatsKit(config(rec.fetch));
   const answers: unknown[] = [];
@@ -96,7 +101,20 @@ async function scenario(name: string, config: (fetch: Fetch) => StatsKitConfig, 
     }
     answers.push({ request: req, status: r.status, headers: r.headers, body });
   }
-  return [name, { now: new Date(NOW).toISOString(), answers, calls: rec.calls }] as const;
+  if (!sourceDays.length) return [name, { now: new Date(NOW).toISOString(), answers, calls: rec.calls }] as const;
+  // what the report took from Google and YouTube, for the .NET server; the calls it made to them (and to Umami for the YouTube
+  // visits) are not replayed there
+  const plain = createStatsKit(config(fakeFetch({ now: () => NOW })));
+  const yt = youtubeClient(fakeSrc.youtube, fakeFetch({ now: () => NOW }));
+  const sources: Record<string, unknown> = {};
+  for (const days of sourceDays) {
+    const search = await plain.search({ days });
+    const youtube = await plain.youtube(Math.min(90, days));
+    const videos = youtube.status === 'ok' && youtube.totals.views ? await yt.topVideos(youtube.start, youtube.end, 3, NOW) : [];
+    sources[String(days)] = { search, youtube, videos };
+  }
+  const calls = Object.fromEntries(Object.entries(rec.calls).filter(([k]) => k.includes(` ${FAKE.umami}/`) && !/[?&](query|referrer)=/.test(k)));
+  return [name, { now: new Date(NOW).toISOString(), answers, calls, sources }] as const;
 }
 
 const files: (readonly [string, unknown])[] = [];
@@ -106,7 +124,10 @@ files.push(await scenario('full-en', (f) => full('en', f), [
   get('/report/preview', { days: '7' }), get('/report/preview', { days: '1' }), { method: 'POST', path: '/report/send', query: { days: '7' } }, get('/world.json'),
   get('/unknown'), { method: 'DELETE', path: '/overview', query: {} },
 ]));
-for (const code of Object.keys(LOCALES).filter((c) => c !== 'en')) files.push(await scenario(`full-${code}`, (f) => full(code, f), [get('/report/preview', { days: '30' })]));
+// every language with Google and YouTube; the English report with them too, and texts read at the report
+for (const code of Object.keys(LOCALES).filter((c) => c !== 'en')) files.push(await scenario(`full-${code}`, (f) => withSources(full(code, f)), [get('/report/preview', { days: '30' })], undefined, [30]));
+files.push(await scenario('sources-en', (f) => { const c = withSources(full('en', f)); return { ...c, report: { ...c.report, texts: () => ({ report: { footer: 'Footer read at every report' } }) } }; },
+  [get('/report/preview', { days: '7' }), get('/report/preview', { days: '30' })], undefined, [7, 30]));
 files.push(await scenario('no-glance', (f) => { const c = full('en', f); return { ...c, report: { ...c.report, glance: false, blocks: () => { throw new Error('no blocks'); } } }; }, [get('/report/preview', { days: '7' })]));
 files.push(await scenario('regional-fr-CH', (f) => full('fr-CH', f), [get('/report/preview', { days: '7' })]));
 files.push(await scenario('not-configured', (f) => ({ siteName: 'Empty site', fetch: f, now: () => NOW, world: null }), [
@@ -142,6 +163,9 @@ for (const tag of [...Object.values(LOCALES).map((t) => t.locale), 'fr-CH', 'en-
     weekdays: Array.from({ length: 7 }, (_, d) => [weekdayName(texts, d), weekdayName(texts, d, 'short')]),
     countries: [...new Set([...world.features.map((f) => f.properties.iso2), 'FRA', 'che', 'XK', 'ZZ', ''])].map((c) => [c, countryName(texts, c)]),
     languages: ['fr', 'fr-FR', 'fr-fr', 'en-US', 'en-GB', 'en', 'de-CH', 'de-AT', 'pt-BR', 'pt-PT', 'zh-Hans', 'zh-CN', 'zh-TW', 'sr-Latn', 'nb-NO', 'ja-JP', 'ko-KR', 'ru-RU', 'it-CH', 'xx', 'xx-FR', ''].map((c) => [c, languageName(texts, c)]),
+    money: ['EUR', 'USD', 'CHF', 'GBP', 'JPY', 'KRW', 'xyz', ''].flatMap((code) => [0, 1, 12.5, 30, 99.999, 1490, 12345.678, -3.256, 0.004, 2.675, 1234567.891].map((v) => [v, code, formatMoney(texts, v, code)])),
+    mergedLanguages: mergeLanguages([{ key: 'fr-FR', label: null, value: 5, previous: 4 }, { key: 'en_US', label: null, value: 3, previous: 1 }, { key: 'fr', label: null, value: 2, previous: null }, { key: 'EN', label: null, value: 3, previous: 2 }, { key: 'de', label: null, value: 6, previous: 0 }, { key: 'ca', label: null, value: 6, previous: 0 }]),
+    paths: ['https://www.example.test/en/contact', 'https://www.example.test/', 'https://www.example.test/a?b=1', 'not a url', '/relative'].map((u) => [u, pathOf(u)]),
     upper: ['Straße', 'éclair à la crème', 'Größte Seiten', 'страницы', 'pages vues'].map((s) => [s, s.toLocaleUpperCase(texts.locale)]),
   };
 }

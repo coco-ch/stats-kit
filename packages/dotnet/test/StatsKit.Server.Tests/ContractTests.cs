@@ -43,15 +43,34 @@ public class ContractTests
                 Groups = [new PageGroup("products", "Product pages", new Regex("^/products/([a-z0-9-]+)$"))],
             },
             Extras = (_, _) => Task.FromResult<Extras?>(SiteExtras),
-            Report = new ReportOptions { Theme = new ReportTheme { Brand = "#b87333", Head = "#1a1a1d", Display = "Georgia,serif" }, StatsUrl = "https://www.example.test/admin/statistics", Send = (_, _) => Task.FromResult(2), Blocks = (_, _) => Task.FromResult(Blocks) },
+            Report = new ReportOptions
+            {
+                Theme = new ReportTheme { Brand = "#b87333", Head = "#1a1a1d", Display = "Georgia,serif", Map = new MapTheme { Land = "#e4ded3" }, Dark = new DarkTheme { Accent = "#e0a46b" } },
+                StatsUrl = "https://www.example.test/admin/statistics", Send = (_, _) => Task.FromResult(2), Blocks = (_, _) => Task.FromResult(Blocks),
+                SearchUrl = "https://www.example.test/admin/google", YoutubeUrl = "https://www.example.test/admin/youtube",
+            },
         };
         o.EventLabels["phone-click"] = "Click to call";
         o.Goals.Add(new GoalOptions("calls", "Clicks to call", ["phone-click"]));
         return o;
     }
 
+    /// <summary>Google and YouTube figures the Node report used, given to the .NET server (it does not connect to them itself).</summary>
+    private static void WithSources(StatsKitOptions o, JsonObject golden)
+    {
+        if (golden["sources"] is not JsonObject sources) return;
+        o.Report.Sources = (range, _) =>
+        {
+            var s = (JsonObject)sources[Js.Str(range.Days)]!;
+            return Task.FromResult<ReportSources?>(new ReportSources(
+                ContractJson.Deserialize<SearchOverview>(s["search"]!.ToJsonString()), ContractJson.Deserialize<YoutubeOverview>(s["youtube"]!.ToJsonString()),
+                ContractJson.Deserialize<List<ReportVideo>>(s["videos"]!.ToJsonString())));
+        };
+    }
+
     private static StatsKitOptions Options(string scenario) => scenario switch
     {
+        "sources-en" => With(Full("en"), o => o.Report.Texts = _ => Task.FromResult<IReadOnlyDictionary<string, string>?>(new Dictionary<string, string> { ["report.footer"] = "Footer read at every report" })),
         "not-configured" => new StatsKitOptions { SiteName = "Empty site", WorldMap = false },
         "umami-error" => With(Full("fr"), o => o.Report = new ReportOptions { Send = (_, _) => throw new InvalidOperationException("mailbox full") }),
         "umami-login-refused" => new StatsKitOptions { SiteName = "Refused", Umami = Umami(), TimeZone = "UTC" },
@@ -76,6 +95,7 @@ public class ContractTests
         var golden = Golden.Load(scenario);
         var replay = new Replay((JsonObject)golden["calls"]!);
         var options = Options(scenario);
+        WithSources(options, golden);
         options.Clock = new FixedClock(Now);
         var kit = new StatsKitServer(options, new HttpClient(replay));
 

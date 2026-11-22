@@ -106,11 +106,12 @@ public static class MapPng
         return c ^ 0xFFFFFFFFu;
     }
 
-    /// <summary>RGB pixels (8 bits) → PNG.</summary>
-    public static byte[] EncodePng(byte[] rgb, int width, int height)
+    /// <summary>RGB pixels (8 bits; RGBA with <paramref name="channels"/> = 4) → PNG.</summary>
+    public static byte[] EncodePng(byte[] rgb, int width, int height, int channels = 3)
     {
-        var raw = new byte[(width * 3 + 1) * height];
-        for (var y = 0; y < height; y++) Buffer.BlockCopy(rgb, y * width * 3, raw, y * (width * 3 + 1) + 1, width * 3);
+        var row = width * channels;
+        var raw = new byte[(row + 1) * height];
+        for (var y = 0; y < height; y++) Buffer.BlockCopy(rgb, y * row, raw, y * (row + 1) + 1, row);
         using var zipped = new MemoryStream();
         using (var z = new ZLibStream(zipped, CompressionLevel.Optimal, true)) z.Write(raw);
         using var png = new MemoryStream();
@@ -133,7 +134,7 @@ public static class MapPng
         System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(ihdr, (uint)width);
         System.Buffers.Binary.BinaryPrimitives.WriteUInt32BigEndian(ihdr.AsSpan(4), (uint)height);
         ihdr[8] = 8; // 8 bits per channel
-        ihdr[9] = 2; // RGB
+        ihdr[9] = (byte)(channels == 4 ? 6 : 2); // RGBA or RGB
         Chunk("IHDR", ihdr);
         Chunk("IDAT", zipped.ToArray());
         Chunk("IEND", []);
