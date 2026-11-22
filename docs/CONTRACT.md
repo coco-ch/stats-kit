@@ -108,6 +108,8 @@ The opportunities (high potential, rising, falling, new queries, rarely clicked 
 
 ## Writing a compatible server in .NET
 
+The simplest is not to write it: the NuGet package `StatsKit.Server` ([README](../README.md#server-side-aspnet-core)) is that server, checked against the Node server by contract tests. The notes below remain for a site that keeps its own code.
+
 - Serialise in camelCase and **write the `null`s**: `new JsonSerializerOptions(JsonSerializerDefaults.Web) { DefaultIgnoreCondition = JsonIgnoreCondition.Never }`.
 - Slots are strings computed in the site's time zone (`TimeZoneInfo.ConvertTime`), not serialised `DateTime`s.
 - `heatmap`: `int[7][24]`, Monday first (`((int)day.DayOfWeek + 6) % 7`).

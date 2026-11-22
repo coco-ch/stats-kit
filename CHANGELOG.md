@@ -1,10 +1,19 @@
 # Changelog
 
-## Unreleased
+## 0.2.6
+
+A .NET server, published as the NuGet package `StatsKit.Server`, and four more languages. Backward compatible: nothing changes for Node sites.
+
+### Added
+
+- **.NET server** (`packages/dotnet`, NuGet package `StatsKit.Server`, .NET 10 or later, ASP.NET Core, no dependency beyond the shared framework): Umami connector (service account or API key, token shared and renewed on a 401, "path" retried as "url" on Umami 2), cache, overview with the previous period, live count, last 24 hours, heatmap, rankings, goals, site data (`Extras`), e-mail report with the PNG world map, "At a glance" card, previous period day by day, site-specific cards (`Report.Blocks`), totals in the subject, its preview, weekly sending (`WeeklyReportService`), routes `MapStatsKit(prefix)` and `HandleAsync` without routing. Search Console and YouTube answer "not configured" for now. See the README, "Server side (ASP.NET Core)".
+- **Contract tests between the two servers**: `npm run dotnet:golden` records what the Node server asks the simulated Umami and what it answers (overview over several periods, live count, report preview in every language, errors, unconfigured source); the .NET tests replay it and require the same JSON, the same report HTML and text, and the same map pixels. `npm run dotnet:data` generates the texts and a snapshot of Intl for the .NET server, so that it formats numbers, dates, units, country and language names exactly as Node, also in a container without globalization data. CI checks that both are up to date (job ".NET server").
+- **NuGet publication**: for every version tag, the workflow `.github/workflows/dotnet-release.yml` tests, packs, attaches the `.nupkg` to the GitHub release of the tag, and publishes it on nuget.org when the repository has the `NUGET_API_KEY` secret (how to create it: README, "Publishing the NuGet package").
+- **Languages**: Russian (`ru`), Chinese, simplified (`zh`), Japanese (`ja`) and Korean (`ko`), in the pages, the report and its preview, on both servers. Eleven languages in all.
 
 ### Fixed
 
-- **Weekly report**: a missed report is caught up only during the first days of the week (`schedule.catchUpDays`, 3 by default: Monday to Wednesday for a Monday report). Before, a fresh install or a server started on a Sunday sent the current week's report at once, out of time. `catchUpDays: 7` restores the former behaviour. Servers in another language should apply the same rule.
+- **Weekly report**: a missed report is caught up only during the first days of the week (`schedule.catchUpDays`, 3 by default: Monday to Wednesday for a Monday report). Before, a fresh install or a server started on a Sunday sent the current week's report at once, out of time. `catchUpDays: 7` restores the former behaviour. The .NET server applies the same rule (`WeeklySchedule.CatchUpDays`), checked by the contract tests.
 
 ## 0.2.5
 

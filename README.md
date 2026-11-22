@@ -4,8 +4,9 @@ Website traffic statistics for a site's administration, ready to plug in:
 
 - **server** (Node, no framework imposed, Express middleware included): **Umami** connector (API v2 and v3, self-hosted or Cloud), **Google Search Console** (service account or OAuth) and **YouTube** (Data and Analytics, OAuth); periods, comparison with the previous period, live count, last 24 hours, day × hour heatmap, entry and exit pages, geography; **weekly report** in Outlook-compatible HTML (760 px, images attached as `cid:`), world map PNG drawn on the server, preview, scheduling. Sending stays with the site: the library sends nothing.
 - **standalone Angular components**: a complete **Statistics** page, **Google** (Search Console) and **YouTube** pages, and their building blocks (tiles, sortable tables exportable to CSV, charts, SVG world map, heatmap). Themed with CSS variables, light and dark, accessible (WCAG 2.1 AA checked with axe-core), usable on a phone, full width, without any global style.
-- **a single data contract** (TypeScript types and JSON schema, [docs/CONTRACT.md](docs/CONTRACT.md)): a server written in another language (.NET…) can return the same responses and use the same components.
-- **labels in several languages** — English (default), French, German, Spanish, Italian, Portuguese and Dutch — in the pages, the e-mail report, its preview and the map; numbers, percentages, durations, dates, weekdays, country and language names follow the chosen locale (Intl). Any label can be overridden by the site.
+- **a .NET server** (NuGet package `StatsKit.Server`, ASP.NET Core, no dependency beyond the framework): the same routes and the same answers as the Node server for Umami, the same e-mail report with its PNG world map and its preview, checked against the Node server by contract tests ([below](#server-side-aspnet-core)).
+- **a single data contract** (TypeScript types and JSON schema, [docs/CONTRACT.md](docs/CONTRACT.md)): a server written in another language can return the same responses and use the same components.
+- **labels in eleven languages** — English (default), French, German, Spanish, Italian, Portuguese, Dutch, Russian, Chinese (simplified), Japanese and Korean — in the pages, the e-mail report, its preview and the map; numbers, percentages, durations, dates, weekdays, country and language names follow the chosen locale (Intl). Any label can be overridden by the site.
 
 No runtime dependency on the server; in the browser, only Angular.
 
@@ -19,7 +20,7 @@ The package installs straight from Git. Two options:
 
 ```sh
 # Released version: the tag contains the packages already built (immediate installation, recommended)
-npm i github:manueldelarque/stats-kit#v0.2.5
+npm i github:manueldelarque/stats-kit#v0.2.6
 
 # Main branch: the packages are built at installation ("prepare" script, one to two minutes)
 npm i github:manueldelarque/stats-kit
@@ -83,6 +84,52 @@ report: {
 texts: { report: { subjectWeekly: '{site} — the week: {visitors} visitors ({change})' } },
 ```
 
+## Server side (ASP.NET Core)
+
+The package `StatsKit.Server` (in `packages/dotnet`, .NET 10 or later) is a server of the same contract for ASP.NET Core sites: the same routes, the same JSON, the same e-mail report (HTML for Outlook, PNG world map attached as `cid:`, plain text) in the same languages. It depends on nothing but the ASP.NET Core shared framework.
+
+```sh
+dotnet add package StatsKit.Server
+```
+
+```csharp
+using StatsKit;
+using StatsKit.Report;
+
+builder.Services.AddStatsKit((sp, o) =>
+{
+    o.SiteName = "My site";
+    o.Locale = "en";                       // en, fr, de, es, it, pt, nl, ru, zh, ja, ko, or "fr-CH"…
+    o.TimeZone = "Europe/Paris";
+    o.Umami = UmamiOptions.FromValues(key => builder.Configuration[key]); // UMAMI_API_URL, UMAMI_WEBSITE_ID, UMAMI_USERNAME…
+    o.Report.Theme = new ReportTheme { Brand = "#1d3c9c" };
+    o.Report.StatsUrl = "https://www.example.org/admin/statistics";
+    o.Report.Send = (message, ct) => MySendAsync(message, ct); // returns the number of recipients
+});
+
+app.MapStatsKit("/api/admin/audience").RequireAuthorization("admin");
+```
+
+- `ReportMessage` has `Subject`, `Html`, `Text` and `Attachments` (`Cid`, `FileName`, `ContentType`, `Content`): send it with Microsoft Graph, SMTP… as the site does. The library sends nothing.
+- The same settings as in Node: `Pages` (languages, labels, groups), `EventLabels`, `Goals`, `Extras` (site data, shown even without Umami), `Report.Blocks` (site-specific cards), `Report.Glance`, `Texts["report.footer"] = "…"` (overrides by path), `BaseTexts` (a language the library does not ship), `CacheTtl`.
+- Without ASP.NET routing: `kit.HandleAsync(new KitRequest("GET", "/overview", query))` returns `{ Status, Headers, Body }`; `kit.OverviewAsync()`, `kit.LiveAsync()`, `kit.ReportAsync()`, `kit.SendReportAsync()` give the data. `kit.Umami.GetAsync("stats", …)` reads Umami directly with the same account (for a site's own alerts).
+- Weekly report: register a `WeeklyReportService` (hosted service) with a `WeeklySchedule { Weekday = 1, Hour = 8, TimeZone = "Europe/Paris" }` (a missed report is caught up during `CatchUpDays` days, 3 by default, as in Node), the reading and writing of the last week sent (database: once a week only, even with several instances) and the sending (`(await kit.SendReportAsync(RangeQuery.ForDays(7), weekly: true)).Ok`).
+- Search Console and YouTube are not connected by the .NET server yet: `/search`, `/search/indexation` and `/youtube` answer "not configured" (the pages then show what to do).
+- Formats do not depend on the machine: numbers, dates, units, country and language names are rebuilt from a snapshot of Intl shipped with the package (`npm run dotnet:data`), so a container in invariant globalization mode writes the same report. Regional tags outside the snapshot use the formats of their language.
+
+**Same answers as Node, checked**: `npm run dotnet:golden` runs the Node server on the simulated Umami of the demo and records every call it makes and every answer it gives (overview, live count, report preview in every language, errors, unconfigured source); the .NET tests (`packages/dotnet`) replay the same calls and require the same JSON, the same report HTML and text, and the same map pixels. CI fails if the fixtures are not up to date.
+
+### Publishing the NuGet package
+
+Pushing a `v*` tag (`npm run release`) runs `.github/workflows/dotnet-release.yml`: tests, `dotnet pack` with the tag's version, the `.nupkg` attached to the GitHub release of the tag, then publication on nuget.org **only if** the repository has the `NUGET_API_KEY` secret (otherwise the run ends with a note and nothing is published). To enable it once, the owner of the repository:
+
+1. signs in to [nuget.org](https://www.nuget.org) with his own account (a Microsoft account; the package is published under this account's name);
+2. opens **API Keys → Create**: key name `stats-kit GitHub`, expiration 365 days, scope **Push** (new packages and new versions), glob pattern `StatsKit.*`;
+3. copies the key and adds it to the repository: **Settings → Secrets and variables → Actions → New repository secret**, name `NUGET_API_KEY`;
+4. runs the workflow again for the latest tag (**Actions → .NET package → Run workflow**, tag `vX.Y.Z`), or waits for the next tag.
+
+The key expires: renew it on nuget.org and replace the secret. Until the package is on nuget.org, a site can use the `.nupkg` of the release from a local folder (`nuget.config` with `<add key="local" value="packages" />`).
+
 ## Angular side (ten lines)
 
 ```ts
@@ -123,6 +170,10 @@ The styles of a page stay under 16 kB; if the site has a tighter `anyComponentSt
 | `it` | Italian | `it-IT` |
 | `pt` | Portuguese (Portugal) | `pt-PT` |
 | `nl` | Dutch | `nl-NL` |
+| `ru` | Russian | `ru-RU` |
+| `zh` | Chinese (simplified) | `zh-CN` |
+| `ja` | Japanese | `ja-JP` |
+| `ko` | Korean | `ko-KR` |
 
 - **Choosing the language**: `locale` on `createStatsKit` (report), on `provideStatsKit` (all components) or on each page. Without it, the components follow the application's `LOCALE_ID`, then English. A tag with a region keeps the texts of the language and formats numbers and dates the regional way: `locale: 'de-CH'` gives German labels and Swiss number grouping (`1'234`). An unknown language falls back to English.
 - **Formats**: numbers, percentages, durations, dates, weekdays, hours, country and language names come from `Intl` in the chosen locale; plural forms use `Intl.PluralRules`; CSV exports use `;` where the decimal separator is a comma (what Excel expects there) and `,` otherwise.
@@ -134,7 +185,7 @@ The styles of a page stay under 16 kB; if the site has a tighter `anyComponentSt
   ```
 
 - **A language the library does not ship**: pass complete texts as `baseTexts` (same shape as `LOCALES.en`, from `stats-kit/contract`), with `locale` set to its tag for the formats.
-- **Adding a language to the library**: add `packages/contract/src/locales/<code>.ts` (copy `en.ts`, translate every text, keep the `{variables}`) and register it in `packages/contract/src/locales/index.ts`. The tests check that every locale has exactly the same keys and variables as English and that every file of the folder is registered. Right-to-left languages are not shipped yet: the components would need `dir="rtl"` handling first.
+- **Adding a language to the library**: add `packages/contract/src/locales/<code>.ts` (copy `en.ts`, translate every text, keep the `{variables}`) and register it in `packages/contract/src/locales/index.ts`. The tests check that every locale has exactly the same keys and variables as English and that every file of the folder is registered; then run `npm run dotnet:data` so that the .NET server has it too. Right-to-left languages are not shipped yet: the components would need `dir="rtl"` handling first.
 
 ## Settings
 
@@ -240,7 +291,7 @@ Behaviour changes to check:
 6. **Report**: the map attachment is now `cid:stats-kit-map` / `map.png` (was `stats-kit-carte` / `carte.png`), and `<html lang>` carries the full tag.
 7. **Error messages for developers** (`error` fields of the responses, logs) are in English.
 
-Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.5`. Details: [CHANGELOG.md](CHANGELOG.md).
+Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.6`. Details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 
@@ -254,7 +305,12 @@ npm run screenshots  # screenshots of the demo in screenshots/
 npm run schema       # regenerates the JSON schema from the types
 npm run examples     # regenerates the example responses (packages/contract/examples)
 npm run release      # builds and pushes the v<version> tag with the built packages
+npm run dotnet:data  # regenerates the texts and the Intl snapshot of the .NET server
+npm run dotnet:golden # regenerates the contract fixtures of the .NET server (answers of the Node server)
+cd packages/dotnet && dotnet test --project test/StatsKit.Server.Tests   # .NET server: unit and contract tests
 ```
+
+The .NET data and fixtures depend on the ICU data of Node: they are generated with Node 26 (as in CI).
 
 The demo (`demo/`) plays the part of a site: it has its own global styles, including deliberately hostile rules, and serves as the ground for the end-to-end tests. Its language menu switches between the shipped languages. The fake services (`demo/fake/services.ts`) imitate Umami, Search Console and YouTube with fictitious, deterministic traffic; nothing leaves the machine.
 
