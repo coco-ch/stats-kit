@@ -19,7 +19,7 @@ The package installs straight from Git. Two options:
 
 ```sh
 # Released version: the tag contains the packages already built (immediate installation, recommended)
-npm i github:manueldelarque/stats-kit#v0.2.3
+npm i github:manueldelarque/stats-kit#v0.2.5
 
 # Main branch: the packages are built at installation ("prepare" script, one to two minutes)
 npm i github:manueldelarque/stats-kit
@@ -69,6 +69,19 @@ startWeeklyReport({
 ```
 
 The preview (`GET /report/preview`) returns the message as it would be sent, images included in the page.
+
+What the report contains: key figures with their change, goals, site data, an "At a glance" card (top source, country, page and entry page, best day, busiest slot; `report.glance: false` to remove it), the world map, page views per day next to the previous period day by day, the heatmap, Google, YouTube and the rankings. Options of `report`:
+
+```ts
+report: {
+  // …
+  // Site-specific cards, after the rankings, in the site's language (costs, requests, news…). A failure only removes them.
+  blocks: async (overview) => [{ title: 'Cost of the site', hint: 'Monthly estimate', figures: [{ value: '$14.30', label: 'per month', sub: '$171.60 per year' }], lines: ['No usage-based service'] }],
+},
+// The subject, title, introduction and footer may use {site}, {period}, {from}, {to}, {days}, and the totals {visitors}, {visits},
+// {pageviews} and {change} (change of visitors, "+12 %"); empty brackets left by a missing {change} are removed from the subject.
+texts: { report: { subjectWeekly: '{site} — the week: {visitors} visitors ({change})' } },
+```
 
 ## Angular side (ten lines)
 
@@ -227,7 +240,7 @@ Behaviour changes to check:
 6. **Report**: the map attachment is now `cid:stats-kit-map` / `map.png` (was `stats-kit-carte` / `carte.png`), and `<html lang>` carries the full tag.
 7. **Error messages for developers** (`error` fields of the responses, logs) are in English.
 
-Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.3`. Details: [CHANGELOG.md](CHANGELOG.md).
+Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.5`. Details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 

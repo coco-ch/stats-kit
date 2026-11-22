@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.5
+
+What a site's own statistics page and report had that the library did not, found while moving a consulting firm's site to the library. Backward compatible: nothing to change to upgrade; the report gains two cards by default.
+
+### Added
+
+- **Statistics page**: "Recent days" tiles, visitors and page views of the last 7 days against the 7 days before, for periods of 14 days or more (the recent trend inside a 30 or 90-day period, as on the Google page).
+- **Report**: "At a glance" card after the key figures (top traffic source, country, page and entry page, best day, busiest slot), also in the text version; `report.glance: false` removes it.
+- **Report**: the page views per day show the previous period day by day next to each bar, lighter, with a legend (when the overview has `series.previousPageviews`).
+- **Report**: site-specific cards (`report.blocks(overview)` → `ReportBlock[]`: title, hint, figures, lines), after the rankings and in the text version; a failure of the function is logged and the report leaves without them. Type `ReportBlock`. This was on the roadmap.
+- **Report**: the totals are available as variables of the subject, title, introduction and footer: `{visitors}`, `{visits}`, `{pageviews}`, `{change}` (change of visitors against the previous period); empty brackets left by a missing `{change}` are removed from the subject.
+- Texts in the seven languages: `stats.groupRecent`, `stats.last7Visitors`, `stats.last7Pageviews`, `stats.vsPrevious7`, `report.glanceTitle`, `report.glanceSource`, `report.glanceCountry`, `report.glancePage`, `report.glanceEntry`, `report.glanceSlot`, `report.dailyCurrent`, `report.dailyPrevious`.
+
 ## 0.2.4
 
 Font weights and control radii become public variables, for a host with a lighter type scale (an administration console styled after Fluent 2 / Microsoft 365). Backward compatible: the defaults are unchanged.
@@ -62,7 +75,7 @@ Fixes found while plugging the library into a multi-site administration console.
 - Selector of several sites inside the components (today: one `apiUrl` per site, bound to the host's selector).
 - Configurable funnel (steps chosen by the site: pages, events).
 - YouTube connector with an API key only (public figures, without the owner's OAuth authorisation).
-- Site-specific blocks in the e-mail report.
+- Site-specific blocks in the e-mail report (done in 0.2.5).
 
 
 ## 0.2.0
