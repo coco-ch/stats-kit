@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.4
+
+Font weights and control radii become public variables, for a host with a lighter type scale (an administration console styled after Fluent 2 / Microsoft 365). Backward compatible: the defaults are unchanged.
+
+### Added
+
+- `--sk-weight-strong` (headings, figures, table heads, deltas; 700), `--sk-weight-label` (tile labels, legends, badges, map tooltip; 600), `--sk-weight-control` (buttons, period buttons, section links, "Show all"; 600), `--sk-weight-row` (labels of the table rows; 500).
+- `--sk-radius-control`: corner radius of buttons, period buttons, date fields, CSV button, table filter and map zoom buttons (8 px by default, 6 px for the small buttons).
+
 ## 0.2.3
 
 Follow-up of 0.2.2, found by its own layout check on the end-to-end runners (Linux, whose default fonts are wider). Backward compatible.

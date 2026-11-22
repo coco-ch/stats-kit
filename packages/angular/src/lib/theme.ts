@@ -58,9 +58,16 @@ const RESOLVED = `
   --k-shadow: var(--sk-shadow, var(--_shadow));
 `;
 
+/**
+ * Font weights, public like the colours: strong (headings, figures, table heads, deltas), label (tile labels, legends, badges),
+ * control (buttons, period buttons, section links) and row (labels of the table rows). A host with a lighter type scale (Fluent 2,
+ * Microsoft 365: 600 at most, regular labels) sets them; the defaults are unchanged.
+ */
+const WEIGHTS = `--k-w-strong: var(--sk-weight-strong, 700); --k-w-label: var(--sk-weight-label, 600); --k-w-control: var(--sk-weight-control, 600); --k-w-row: var(--sk-weight-row, 500);`;
+
 /** To put first in the styles of every component. */
 export const TOKENS = `
-  :host { ${LIGHT} ${RESOLVED} --k-radius: var(--sk-radius, 12px); --k-gap: var(--sk-gap, 12px); --k-font: var(--sk-font, inherit); }
+  :host { ${LIGHT} ${RESOLVED} --k-radius: var(--sk-radius, 12px); --k-gap: var(--sk-gap, 12px); --k-font: var(--sk-font, inherit); ${WEIGHTS} }
   :host-context([data-sk-mode=dark]) { ${DARK} }
 `;
 
@@ -76,7 +83,8 @@ export const LAYOUT = `
   :host { display: block; width: 100%; min-width: 0; font-family: var(--k-font); color: var(--k-ink); background: var(--k-bg); line-height: 1.45; }
   * { box-sizing: border-box; }
   h1, h2, h3, p { margin: 0; }
-  h1, h2, h3 { overflow-wrap: anywhere; }
+  h1, h2, h3 { overflow-wrap: anywhere; font-weight: var(--k-w-strong); }
+  b, strong { font-weight: var(--k-w-strong); }
   .sk-page { display: grid; gap: calc(var(--k-gap) * 1.33); min-width: 0; }
   .sk-head { display: grid; gap: .5rem; }
   .sk-head .sk-title { font-size: 1.6rem; line-height: 1.2; letter-spacing: -.01em; }
@@ -86,17 +94,17 @@ export const LAYOUT = `
   .sk-card { min-width: 0; background: var(--k-card); border: 1px solid var(--k-line); border-radius: var(--k-radius); box-shadow: var(--k-shadow); padding: min(1rem, 16px); }
   .sk-card h2 { font-size: 1rem; }
   .sk-sub { margin-top: .2rem; font-size: .8rem; color: var(--k-muted); overflow-wrap: anywhere; }
-  .sk-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; max-width: 100%; min-height: 36px; padding: .35rem min(.8rem, 13px); text-align: center; overflow-wrap: anywhere; font: inherit; font-size: .875rem; font-weight: 600; color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: 8px; cursor: pointer; text-decoration: none; }
+  .sk-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; max-width: 100%; min-height: 36px; padding: .35rem min(.8rem, 13px); text-align: center; overflow-wrap: anywhere; font: inherit; font-size: .875rem; font-weight: var(--k-w-control); color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: var(--sk-radius-control, 8px); cursor: pointer; text-decoration: none; }
   .sk-btn:hover { border-color: var(--k-brand); color: var(--k-brand); }
   .sk-btn:disabled { opacity: .6; cursor: default; }
   .sk-btn--primary { background: var(--k-brand); border-color: var(--k-brand); color: var(--k-brand-ink); }
   .sk-btn--primary:hover { color: var(--k-brand-ink); filter: brightness(1.08); }
   .sk-btn:focus-visible, .sk-seg button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
-  .sk-seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; padding: 3px; gap: 2px; background: var(--k-badge); border-radius: 10px; }
-  .sk-seg button { max-width: 100%; min-height: 32px; padding: .25rem min(.75rem, 12px); overflow-wrap: anywhere; font: inherit; font-size: .85rem; font-weight: 600; color: var(--k-ink2); background: transparent; border: 0; border-radius: 8px; cursor: pointer; }
+  .sk-seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; padding: 3px; gap: 2px; background: var(--k-badge); border-radius: calc(var(--sk-radius-control, 8px) + 2px); }
+  .sk-seg button { max-width: 100%; min-height: 32px; padding: .25rem min(.75rem, 12px); overflow-wrap: anywhere; font: inherit; font-size: .85rem; font-weight: var(--k-w-control); color: var(--k-ink2); background: transparent; border: 0; border-radius: var(--sk-radius-control, 8px); cursor: pointer; }
   .sk-seg button[aria-pressed=true] { background: var(--k-card); color: var(--k-ink); box-shadow: 0 1px 2px rgb(0 0 0 / 15%); }
   .sk-field { display: inline-flex; align-items: center; gap: .35rem; font-size: .85rem; color: var(--k-ink2); }
-  .sk-field input, .sk-field select { min-height: 34px; padding: .2rem .45rem; font: inherit; color: var(--k-ink); background: var(--k-input); border: 1px solid var(--k-line2); border-radius: 8px; }
+  .sk-field input, .sk-field select { min-height: 34px; padding: .2rem .45rem; font: inherit; color: var(--k-ink); background: var(--k-input); border: 1px solid var(--k-line2); border-radius: var(--sk-radius-control, 8px); }
   .sk-status { display: flex; flex-wrap: wrap; gap: .6rem; align-items: flex-start; padding: min(.75rem, 12px) min(1rem, 16px); overflow-wrap: anywhere; border-radius: var(--k-radius); font-size: .9rem; border: 1px solid var(--k-line); background: var(--k-card); }
   .sk-status--warn { background: var(--k-warn-soft); color: var(--k-warn); border-color: transparent; }
   .sk-status--err { background: var(--k-down-soft); color: var(--k-down); border-color: transparent; }
@@ -113,7 +121,7 @@ export const LAYOUT = `
   .sk-twin { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: var(--k-gap); align-items: stretch; }
   @media (max-width: 1100px) { .sk-twin { grid-template-columns: minmax(0, 1fr); } }
   .sk-jump { display: flex; flex-wrap: wrap; gap: .25rem .9rem; font-size: .85rem; }
-  .sk-jump a { color: var(--k-brand); font-weight: 600; text-decoration: none; padding: .35rem 0; }
+  .sk-jump a { color: var(--k-brand); font-weight: var(--k-w-control); text-decoration: none; padding: .35rem 0; }
   .sk-jump a:hover { text-decoration: underline; }
   .sk-small { font-size: .8rem; color: var(--k-muted); overflow-wrap: anywhere; }
   .sk-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

@@ -185,11 +185,14 @@ sk-statistics, sk-search-console, sk-youtube {
   --sk-chart-2: #c2410c;   /* line */
   --sk-radius: 10px;
   --sk-font: inherit;
+  --sk-weight-strong: 600; /* lighter type scale */
 }
 html.dark sk-statistics { --sk-brand: #9ab6ff; --sk-chart-1: #7d9ef7; }
 ```
 
 Available variables: `--sk-card`, `--sk-bg`, `--sk-ink`, `--sk-ink-2`, `--sk-muted`, `--sk-line`, `--sk-line-strong`, `--sk-brand`, `--sk-on-brand`, `--sk-chart-1`, `--sk-chart-1-hover`, `--sk-chart-2`, `--sk-chart-3`, `--sk-up`, `--sk-up-soft`, `--sk-down`, `--sk-down-soft`, `--sk-warn`, `--sk-warn-soft`, `--sk-hover`, `--sk-bar-track`, `--sk-input`, `--sk-badge`, `--sk-map-sea`, `--sk-map-land`, `--sk-map-border`, `--sk-map-lo`, `--sk-map-hi`, `--sk-shadow`, `--sk-radius`, `--sk-gap`, `--sk-font`. The defaults meet AA contrast; when changing them, the site is in charge of that contrast.
+
+Type and shape, for a host with its own scale (for example Fluent 2: 600 at most, regular labels, 4 px controls): `--sk-weight-strong` (headings, figures, table heads, deltas; default 700), `--sk-weight-label` (tile labels, legends, badges, map tooltip; default 600), `--sk-weight-control` (buttons, period buttons, section links, "Show all"; default 600), `--sk-weight-row` (labels of the table rows; default 500), `--sk-radius-control` (buttons, period buttons, fields, CSV button, map zoom; default 8 px, 6 px for the small buttons).
 
 The e-mail report has its own theme: `report.theme = { brand, head, ink, muted…, font, display, logo: { png | url, width, alt } }`; only `brand` is required.
 

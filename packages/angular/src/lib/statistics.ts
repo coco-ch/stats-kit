@@ -27,7 +27,7 @@ const today = () => new Date().toISOString().slice(0, 10);
   host: { '[attr.data-sk-mode]': 'mode()' },
   styles: [TOKENS, LAYOUT, `
     .sk-live { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
-    .sk-badge { display: inline-flex; align-items: center; gap: .45rem; max-width: 100%; overflow-wrap: anywhere; padding: .25rem .7rem; border-radius: 999px; font-size: .82rem; font-weight: 600; background: var(--k-up-soft); color: var(--k-up); }
+    .sk-badge { display: inline-flex; align-items: center; gap: .45rem; max-width: 100%; overflow-wrap: anywhere; padding: .25rem .7rem; border-radius: 999px; font-size: .82rem; font-weight: var(--k-w-label); background: var(--k-up-soft); color: var(--k-up); }
     .sk-badge i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: sk-pulse 2s ease-in-out infinite; }
     .sk-badge--stale { background: var(--k-warn-soft); color: var(--k-warn); }
     .sk-badge--stale i { animation: none; }
@@ -40,14 +40,14 @@ const today = () => new Date().toISOString().slice(0, 10);
     @media (max-width: 1000px) { .sk-geo { grid-template-columns: minmax(0, 1fr); } }
     .sk-map-card { display: grid; gap: .75rem; }
     .sk-map-card__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; }
-    .sk-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; max-width: 100%; font-size: .76rem; font-weight: 600; color: var(--k-ink2); }
+    .sk-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; max-width: 100%; font-size: .76rem; font-weight: var(--k-w-label); color: var(--k-ink2); }
     .sk-legend i { width: clamp(32px, 20vw, 96px); height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--k-map-lo), var(--k-map-hi)); }
     .sk-funnel { display: grid; gap: 1rem; margin: .75rem 0 0; padding: 0; list-style: none; }
     .sk-funnel li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .25rem .75rem; align-items: baseline; font-size: .875rem; }
-    .sk-funnel__label { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+    .sk-funnel__label { min-width: 0; font-weight: var(--k-w-label); overflow-wrap: anywhere; }
     .sk-funnel__val { min-width: 0; text-align: right; overflow-wrap: anywhere; }
     .sk-funnel__val b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
-    .sk-funnel small { display: block; color: var(--k-muted); font-size: .76rem; font-weight: 500; }
+    .sk-funnel small { display: block; color: var(--k-muted); font-size: .76rem; font-weight: var(--k-w-row); }
     .sk-funnel__bar { grid-column: 1 / -1; position: relative; height: 10px; border-radius: 5px; background: var(--k-track); overflow: hidden; }
     .sk-funnel__bar::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 5px; background: var(--k-c1); }
     .sk-hint { margin-top: .75rem; font-size: .78rem; color: var(--k-muted); overflow-wrap: anywhere; }

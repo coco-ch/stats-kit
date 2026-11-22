@@ -39,15 +39,15 @@ const ZERO = /^(?:0(?:[,.]0+)?(?:\s?%)?|—)$/;
   styles: [TOKENS, `
     :host { display: grid; grid-row: span 4; grid-template-rows: subgrid; grid-template-columns: minmax(0, 1fr); row-gap: .25rem; align-content: start; min-width: 0; padding: min(.8rem, 13px) min(1rem, 16px); background: var(--k-card); overflow-wrap: anywhere; }
     :host(.sk-hl) { background: var(--k-warn-soft); }
-    .sk-tile__label { align-self: end; font-size: .82rem; font-weight: 600; line-height: 1.3; color: var(--k-muted); }
+    .sk-tile__label { align-self: end; font-size: .82rem; font-weight: var(--k-w-label); line-height: 1.3; color: var(--k-muted); }
     .sk-tile__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .55rem; }
-    .sk-tile__value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+    .sk-tile__value { font-size: 1.6rem; font-weight: var(--k-w-strong); line-height: 1.1; letter-spacing: -.02em; color: var(--k-ink); font-variant-numeric: tabular-nums; }
     /* a figure goes to the line between its words when the tile is too narrow ("1 min 36 s"); badges too on a phone */
     @media (max-width: ${PHONE}px) { :host .sk-d { white-space: normal; } }
-    :host(.sk-zero) .sk-tile__value { color: var(--k-muted); font-weight: 600; }
+    :host(.sk-zero) .sk-tile__value { color: var(--k-muted); font-weight: var(--k-w-label); }
     .sk-tile__sub { font-size: .76rem; line-height: 1.35; color: var(--k-muted); }
     .sk-tile__sub:empty, .sk-tile__trend:empty { display: none; }
-    .sk-d { display: inline-block; max-width: 100%; padding: .05rem .45rem; border-radius: 999px; font-style: normal; font-size: .74rem; font-weight: 700; line-height: 1.45; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--k-badge); color: var(--k-muted); }
+    .sk-d { display: inline-block; max-width: 100%; padding: .05rem .45rem; border-radius: 999px; font-style: normal; font-size: .74rem; font-weight: var(--k-w-strong); line-height: 1.45; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--k-badge); color: var(--k-muted); }
     .sk-d--up { background: var(--k-up-soft); color: var(--k-up); }
     .sk-d--down { background: var(--k-down-soft); color: var(--k-down); }
     svg.sk-spark { display: block !important; width: 100% !important; height: 22px !important; max-width: none !important; overflow: visible; }
@@ -81,7 +81,7 @@ export class SkTile {
   styles: [TOKENS, `
     :host { display: flex; flex-wrap: wrap; gap: var(--k-gap); min-width: 0; }
     .sk-tg { flex: var(--n) 1 calc(var(--n) * 11rem); min-width: 0; max-width: 100%; display: grid; align-content: start; background: var(--k-card); border: 1px solid var(--k-line); border-radius: var(--k-radius); box-shadow: var(--k-shadow); overflow: hidden; }
-    .sk-tg__title { margin: 0; padding: min(.75rem, 12px) min(1rem, 16px) 0; overflow-wrap: anywhere; font-size: .74rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--k-muted); }
+    .sk-tg__title { margin: 0; padding: min(.75rem, 12px) min(1rem, 16px) 0; overflow-wrap: anywhere; font-size: .74rem; font-weight: var(--k-w-strong); letter-spacing: .08em; text-transform: uppercase; color: var(--k-muted); }
     .sk-tg__tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr)); margin: .5rem -1px -1px 0; border-top: 1px solid var(--k-line); }
     .sk-tg__tiles > sk-tile { box-shadow: inset -1px 0 0 var(--k-line), inset 0 -1px 0 var(--k-line); }
     /* phone: two tiles a row, one when the text is enlarged */
@@ -184,15 +184,15 @@ export function formatCell(texts: Texts, v: number | string | null | undefined, 
     h2 { margin: 0; font-size: 1rem; overflow-wrap: anywhere; }
     .sk-mt__sub { margin: .2rem 0 0; font-size: .78rem; line-height: 1.4; color: var(--k-muted); overflow-wrap: anywhere; }
     .sk-mt__tools { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; align-items: center; flex: 0 1 auto; min-width: 0; max-width: 100%; }
-    .sk-mt__search { width: 9.5rem; max-width: 100%; min-width: 0; font: inherit; font-size: .8rem; min-height: 32px; padding: .2rem .55rem; border: 1px solid var(--k-line2); border-radius: 6px; background: var(--k-input); color: var(--k-ink); }
-    .sk-mt__btn { font: inherit; font-size: .78rem; font-weight: 700; letter-spacing: .03em; min-height: 32px; padding: .2rem .6rem; border: 1px solid var(--k-line2); border-radius: 6px; background: var(--k-card); color: var(--k-ink2); cursor: pointer; }
+    .sk-mt__search { width: 9.5rem; max-width: 100%; min-width: 0; font: inherit; font-size: .8rem; min-height: 32px; padding: .2rem .55rem; border: 1px solid var(--k-line2); border-radius: var(--sk-radius-control, 6px); background: var(--k-input); color: var(--k-ink); }
+    .sk-mt__btn { font: inherit; font-size: .78rem; font-weight: var(--k-w-strong); letter-spacing: .03em; min-height: 32px; padding: .2rem .6rem; border: 1px solid var(--k-line2); border-radius: var(--sk-radius-control, 6px); background: var(--k-card); color: var(--k-ink2); cursor: pointer; }
     .sk-mt__btn:hover { color: var(--k-brand); border-color: var(--k-brand); }
     .sk-mt__wrap { overflow-x: auto; }
     .sk-mt__table { width: 100%; border-collapse: collapse; font-size: .875rem; font-variant-numeric: tabular-nums; }
     .sk-mt__table th, .sk-mt__table td { padding: .42rem .55rem; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--k-line); }
     .sk-mt__table tr > :first-child { padding-left: 0; }
     .sk-mt__table tr > :last-child { padding-right: 0; }
-    .sk-mt__table thead th { padding-block: .3rem; font-size: .76rem; font-weight: 700; color: var(--k-muted); background: var(--k-card); }
+    .sk-mt__table thead th { padding-block: .3rem; font-size: .76rem; font-weight: var(--k-w-strong); color: var(--k-muted); background: var(--k-card); }
     .sk-mt__table thead th:first-child { width: 100%; }
     .sk-mt__table thead button { all: unset; cursor: pointer; }
     .sk-mt__table thead button:hover, .sk-mt__table thead button:focus-visible { color: var(--k-brand); }
@@ -200,16 +200,16 @@ export function formatCell(texts: Texts, v: number | string | null | undefined, 
     .sk-num { text-align: right !important; }
     .sk-mt__table tbody tr:last-child > * { border-bottom: 0; }
     .sk-mt__table tbody tr:hover > * { background: var(--k-hover); }
-    .sk-lab { position: relative; max-width: 0; min-width: min(8.5rem, 40vw); white-space: normal !important; font-weight: 500; color: var(--k-ink); padding-bottom: .62rem !important; }
+    .sk-lab { position: relative; max-width: 0; min-width: min(8.5rem, 40vw); white-space: normal !important; font-weight: var(--k-w-row); color: var(--k-ink); padding-bottom: .62rem !important; }
     .sk-lab::before, .sk-lab::after { content: ''; position: absolute; left: 0; bottom: .32rem; height: 4px; border-radius: 2px; }
     .sk-lab::before { right: 0; background: var(--k-track); }
     .sk-lab::after { width: var(--w, 0%); background: var(--k-c1); }
     .sk-lab__txt { display: block; overflow-wrap: anywhere; }
     .sk-lab small { margin-left: .4rem; color: var(--k-muted); font-weight: 400; font-size: .76rem; }
     .sk-lab a { color: inherit; }
-    .sk-d { font-style: normal; font-weight: 700; margin-left: .4rem; font-size: .74rem; }
+    .sk-d { font-style: normal; font-weight: var(--k-w-strong); margin-left: .4rem; font-size: .74rem; }
     .sk-d--up { color: var(--k-up); } .sk-d--down { color: var(--k-down); } .sk-d--flat { color: var(--k-muted); }
-    .sk-mt__more { all: unset; cursor: pointer; margin-top: .5rem; max-width: 100%; overflow-wrap: anywhere; font-size: .875rem; color: var(--k-brand); font-weight: 600; }
+    .sk-mt__more { all: unset; cursor: pointer; margin-top: .5rem; max-width: 100%; overflow-wrap: anywhere; font-size: .875rem; color: var(--k-brand); font-weight: var(--k-w-control); }
     .sk-mt__more:hover { text-decoration: underline; }
     .sk-mt__empty { margin: .3rem 0; font-size: .875rem; color: var(--k-muted); }
     @media (max-width: ${PHONE}px) {
@@ -326,7 +326,7 @@ export class SkMetricTable {
     :host { position: relative; display: flex; flex-direction: column; min-width: 0; padding: min(1rem, 16px) min(1rem, 16px) min(.75rem, 12px); background: var(--k-card); border: 1px solid var(--k-line); border-radius: var(--k-radius); box-shadow: var(--k-shadow); }
     .sk-tc__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1rem; }
     h2 { margin: 0; font-size: 1rem; overflow-wrap: anywhere; }
-    .sk-tc__legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0; padding: 0; list-style: none; font-size: .76rem; font-weight: 600; color: var(--k-ink2); }
+    .sk-tc__legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: 0; padding: 0; list-style: none; font-size: .76rem; font-weight: var(--k-w-label); color: var(--k-ink2); }
     .sk-tc__legend li { display: inline-flex; align-items: center; min-width: 0; overflow-wrap: anywhere; }
     .sk-tc__legend b { flex: none; }
     .sk-tc__legend b { display: inline-block; width: 12px; height: 10px; margin-right: 6px; border-radius: 3px 3px 0 0; }
