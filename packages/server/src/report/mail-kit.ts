@@ -177,10 +177,11 @@ export function mailKit(C: Palette, texts: Texts) {
   const heat = (gridValues: number[][], days: string[]) => {
     const max = Math.max(1, ...gridValues.flat());
     const head = `<tr><td width="4%"></td>${Array.from({ length: 24 }, (_, h) => `<td width="4%" align="center" ${ts('9px/1.4', 400, C.muted)}>${h % 3 === 0 ? esc(formatNumber(texts, h)) : ''}</td>`).join('')}</tr>`;
-    // the cells are only coloured (the heatmap has 168 of them): gaps from the table spacing, height on the row
+    // the cells are only coloured (the heatmap has 168 of them): gaps from the table spacing, height on the row; an empty cell
+    // (`sk-he`) stays a little lighter than the card in dark mode, so that the grid reads
     const rows = gridValues.map((r, d) => `<tr style="height:15px"><td ${ts('10px', 400, C.muted, C.font, 'padding-right:4px;line-height:1')}>${esc(days[d])}</td>${r.map((y) => y
       ? `<td bgcolor="${mixHex(C.soft, C.accentDeep, 0.15 + 0.85 * (y / max))}">&nbsp;</td>`
-      : `<td class="sk-bg" bgcolor="${C.page}">&nbsp;</td>`).join('')}</tr>`);
+      : `<td class="sk-he" bgcolor="${C.page}">&nbsp;</td>`).join('')}</tr>`);
     return `<table role="presentation" width="100%" cellpadding="0" cellspacing="2" border="0" style="font-size:0;line-height:0">${head}${rows.join('')}</table>`;
   };
 
@@ -204,7 +205,7 @@ export function mailKit(C: Palette, texts: Texts) {
 
   /** Style sheet: phone layout and dark mode (clients that read it; the others keep the inline styles). */
   const css = () => {
-    const dark = `.sk-bg{background:${D.page}!important;background-color:${D.page}!important}.sk-card{background:${D.card}!important;background-color:${D.card}!important;border-color:${D.line}!important}.sk-soft{background:${D.soft}!important;background-color:${D.soft}!important}.sk-ink{color:${D.ink}!important}.sk-tx{color:${D.text}!important}.sk-mu{color:${D.muted}!important}.sk-ac{color:${D.accent}!important}.sk-up{color:${D.up}!important}.sk-dn{color:${D.down}!important}.sk-bd{border-color:${D.line}!important}.sk-warn{background:#3a2f16!important;background-color:#3a2f16!important}.sk-wi{color:#ffd98c!important}.sk-b1{background:${D.accent}!important;background-color:${D.accent}!important}.sk-b0{background:${mixHex(D.line, D.muted, 0.4)}!important;background-color:${mixHex(D.line, D.muted, 0.4)}!important}`;
+    const dark = `.sk-bg{background:${D.page}!important;background-color:${D.page}!important}.sk-card{background:${D.card}!important;background-color:${D.card}!important;border-color:${D.line}!important}.sk-soft{background:${D.soft}!important;background-color:${D.soft}!important}.sk-ink{color:${D.ink}!important}.sk-tx{color:${D.text}!important}.sk-mu{color:${D.muted}!important}.sk-ac{color:${D.accent}!important}.sk-up{color:${D.up}!important}.sk-dn{color:${D.down}!important}.sk-bd{border-color:${D.line}!important}.sk-he{background:${mixHex(D.card, '#ffffff', 0.08)}!important;background-color:${mixHex(D.card, '#ffffff', 0.08)}!important}.sk-warn{background:#3a2f16!important;background-color:#3a2f16!important}.sk-wi{color:#ffd98c!important}.sk-b1{background:${D.accent}!important;background-color:${D.accent}!important}.sk-b0{background:${mixHex(D.line, D.muted, 0.4)}!important;background-color:${mixHex(D.line, D.muted, 0.4)}!important}`;
     const ogsc = dark.replace(/\.sk-/g, '[data-ogsc] .sk-');
     return `<style>:root{color-scheme:light dark;supported-color-schemes:light dark}@media only screen and (max-width:600px){.sk-px{padding-left:10px!important;padding-right:10px!important}.sk-in{padding:14px!important}.sk-q{display:inline-block!important;width:50%!important;box-sizing:border-box}.sk-col{display:block!important;width:100%!important;box-sizing:border-box;padding:0 0 12px 0!important}.sk-pr{padding-bottom:4px!important}.sk-h1{font-size:22px!important}.sk-fig{font-size:24px!important}}@media (prefers-color-scheme:dark){${dark}}${ogsc}</style>`;
   };

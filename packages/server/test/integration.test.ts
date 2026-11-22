@@ -254,7 +254,7 @@ describe('report', () => {
     for (const s of ['href="https://www.example.test/admin/requests?a=1&#38;b=2"', '>Open the requests</a>', 'href="https://www.example.test/admin/google"', 'Google page of the administration →', 'href="https://www.example.test/admin/youtube"', 'YouTube page of the administration →', 'Countries (Google)', 'France']) expect(m.html).toContain(s);
     expect(m.text).toContain('To handle: 3 (pending) https://www.example.test/admin/requests?a=1&b=2');
     expect(m.text).toContain('COUNTRIES (GOOGLE)');
-    expect(m.attachments.map((a) => [a.cid, a.filename])).toEqual([['stats-kit-logo', 'logo.png'], ['stats-kit-visitors', 'visitors.png'], ['stats-kit-pageviews', 'pageviews.png'], ['stats-kit-visits', 'visits.png'], ['stats-kit-bounce', 'bounce.png'], ['stats-kit-goal-tel', 'goal-tel.png'], ['stats-kit-map', 'map.png']]);
+    expect(m.attachments.map((a) => [a.cid, a.filename])).toEqual([['stats-kit-logo', 'logo.png'], ['stats-kit-visitors', 'visitors.png'], ['stats-kit-pageviews', 'pageviews.png'], ['stats-kit-map', 'map.png']]); // visits, bounce and goals: charts given by the kit (daily, goalSeries)
     for (const s of ['width="760"', 'lang="en-GB"', 'cid:stats-kit-map', 'cid:stats-kit-logo', 'Calls', 'Requests', 'To handle: 3', 'In Google', 'On YouTube', 'Film &#60;1&#62;', 'Subjects', 'Hello,<br>here', 'See all statistics', '<!--[if mso]>', 'Monday']) expect(m.html).toContain(s);
     expect(m.html).not.toMatch(/<script|<svg/i);
     for (const s of ['Visitors: ', 'IN GOOGLE', 'ON YOUTUBE', 'Statistics: https://www.example.test/admin', 'Film <1>: 9 https://youtube.example.test/v']) expect(m.text).toContain(s);

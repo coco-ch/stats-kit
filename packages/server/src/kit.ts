@@ -7,6 +7,7 @@ import { createTexts, type IndexationResponse, type Item, type LiveResponse, typ
 import { buildOverview, siteExtras, sourceVisits, type OverviewOptions } from './overview.ts';
 import { gscClient, gscConfigured, emptySearch, searchPeriod, type GscClient, type GscConfig } from './gsc.ts';
 import { Cache, errorMessage, type Fetch } from './http.ts';
+import { dailyVisits, goalSeries } from './report/daily.ts';
 import { buildReport, previewHtml, type ReportBlock, type ReportMessage } from './report/report.ts';
 import { loadWorld, worldFile } from './report/map-png.ts';
 import type { ReportTheme } from './report/theme.ts';
@@ -201,10 +202,12 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
         console.error('[stats-kit] report blocks', e);
       }
     }
+    // visits and bounces day by day, occurrences of the goals: the charts of these figures
+    const daily = umami ? await dailyVisits(umami, o) : null;
     const extra = r.texts ? await r.texts() : null;
     const reportTexts = extra ? createTexts(config.locale ?? 'en', mergeOverrides(config.texts, extra), config.baseTexts) : texts;
     return buildReport({
-      overview: o, blocks, glance: r.glance, search: withSearch, youtube: withYoutube, youtubeVideos: videos, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
+      overview: o, blocks, glance: r.glance, daily, goalSeries: goalSeries(o, config.goals ?? []), search: withSearch, youtube: withYoutube, youtubeVideos: videos, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
       siteName: config.siteName, statsUrl: r.statsUrl ?? null, searchUrl: r.searchUrl ?? null, youtubeUrl: r.youtubeUrl ?? null, weekly, world: getWorld(),
     });
   }

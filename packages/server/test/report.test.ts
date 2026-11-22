@@ -5,7 +5,7 @@ import { inflateSync } from 'node:zlib';
 import { chromium } from '@playwright/test';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createTexts, formatMoney, mergeLanguages, type Item, type StatsOverview } from 'stats-kit/contract';
-import { buildOverview, buildReport, createStatsKit, gscClient, loadWorld, previewHtml, renderCompare, renderSparkline, resolveRange, umamiClient, youtubeClient, SPARK_HEIGHT, SPARK_WIDTH } from 'stats-kit/server';
+import { buildOverview, buildReport, createStatsKit, dailyVisits, goalSeries, gscClient, loadWorld, previewHtml, renderCompare, renderSparkline, resolveRange, umamiClient, youtubeClient, SPARK_HEIGHT, SPARK_WIDTH } from 'stats-kit/server';
 import { fakeFetch, fakeSources } from '../../../demo/fake/services.ts';
 
 const NOW = Date.parse('2026-11-16T10:30:00Z');
@@ -114,6 +114,27 @@ describe('charts of the key figures (PNG)', () => {
     expect([bars.width, bars.height, bars.colour]).toEqual([SPARK_WIDTH, SPARK_HEIGHT, 6]);
     expect(renderCompare(0, 0, [0, 0, 0], [0, 0, 0])).toBeNull();
     expect(renderCompare(0, 3, [0, 0, 0], [9, 9, 9])).not.toBeNull();
+  });
+});
+
+describe('a chart in every key figure', () => {
+  it('visits and bounce rate day by day, goals from their events; no chart rather than bars', async () => {
+    const kit = createStatsKit({ siteName: 'S', timeZone: 'Europe/Paris', umami: sources.umami, fetch: fake, now: () => NOW, goals: [{ id: 'calls', label: 'Calls', events: ['phone-click'] }, { id: 'none', label: 'None', events: ['nothing'] }] });
+    const week = await kit.report({ days: '7' }, true);
+    expect(week.attachments.map((a) => a.cid).filter((c) => c !== 'stats-kit-map')).toEqual(['stats-kit-visitors', 'stats-kit-pageviews', 'stats-kit-visits', 'stats-kit-bounce', 'stats-kit-goal-calls']);
+    // one Umami call per day of the period, the first and last days cut at the period's bounds
+    const o = await kit.overview({ days: '7' });
+    const calls: string[] = [];
+    const daily = await dailyVisits(umamiClient(sources.umami, async (url, init) => (url.includes('/stats?') && calls.push(url), fake(url, init))), o);
+    expect([daily?.visits.length, calls.length, daily!.visits.every((v) => v > 0), daily!.bounces.every((b, i) => b <= daily!.visits[i])]).toEqual([8, 8, true, true]);
+    expect(goalSeries(o, [{ id: 'calls', events: ['phone-click'] }]).calls).toEqual(o.eventSeries!['phone-click']);
+    expect(goalSeries({ ...o, eventSeries: null }, [{ id: 'calls', events: ['phone-click'] }])).toEqual({});
+    // last 24 hours, long periods, a refused day: no chart (never grey bars)
+    for (const days of ['1', '90']) expect(await dailyVisits(umamiClient(sources.umami, fake), await kit.overview({ days }))).toBeNull();
+    const refused = umamiClient(sources.umami, async (url, init) => (url.includes('/stats?') && url.includes(String(Date.parse(o.range.from))) ? new Response('', { status: 500 }) : fake(url, init)));
+    expect(await dailyVisits(refused, o)).toBeNull();
+    const day = await kit.report({ days: '1' });
+    expect(day.html).not.toContain('cid:stats-kit-visits');
   });
 });
 
@@ -238,12 +259,14 @@ describe('phone and dark mode (rendered in Chrome)', () => {
         body: getComputedStyle(document.body).backgroundColor,
         card: getComputedStyle(document.querySelector('.sk-card')!).backgroundColor,
         ink: getComputedStyle(document.querySelector('.sk-ink')!).color,
+        // an empty cell of the heatmap stays lighter than the card (the grid reads on a dark background)
+        empty: getComputedStyle(document.querySelector('td.sk-he')!).backgroundColor,
       }));
       await page.close();
       return c;
     };
-    expect(await colours('light')).toEqual({ body: 'rgb(244, 245, 249)', card: 'rgb(255, 255, 255)', ink: 'rgb(20, 26, 42)' });
-    expect(await colours('dark')).toEqual({ body: 'rgb(17, 19, 24)', card: 'rgb(27, 30, 38)', ink: 'rgb(243, 244, 248)' });
+    expect(await colours('light')).toEqual({ body: 'rgb(244, 245, 249)', card: 'rgb(255, 255, 255)', ink: 'rgb(20, 26, 42)', empty: 'rgb(244, 245, 249)' });
+    expect(await colours('dark')).toEqual({ body: 'rgb(17, 19, 24)', card: 'rgb(27, 30, 38)', ink: 'rgb(243, 244, 248)', empty: 'rgb(45, 48, 55)' });
     expect(html).toContain('[data-ogsc] .sk-ink{');
     expect(html).toContain('<meta name="color-scheme" content="light dark">');
   });

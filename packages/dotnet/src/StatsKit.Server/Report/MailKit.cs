@@ -225,10 +225,11 @@ internal sealed class MailKit(Palette c, Texts texts)
     {
         var max = Math.Max(1, grid.SelectMany(r => r).DefaultIfEmpty(0).Max());
         var head = $"<tr><td width=\"4%\"></td>{string.Concat(Enumerable.Range(0, 24).Select(h => $"<td width=\"4%\" align=\"center\" {Ts("9px/1.4", 400, c.Muted)}>{(h % 3 == 0 ? Esc(Format.Number(texts, h)) : "")}</td>"))}</tr>";
-        // the cells are only coloured (the heatmap has 168 of them): gaps from the table spacing, height on the row
+        // the cells are only coloured (the heatmap has 168 of them): gaps from the table spacing, height on the row; an empty
+        // cell (sk-he) stays a little lighter than the card in dark mode, so that the grid reads
         var rows = grid.Select((r, d) => $"<tr style=\"height:15px\"><td {Ts("10px", 400, c.Muted, c.Font, "padding-right:4px;line-height:1")}>{Esc(days[d])}</td>{string.Concat(r.Select(y => y != 0
             ? $"<td bgcolor=\"{Format.MixHex(c.Soft, c.AccentDeep, 0.15 + 0.85 * (y / max))}\">&nbsp;</td>"
-            : $"<td class=\"sk-bg\" bgcolor=\"{c.Page}\">&nbsp;</td>"))}</tr>");
+            : $"<td class=\"sk-he\" bgcolor=\"{c.Page}\">&nbsp;</td>"))}</tr>");
         return $"<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"2\" border=\"0\" style=\"font-size:0;line-height:0\">{head}{string.Concat(rows)}</table>";
     }
 
@@ -256,7 +257,8 @@ internal sealed class MailKit(Palette c, Texts texts)
     {
         var d = c.Dark;
         var ghost = Format.MixHex(d.Line, d.Muted, 0.4);
-        var dark = $".sk-bg{{background:{d.Page}!important;background-color:{d.Page}!important}}.sk-card{{background:{d.Card}!important;background-color:{d.Card}!important;border-color:{d.Line}!important}}.sk-soft{{background:{d.Soft}!important;background-color:{d.Soft}!important}}.sk-ink{{color:{d.Ink}!important}}.sk-tx{{color:{d.Text}!important}}.sk-mu{{color:{d.Muted}!important}}.sk-ac{{color:{d.Accent}!important}}.sk-up{{color:{d.Up}!important}}.sk-dn{{color:{d.Down}!important}}.sk-bd{{border-color:{d.Line}!important}}.sk-warn{{background:#3a2f16!important;background-color:#3a2f16!important}}.sk-wi{{color:#ffd98c!important}}.sk-b1{{background:{d.Accent}!important;background-color:{d.Accent}!important}}.sk-b0{{background:{ghost}!important;background-color:{ghost}!important}}";
+        var empty = Format.MixHex(d.Card, "#ffffff", 0.08);
+        var dark = $".sk-bg{{background:{d.Page}!important;background-color:{d.Page}!important}}.sk-card{{background:{d.Card}!important;background-color:{d.Card}!important;border-color:{d.Line}!important}}.sk-soft{{background:{d.Soft}!important;background-color:{d.Soft}!important}}.sk-ink{{color:{d.Ink}!important}}.sk-tx{{color:{d.Text}!important}}.sk-mu{{color:{d.Muted}!important}}.sk-ac{{color:{d.Accent}!important}}.sk-up{{color:{d.Up}!important}}.sk-dn{{color:{d.Down}!important}}.sk-bd{{border-color:{d.Line}!important}}.sk-he{{background:{empty}!important;background-color:{empty}!important}}.sk-warn{{background:#3a2f16!important;background-color:#3a2f16!important}}.sk-wi{{color:#ffd98c!important}}.sk-b1{{background:{d.Accent}!important;background-color:{d.Accent}!important}}.sk-b0{{background:{ghost}!important;background-color:{ghost}!important}}";
         var ogsc = dark.Replace(".sk-", "[data-ogsc] .sk-", StringComparison.Ordinal);
         return $"<style>:root{{color-scheme:light dark;supported-color-schemes:light dark}}@media only screen and (max-width:600px){{.sk-px{{padding-left:10px!important;padding-right:10px!important}}.sk-in{{padding:14px!important}}.sk-q{{display:inline-block!important;width:50%!important;box-sizing:border-box}}.sk-col{{display:block!important;width:100%!important;box-sizing:border-box;padding:0 0 12px 0!important}}.sk-pr{{padding-bottom:4px!important}}.sk-h1{{font-size:22px!important}}.sk-fig{{font-size:24px!important}}}}@media (prefers-color-scheme:dark){{{dark}}}{ogsc}</style>";
     }

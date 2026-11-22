@@ -7,12 +7,13 @@
  */
 import {
   bestSlot, browserName, countryName, deviceName, fill, formatDuration, formatNumber, formatPercent, hourName, labelValue, languageName, longDay,
-  mergeLanguages, mixHex, pathOf, percentChange, shortDate, slotLabel, weekdayName,
+  mergeLanguages, pathOf, percentChange, shortDate, slotLabel, weekdayName,
   type Item, type SearchOverview, type StatsOverview, type Texts, type World, type YoutubeOverview,
 } from 'stats-kit/contract';
 import { CARD_INNER, esc, mailKit, type Figure } from './mail-kit.ts';
 import { renderWorldMap } from './map-png.ts';
-import { SPARK_HEIGHT, SPARK_WIDTH, renderCompare, renderSparkline } from './spark-png.ts';
+import type { ReportDaily } from './daily.ts';
+import { SPARK_HEIGHT, SPARK_WIDTH, renderSparkline } from './spark-png.ts';
 import { palette, rgb, type ReportTheme } from './theme.ts';
 
 /** Attachment shown in the message ("cid:"). */
@@ -62,6 +63,10 @@ export interface ReportInput {
   glance?: boolean;
   /** Site-specific cards, shown after the rankings (costs, requests, news of the site…). */
   blocks?: ReportBlock[];
+  /** Visits and bounces day by day (charts of the "Visits" and "Bounce" figures); without them, no chart there. */
+  daily?: ReportDaily | null;
+  /** Occurrences of each goal per slot, by goal id (charts of the goals). */
+  goalSeries?: Record<string, number[]> | null;
 }
 
 /**
@@ -118,15 +123,15 @@ export function buildReport(input: ReportInput): ReportMessage {
 
   // small charts of the figures (attached PNG, transparent background), in the light shade of the brand: readable on a white
   // card and on a dark one
-  const accent = rgb(C.accent), ghost = rgb(mixHex(C.line, C.muted, 0.25));
+  const accent = rgb(C.accent);
   const image = (name: string, png: Uint8Array | null) => {
     if (!png) return '';
     const cid = `stats-kit-${name}`;
     attachments.push({ cid, filename: `${name}.png`, contentType: 'image/png', content: png });
     return K.spark(cid, SPARK_WIDTH, SPARK_HEIGHT);
   };
-  const line = (name: string, values: number[]) => image(name, renderSparkline(values, accent));
-  const compare = (name: string, before: number | null | undefined, now: number) => (before === null || before === undefined ? '' : image(name, renderCompare(before, now, accent, ghost)));
+  const line = (name: string, values: number[] | null | undefined) => (values ? image(name, renderSparkline(values, accent)) : '');
+  const daily = input.daily;
 
   let logo = '';
   const l = C.logo;
@@ -175,8 +180,8 @@ export function buildReport(input: ReportInput): ReportMessage {
     rows.push(K.kpiRow([
       { value: nf(s.visitors), label: R.visitors, sub: K.trend(s.visitors, p?.visitors), image: line('visitors', ser.visitors) },
       { value: nf(s.pageviews), label: R.pageviews, sub: K.trend(s.pageviews, p?.pageviews), image: line('pageviews', ser.pageviews) },
-      { value: nf(s.visits), label: R.visits, sub: K.trend(s.visits, p?.visits), image: compare('visits', p?.visits, s.visits) },
-      { value: bounce, label: R.bounce, sub: K.gap(bounceNow * 100, bounceBefore === null ? null : bounceBefore * 100, 0, texts.common.points, true), image: compare('bounce', bounceBefore, bounceNow) },
+      { value: nf(s.visits), label: R.visits, sub: K.trend(s.visits, p?.visits), image: line('visits', daily?.visits) },
+      { value: bounce, label: R.bounce, sub: K.gap(bounceNow * 100, bounceBefore === null ? null : bounceBefore * 100, 0, texts.common.points, true), image: line('bounce', daily?.visits.map((v, i) => (v ? daily.bounces[i] / v : 0))) },
     ]));
     rows.push(K.card(K.figures([
       { value: avg, label: R.avgDurationLabel, sub: K.trend(avgNow, avgBefore) },
@@ -187,7 +192,7 @@ export function buildReport(input: ReportInput): ReportMessage {
       lv(R.visits, `${nf(s.visits)}${t(s.visits, p?.visits)}`), lv(R.bounce, `${bounce}${tpts(bounceNow * 100, bounceBefore === null ? null : bounceBefore * 100, 0)}`),
       lv(R.avgDurationLabel, `${avg}${t(avgNow, avgBefore)}`), lv(R.pagesPerVisit, `${nf(ppvNow, 1)}${t(ppvNow, ppvBefore)}`), lv(R.visitsPerVisitor, `${nf(vpvNow, 1)}${t(vpvNow, vpvBefore)}`));
     if (o.goals.length) {
-      rows.push(K.kpiRow(o.goals.map((g) => ({ value: nf(g.value), label: g.label, sub: K.trend(g.value, g.previous), image: compare(`goal-${g.id.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`, g.previous, g.value) }))));
+      rows.push(K.kpiRow(o.goals.map((g) => ({ value: nf(g.value), label: g.label, sub: K.trend(g.value, g.previous), image: line(`goal-${g.id.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`, input.goalSeries?.[g.id]) }))));
       for (const g of o.goals) text.push(lv(g.label, `${nf(g.value)}${t(g.value, g.previous)}`));
     }
   } else {

@@ -122,8 +122,10 @@ public sealed class StatsKitServer
             foreach (var (path, value) in extra) merged[path] = value;
             texts = Texts.Create(_options.Locale, merged, _options.BaseTexts);
         }
+        // visits and bounces day by day, occurrences of the goals: the charts of these figures
+        var daily = Umami is null ? null : await Daily.VisitsAsync(Umami, o, ct).ConfigureAwait(false);
         return ReportBuilder.Build(o, texts, r.Theme, _options.SiteName, r.StatsUrl, weekly, _options.WorldMap, r.Glance, blocks,
-            sources?.Search, sources?.Youtube, sources?.Videos, r.SearchUrl, r.YoutubeUrl);
+            sources?.Search, sources?.Youtube, sources?.Videos, r.SearchUrl, r.YoutubeUrl, daily, Daily.GoalSeries(o, _options.Goals));
     }
 
     /// <summary>Builds the report and hands it to <see cref="ReportOptions.Send"/>.</summary>

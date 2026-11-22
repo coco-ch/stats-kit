@@ -66,9 +66,11 @@ public static partial class ReportBuilder
     /// <param name="videos">Most viewed videos of the period.</param>
     /// <param name="searchUrl">Google page of the administration (link at the end of the Google block).</param>
     /// <param name="youtubeUrl">YouTube page of the administration (link at the end of the YouTube block).</param>
+    /// <param name="daily">Visits and bounces day by day (charts of the "Visits" and "Bounce" figures); without them, no chart there.</param>
+    /// <param name="goalSeries">Occurrences of each goal per slot, by goal id (charts of the goals).</param>
     public static ReportMessage Build(StatsOverview o, Texts texts, ReportTheme theme, string siteName, string? statsUrl = null, bool weekly = false, bool worldMap = true,
         bool glance = true, IReadOnlyList<ReportBlock>? blocks = null, SearchOverview? search = null, YoutubeOverview? youtube = null, IReadOnlyList<ReportVideo>? videos = null,
-        string? searchUrl = null, string? youtubeUrl = null)
+        string? searchUrl = null, string? youtubeUrl = null, ReportDaily? daily = null, IReadOnlyDictionary<string, IReadOnlyList<double>>? goalSeries = null)
     {
         string R(string key) => texts["report." + key];
         var c = Palette.From(theme);
@@ -101,7 +103,6 @@ public static partial class ReportBuilder
         // white card and on a dark one
         byte[] Rgb(string hex) => [.. Format.Rgb(hex).Select(v => (byte)v)];
         var accent = Rgb(c.Accent);
-        var ghost = Rgb(Format.MixHex(c.Line, c.Muted, 0.25));
         string Image(string name, byte[]? png)
         {
             if (png is null) return "";
@@ -109,8 +110,7 @@ public static partial class ReportBuilder
             attachments.Add(new InlineAttachment(cid, $"{name}.png", "image/png", png));
             return MailKit.Spark(cid, SparkPng.Width, SparkPng.Height);
         }
-        string Line(string name, IReadOnlyList<double> values) => Image(name, SparkPng.Sparkline(values, accent));
-        string Compare(string name, double? before, double now) => before is not { } b ? "" : Image(name, SparkPng.Compare(b, now, accent, ghost));
+        string Line(string name, IReadOnlyList<double>? values) => values is null ? "" : Image(name, SparkPng.Sparkline(values, accent));
 
         var logo = "";
         if (c.Logo is { } l)
@@ -171,8 +171,8 @@ public static partial class ReportBuilder
             rows.Add(k.KpiRow([
                 new(Nf(s.Visitors), R("visitors"), k.Trend(s.Visitors, p?.Visitors), Line("visitors", ser.Visitors)),
                 new(Nf(s.Pageviews), R("pageviews"), k.Trend(s.Pageviews, p?.Pageviews), Line("pageviews", ser.Pageviews)),
-                new(Nf(s.Visits), R("visits"), k.Trend(s.Visits, p?.Visits), Compare("visits", p?.Visits, s.Visits)),
-                new(bounce, R("bounce"), k.Gap(bounceNow * 100, bounceBefore is { } bb ? bb * 100 : null, 0, texts["common.points"], true), Compare("bounce", bounceBefore, bounceNow)),
+                new(Nf(s.Visits), R("visits"), k.Trend(s.Visits, p?.Visits), Line("visits", daily?.Visits)),
+                new(bounce, R("bounce"), k.Gap(bounceNow * 100, bounceBefore is { } bb ? bb * 100 : null, 0, texts["common.points"], true), Line("bounce", daily is null ? null : [.. daily.Visits.Select((v, i) => v != 0 ? daily.Bounces[i] / v : 0)])),
             ]));
             rows.Add(k.Card(k.Figures([
                 new(avg, R("avgDurationLabel"), k.Trend(avgNow, avgBefore)),
@@ -188,7 +188,7 @@ public static partial class ReportBuilder
             text.Add(Lv(R("visitsPerVisitor"), $"{Nf(vpvNow, 1)}{T(vpvNow, vpvBefore)}"));
             if (o.Goals.Count > 0)
             {
-                rows.Add(k.KpiRow(o.Goals.Select(goal => new Figure(Nf(goal.Value), goal.Label, k.Trend(goal.Value, goal.Previous), Compare($"goal-{NotId().Replace(goal.Id.ToLowerInvariant(), "-")}", goal.Previous, goal.Value)))));
+                rows.Add(k.KpiRow(o.Goals.Select(goal => new Figure(Nf(goal.Value), goal.Label, k.Trend(goal.Value, goal.Previous), Line($"goal-{NotId().Replace(goal.Id.ToLowerInvariant(), "-")}", goalSeries?.GetValueOrDefault(goal.Id))))));
                 foreach (var goal in o.Goals) text.Add(Lv(goal.Label, $"{Nf(goal.Value)}{T(goal.Value, goal.Previous)}"));
             }
         }
