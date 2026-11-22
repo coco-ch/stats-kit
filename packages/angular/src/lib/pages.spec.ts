@@ -57,6 +57,8 @@ describe('Statistics page', () => {
     for (const s of ['Statistics', 'Audience', 'Engagement', 'Recent days', 'Visitors, last 7 days', 'Page views, last 7 days', 'vs the 7 days before', 'Goals', 'Site data', 'Requests received', 'Page views and visitors per day', 'What visitors do', 'Where visits come from', 'Last 24 hours', 'When do they come?', 'Most viewed pages', 'Product pages', 'Acquisition channels', 'Traffic sources', 'Regions', 'Browsers', 'Visitor actions', 'Requests by subject', 'Latest sessions', 'Open Umami']) expect(t).toContain(s);
     expect(el.getAttribute('data-sk-mode')).toMatch(/light|dark/);
     expect(el.querySelectorAll('sk-metric-table').length).toBeGreaterThan(15);
+    // no empty table header (axe-core "empty-table-header"): the hidden data tables of the charts name their first column too
+    expect([...el.querySelectorAll('th')].filter((th) => !text(th))).toEqual([]);
     expect(el.querySelectorAll('.sk-funnel li')).toHaveLength(4);
     expect(el.querySelectorAll('.sk-sessions tbody tr')).toHaveLength(12);
     expect(t).toMatch(/\d active visitors/);

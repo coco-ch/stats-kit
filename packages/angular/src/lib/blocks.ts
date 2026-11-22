@@ -323,7 +323,7 @@ export class SkMetricTable {
     </div>
     <div class="sk-sr"><table>
       <caption>{{ title() }}</caption>
-      <thead><tr><th scope="col"></th><th scope="col">{{ barLabel() }}</th>@if (line().length) { <th scope="col">{{ lineLabel() }}</th> }@if (prev().length) { <th scope="col">{{ T().common.previousPeriod }}</th> }</tr></thead>
+      <thead><tr><th scope="col">{{ T().periods.label }}</th><th scope="col">{{ barLabel() }}</th>@if (line().length) { <th scope="col">{{ lineLabel() }}</th> }@if (prev().length) { <th scope="col">{{ T().common.previousPeriod }}</th> }</tr></thead>
       <tbody>@for (s of slots(); track s; let i = $index) { <tr><th scope="row">{{ label(s) }}</th><td>{{ bar()[i] ?? 0 }}</td>@if (line().length) { <td>{{ line()[i] ?? 0 }}</td> }@if (prev().length) { <td>{{ prev()[i] ?? 0 }}</td> }</tr> }</tbody>
     </table></div>
     @if (foot()) { <p class="sk-tc__foot">{{ foot() }}</p> }

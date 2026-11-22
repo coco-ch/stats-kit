@@ -90,6 +90,10 @@ public sealed class ReportTheme
     public string Brand { get; set; } = "#2f5bd3";
     /// <summary>Header colour (default: <see cref="Brand"/>).</summary>
     public string? Head { get; set; }
+    /// <summary>Background of a highlighted site tile's line (requests to handle…), "#rrggbb" (default: amber).</summary>
+    public string? WarnSoft { get; set; }
+    /// <summary>Text of a highlighted site tile's line (default: dark amber).</summary>
+    public string? WarnInk { get; set; }
     /// <summary>Header text.</summary>
     public string? HeadText { get; set; }
     /// <summary>Header secondary text.</summary>

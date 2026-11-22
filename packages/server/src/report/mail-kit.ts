@@ -103,7 +103,7 @@ export function mailKit(C: Palette, texts: Texts) {
     `<tr><td style="padding:0 24px 16px 24px"><table ${T} bgcolor="${C.head}" style="background:${C.head};border-radius:16px"><tr><td style="padding:26px 28px">${logo ? `<div style="margin-bottom:14px">${logo}</div>` : ''}<div style="${font('12px', 700, C.eyebrow)};letter-spacing:0.14em;text-transform:uppercase">${esc(eyebrow)}</div><div style="${font('26px/1.2', 800, C.headText, C.display)};margin-top:8px;letter-spacing:-0.02em">${esc(title)}</div><div style="${font('14px', 400, C.headMuted)};margin-top:6px">${esc(subtitle)}</div></td></tr></table></td></tr>`;
 
   const note = (text: string) => `<tr><td style="padding:0 24px 16px;${font('13px/1.5', 400, C.muted)}">${esc(text)}</td></tr>`;
-  const callout = (html: string) => `<tr><td style="padding:0 24px 16px"><table ${T} style="background:${C.soft};border-radius:12px"><tr><td style="padding:14px 16px;${font('14px/1.5', 400, C.ink)}">${html}</td></tr></table></td></tr>`;
+  const callout = (html: string) => `<tr><td style="padding:0 24px 16px"><table ${T} style="background:${C.warnSoft};border-radius:12px"><tr><td style="padding:14px 16px;${font('14px/1.5', 400, C.warnInk)}">${html}</td></tr></table></td></tr>`;
   const paragraph = (text: string) => `<tr><td style="padding:0 24px 16px;${font('15px/1.6', 400, C.ink)}">${escLines(text)}</td></tr>`;
   const footer = (text: string) => `<tr><td align="center" style="padding:14px 24px 0;${font('12px/1.6', 400, C.muted)}">${escLines(text)}</td></tr>`;
 

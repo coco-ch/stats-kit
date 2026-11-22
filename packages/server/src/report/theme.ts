@@ -25,6 +25,9 @@ export interface ReportTheme {
   font?: string;
   /** Font stack of titles and figures. */
   display?: string;
+  /** Highlighted site data (requests to handle…): background and text of its line (default: amber, as on the Statistics page). */
+  warnSoft?: string;
+  warnInk?: string;
   /** Colours of the PNG world map, "#rrggbb" (default: derived from `brand`): sea, land, borders, few visits, many visits. */
   map?: { background?: string; land?: string; border?: string; low?: string; high?: string };
   /** Header logo: PNG attached to the message (`png`) or online image (`url`). */
@@ -58,6 +61,8 @@ export function palette(t: ReportTheme): Palette {
     down: t.down ?? '#b3261e',
     font: t.font ?? "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif",
     display: t.display ?? "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif",
+    warnSoft: hexOr(t.warnSoft, '#fff3d6'),
+    warnInk: hexOr(t.warnInk, '#5a3b00'),
     logo: t.logo ?? null,
     map: {
       background: hexOr(t.map?.background, mixHex(brand, '#ffffff', 0.94)),

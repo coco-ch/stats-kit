@@ -268,6 +268,10 @@ describe('report', () => {
     const base = Buffer.from(png());
     expect(Buffer.from(png({ background: '#e9eefa', land: '#d0d7ea', border: '#fafbff', low: '#96aaeb', high: '#344d9b' })).equals(base)).toBe(false);
     expect(Buffer.from(png({ background: 'blue', low: '#12345' })).equals(base)).toBe(true);
+    // highlighted site data in amber by default, colours given by the site otherwise
+    const { o: full0 } = await full();
+    expect(buildReport({ overview: full0, texts, theme: { brand: '#344d9b' }, siteName: 'S', world: null }).html).toContain('background:#fff3d6');
+    expect(buildReport({ overview: full0, texts, theme: { brand: '#344d9b', warnSoft: '#ffeeaa', warnInk: 'x' }, siteName: 'S', world: null }).html).toMatch(/background:#ffeeaa[^>]*><tr><td style="padding:14px 16px;[^"]*color:#5a3b00/);
   });
   it('in French and in German, with the punctuation and formats of each language', async () => {
     const { o, search, youtube } = await full();
@@ -284,7 +288,7 @@ describe('report', () => {
   it('no hard-coded text: with a pseudo-locale, nothing Latin remains in the HTML or in the text version', async () => {
     const { o, search, youtube } = await full();
     const m = buildReport({ overview: scrub(o), search: scrub(search), youtube: scrub(youtube), youtubeTop: { title: '‡', url: 'ж', views: 9 }, texts: pseudoTexts(), theme: { brand: '#1d3c9c', logo: { png: new Uint8Array([1]), alt: '‡' } }, siteName: '‡', statsUrl: 'https://x', searchUrl: 'https://x', youtubeUrl: 'https://x', weekly: true, world: null, blocks: [{ title: '‡', hint: '‡', figures: [{ value: '‡', label: '‡', sub: '‡' }], lines: ['‡'] }] });
-    const visible = m.html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ');
+    const visible = m.html.replace(/<style>[\s\S]*?<\/style>/g, '').replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ');
     const attributes = [...m.html.matchAll(/\s(?:alt|title)="([^"]*)"/g)].map((x) => x[1]).join(' ');
     expect(latin(visible)).toEqual([]);
     expect(latin(attributes)).toEqual([]);

@@ -6,7 +6,7 @@ namespace StatsKit.Report;
 /// <summary>Complete theme of the report, all shades computed.</summary>
 internal sealed record Palette(
     string Brand, string Head, string HeadText, string HeadMuted, string Eyebrow, string Accent, string AccentDeep, string Soft, string Ink, string Text,
-    string Muted, string Line, string Page, string Card, string Up, string Down, string Font, string Display, ReportLogo? Logo)
+    string Muted, string Line, string Page, string Card, string Up, string Down, string Font, string Display, ReportLogo? Logo, string WarnSoft = "#fff3d6", string WarnInk = "#5a3b00")
 {
     private static readonly Regex Hex = new("^#[0-9a-f]{6}$", RegexOptions.IgnoreCase);
     private const string Fonts = "-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
@@ -16,7 +16,8 @@ internal sealed record Palette(
         var brand = Hex.IsMatch(t.Brand) ? t.Brand : "#2f5bd3";
         return new Palette(brand, t.Head ?? brand, t.HeadText ?? "#ffffff", t.HeadMuted ?? Format.MixHex(brand, "#ffffff", 0.82), t.Eyebrow ?? Format.MixHex(brand, "#ffffff", 0.7),
             t.Accent ?? Format.MixHex(brand, "#ffffff", 0.35), brand, t.Soft ?? Format.MixHex(brand, "#ffffff", 0.85), t.Ink ?? "#141a2a", t.Text ?? "#252d40",
-            t.Muted ?? "#5a6274", t.Line ?? "#e3e6ee", t.Page ?? "#f4f5f9", t.Card ?? "#ffffff", t.Up ?? "#0b7a5c", t.Down ?? "#b3261e", t.Font ?? Fonts, t.Display ?? Fonts, t.Logo);
+            t.Muted ?? "#5a6274", t.Line ?? "#e3e6ee", t.Page ?? "#f4f5f9", t.Card ?? "#ffffff", t.Up ?? "#0b7a5c", t.Down ?? "#b3261e", t.Font ?? Fonts, t.Display ?? Fonts, t.Logo,
+            t.WarnSoft is { } ws && Hex.IsMatch(ws) ? ws : "#fff3d6", t.WarnInk is { } wi && Hex.IsMatch(wi) ? wi : "#5a3b00");
     }
 }
 
@@ -126,7 +127,7 @@ internal sealed class MailKit(Palette c, Texts texts)
         $"<tr><td style=\"padding:0 24px 16px 24px\"><table {T} bgcolor=\"{c.Head}\" style=\"background:{c.Head};border-radius:16px\"><tr><td style=\"padding:26px 28px\">{(logo.Length > 0 ? $"<div style=\"margin-bottom:14px\">{logo}</div>" : "")}<div style=\"{Font("12px", 700, c.Eyebrow)};letter-spacing:0.14em;text-transform:uppercase\">{Esc(eyebrow)}</div><div style=\"{Font("26px/1.2", 800, c.HeadText, c.Display)};margin-top:8px;letter-spacing:-0.02em\">{Esc(title)}</div><div style=\"{Font("14px", 400, c.HeadMuted)};margin-top:6px\">{Esc(subtitle)}</div></td></tr></table></td></tr>";
 
     public string Note(string text) => $"<tr><td style=\"padding:0 24px 16px;{Font("13px/1.5", 400, c.Muted)}\">{Esc(text)}</td></tr>";
-    public string Callout(string html) => $"<tr><td style=\"padding:0 24px 16px\"><table {T} style=\"background:{c.Soft};border-radius:12px\"><tr><td style=\"padding:14px 16px;{Font("14px/1.5", 400, c.Ink)}\">{html}</td></tr></table></td></tr>";
+    public string Callout(string html) => $"<tr><td style=\"padding:0 24px 16px\"><table {T} style=\"background:{c.WarnSoft};border-radius:12px\"><tr><td style=\"padding:14px 16px;{Font("14px/1.5", 400, c.WarnInk)}\">{html}</td></tr></table></td></tr>";
     public string Paragraph(string text) => $"<tr><td style=\"padding:0 24px 16px;{Font("15px/1.6", 400, c.Ink)}\">{EscLines(text)}</td></tr>";
     public string Footer(string text) => $"<tr><td align=\"center\" style=\"padding:14px 24px 0;{Font("12px/1.6", 400, c.Muted)}\">{EscLines(text)}</td></tr>";
 
