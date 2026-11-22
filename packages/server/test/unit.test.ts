@@ -264,6 +264,13 @@ describe('scheduling', () => {
     expect(reportDue(Date.parse('2026-11-18T07:30:00Z'), '2026-W46', s)).toBe('2026-W47'); // catching up in the middle of the week
     expect(reportDue(Date.parse('2026-11-22T07:30:00Z'), null, { ...s, weekday: 7, hour: 10 })).toBeNull();
   });
+  it('does not send out of time: a missed report is caught up only during the first days', () => {
+    expect(reportDue(Date.parse('2026-11-19T07:30:00Z'), null, s)).toBeNull(); // Thursday: too late for week 47
+    expect(reportDue(Date.parse('2026-11-22T13:53:00Z'), null, s)).toBeNull(); // Sunday, fresh install: nothing
+    expect(reportDue(Date.parse('2026-11-23T07:30:00Z'), null, s)).toBe('2026-W48'); // next Monday
+    expect(reportDue(Date.parse('2026-11-17T07:30:00Z'), null, { ...s, catchUpDays: 1 })).toBeNull(); // Tuesday, Monday only
+    expect(reportDue(Date.parse('2026-11-22T13:53:00Z'), null, { ...s, catchUpDays: 7 })).toBe('2026-W47'); // former behaviour
+  });
   it('one pass: sending, failure, new attempt one hour later', async () => {
     let t = Date.parse('2026-11-16T09:00:00Z');
     let last: string | null = null;

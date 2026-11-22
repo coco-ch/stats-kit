@@ -7,6 +7,12 @@ export interface WeeklySchedule {
   /** Hour from which to send (0 to 23). */
   hour: number;
   timeZone: string;
+  /**
+   * Number of days, from the scheduled weekday, during which a missed report is still sent (3 by default: Monday, Tuesday and
+   * Wednesday for a Monday report). Later in the week nothing is sent until the next scheduled day, so a fresh install or a
+   * server started on a Sunday does not send a report out of time. 7 restores the former behaviour (catch up any day).
+   */
+  catchUpDays?: number;
 }
 
 /** Week to send now ("2026-W47"), or `null` if it is not the time or if it has already been sent. */
@@ -14,6 +20,7 @@ export function reportDue(now: number, lastSent: string | null, s: WeeklySchedul
   const p = zonedParts(now, s.timeZone);
   const day = new Date(Date.UTC(p.y, p.m - 1, p.d)).getUTCDay() || 7;
   if (day < s.weekday || (day === s.weekday && p.h < s.hour)) return null;
+  if (day - s.weekday >= Math.max(1, s.catchUpDays ?? 3)) return null;
   const id = weekId(now, s.timeZone);
   return lastSent === id ? null : id;
 }

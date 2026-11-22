@@ -61,7 +61,7 @@ Routes (relative to the mount point): `GET /overview`, `GET /live`, `GET /search
 import { startWeeklyReport } from 'stats-kit/server';
 
 startWeeklyReport({
-  schedule: { weekday: 1, hour: 8, timeZone: 'Europe/Paris' }, // on Mondays from 8 am
+  schedule: { weekday: 1, hour: 8, timeZone: 'Europe/Paris' }, // on Mondays from 8 am; a missed report is caught up until Wednesday (catchUpDays: 3)
   getLastSent: () => myDb.read('report.week'),                 // "2026-W47": once a week only, even with several instances
   setLastSent: (week) => myDb.write('report.week', week),
   send: async () => (await stats.sendReport({ days: 7 }, true)).ok,

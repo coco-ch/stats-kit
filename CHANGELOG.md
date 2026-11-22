@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- **Weekly report**: a missed report is caught up only during the first days of the week (`schedule.catchUpDays`, 3 by default: Monday to Wednesday for a Monday report). Before, a fresh install or a server started on a Sunday sent the current week's report at once, out of time. `catchUpDays: 7` restores the former behaviour. Servers in another language should apply the same rule.
+
 ## 0.2.5
 
 What a site's own statistics page and report had that the library did not, found while moving a consulting firm's site to the library. Backward compatible: nothing to change to upgrade; the report gains two cards by default.
