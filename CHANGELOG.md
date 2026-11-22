@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.3
+
+Follow-up of 0.2.2, found by its own layout check on the end-to-end runners (Linux, whose default fonts are wider). Backward compatible.
+
+### Fixed
+
+- **Tiles**: a long figure ("1 min 36 secs") still overflowed its tile between 768 and 1440 px with wider fonts; it now goes to the line between its words at every width.
+- **Buttons**: in German with enlarged text, a single long word ("Berichtsvorschau") made a button wider than a 320 px screen and the whole page scrolled sideways. Buttons and period buttons stay within their container and may break inside a word; their side padding is capped in pixels.
+- **Heatmap**: with enlarged text on a phone, the hour labels collided; below a width of 15rem (a threshold that grows with the text) only every sixth hour is labelled.
+
+### Changed
+
+- The layout check (`e2e/layout.spec.ts`) runs in a wide font (Verdana, DejaVu Sans), so that it is as strict on Windows and macOS as on Linux.
+
 ## 0.2.2
 
 Layout fixes found with the text enlarged to 200 % on a phone, in an administration console that embeds the three pages. Backward compatible: nothing to change to upgrade; hosts that patched these points in their own styles can drop those rules.
