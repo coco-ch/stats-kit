@@ -7,7 +7,7 @@ test.describe('on a phone', () => {
       await ready(page, `/${tab}`);
       await noHorizontalScroll(page);
       const button = page.locator('main .sk-seg button').first();
-      expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+      expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(48);
     });
   }
   test('accessibility AA', async ({ page }) => {

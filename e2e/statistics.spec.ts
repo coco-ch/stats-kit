@@ -86,9 +86,9 @@ test.describe('Statistics page', () => {
     const svg = page.locator('sk-world-map svg');
     const before = await svg.getAttribute('viewBox');
     await page.locator('sk-world-map').getByRole('button', { name: 'Zoom in', exact: true }).click();
-    expect(await svg.getAttribute('viewBox')).not.toBe(before);
+    await expect(svg).not.toHaveAttribute('viewBox', before!); // retried: the view is redrawn after the click
     await page.locator('sk-world-map').getByRole('button', { name: 'Reset view' }).click();
-    expect(await svg.getAttribute('viewBox')).toBe(before);
+    await expect(svg).toHaveAttribute('viewBox', before!);
     await page.locator('sk-world-map path.sk-map__on').first().hover();
     await expect(page.locator('.sk-map__tip')).toContainText('visits');
   });

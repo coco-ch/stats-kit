@@ -9,7 +9,7 @@ import { StatsKitApi, injectOptions, resolveTexts, worldAddress } from './config
 
 /** List in the locale ("France, Spain and Italy"), with a plain fallback where Intl.ListFormat is missing. */
 const list = (locale: string, items: string[]): string => (typeof Intl.ListFormat === 'function' ? new Intl.ListFormat(locale, { type: 'unit' }).format(items) : items.join(', '));
-import { TOKENS } from './theme';
+import { PHONE, TOKENS } from './theme';
 
 const WIDTH = 1000;
 const HEIGHT = Math.round(WIDTH * MAP_RATIO);
@@ -49,12 +49,12 @@ interface Shape { iso: string; d: string; n: number }
     .sk-map__land { fill: var(--k-map-land); stroke: var(--k-map-border); stroke-width: .5; vector-effect: non-scaling-stroke; }
     .sk-map__on:hover { stroke: var(--k-ink); stroke-width: 1.2; }
     .sk-map__dot { fill: var(--k-map-hi); stroke: var(--k-card); }
-    .sk-map__tip { position: absolute; left: .5rem; top: .5rem; padding: .25rem .55rem; font-size: .8rem; font-weight: 600; color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line); border-radius: 6px; box-shadow: var(--k-shadow); pointer-events: none; }
+    .sk-map__tip { position: absolute; left: .5rem; top: .5rem; max-width: calc(100% - 1rem); overflow-wrap: anywhere; padding: .25rem .55rem; font-size: .8rem; font-weight: 600; color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line); border-radius: 6px; box-shadow: var(--k-shadow); pointer-events: none; }
     .sk-map__zoom { position: absolute; right: .5rem; bottom: .5rem; display: grid; gap: 4px; }
     .sk-map__zoom button { width: 32px; height: 32px; font: inherit; font-size: 1rem; font-weight: 700; line-height: 1; color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: 6px; cursor: pointer; }
     .sk-map__zoom button:hover { color: var(--k-brand); border-color: var(--k-brand); }
     .sk-map__zoom button:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
-    @media (max-width: 700px) { .sk-map__zoom button { width: 44px; height: 44px; } }
+    @media (max-width: ${PHONE}px) { .sk-map__zoom { grid-auto-flow: column; } .sk-map__zoom button { width: 48px; height: 48px; } }
     @media print { .sk-map__land, .sk-map__dot { print-color-adjust: exact; } }
   `],
 })

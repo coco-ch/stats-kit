@@ -13,7 +13,7 @@ import {
 import { SkHeatmap, SkMetricTable, SkTileGroups, SkTrendChart, type Col, type MRow, type TileData } from './blocks';
 import { SkWorldMap } from './world-map';
 import { StatsKitApi, download, injectOptions, loadOnSource, resolveTexts } from './config';
-import { LAYOUT, TOKENS, resolvedMode, type HeadingLevel, type ThemeChoice } from './theme';
+import { LAYOUT, PHONE, TOKENS, resolvedMode, type HeadingLevel, type ThemeChoice } from './theme';
 
 interface Block { id: string; section: Section; title: string; sub?: string; head: string; cols: Col[]; rows: MRow[]; limit?: number }
 
@@ -27,44 +27,44 @@ const today = () => new Date().toISOString().slice(0, 10);
   host: { '[attr.data-sk-mode]': 'mode()' },
   styles: [TOKENS, LAYOUT, `
     .sk-live { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
-    .sk-badge { display: inline-flex; align-items: center; gap: .45rem; padding: .25rem .7rem; border-radius: 999px; font-size: .82rem; font-weight: 600; background: var(--k-up-soft); color: var(--k-up); }
-    .sk-badge i { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: sk-pulse 2s ease-in-out infinite; }
+    .sk-badge { display: inline-flex; align-items: center; gap: .45rem; max-width: 100%; overflow-wrap: anywhere; padding: .25rem .7rem; border-radius: 999px; font-size: .82rem; font-weight: 600; background: var(--k-up-soft); color: var(--k-up); }
+    .sk-badge i { flex: none; width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: sk-pulse 2s ease-in-out infinite; }
     .sk-badge--stale { background: var(--k-warn-soft); color: var(--k-warn); }
     .sk-badge--stale i { animation: none; }
     @media (prefers-reduced-motion: reduce) { .sk-badge i { animation: none; } }
     @keyframes sk-pulse { 50% { opacity: .35; } }
-    .sk-pause { width: 34px; height: 34px; display: inline-grid; place-items: center; font-size: .65rem; color: var(--k-ink2); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: 50%; cursor: pointer; }
+    .sk-pause { flex: none; width: 34px; height: 34px; display: inline-grid; place-items: center; font-size: .65rem; color: var(--k-ink2); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: 50%; cursor: pointer; }
     .sk-pause:hover { color: var(--k-brand); border-color: var(--k-brand); }
     .sk-pause:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
     .sk-geo { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: var(--k-gap); align-items: start; }
     @media (max-width: 1000px) { .sk-geo { grid-template-columns: minmax(0, 1fr); } }
     .sk-map-card { display: grid; gap: .75rem; }
     .sk-map-card__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; }
-    .sk-legend { display: inline-flex; align-items: center; gap: .5rem; font-size: .76rem; font-weight: 600; color: var(--k-ink2); }
-    .sk-legend i { width: 96px; height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--k-map-lo), var(--k-map-hi)); }
+    .sk-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; max-width: 100%; font-size: .76rem; font-weight: 600; color: var(--k-ink2); }
+    .sk-legend i { width: clamp(32px, 20vw, 96px); height: 10px; border-radius: 5px; background: linear-gradient(90deg, var(--k-map-lo), var(--k-map-hi)); }
     .sk-funnel { display: grid; gap: 1rem; margin: .75rem 0 0; padding: 0; list-style: none; }
     .sk-funnel li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .25rem .75rem; align-items: baseline; font-size: .875rem; }
-    .sk-funnel__label { font-weight: 600; }
-    .sk-funnel__val { text-align: right; }
+    .sk-funnel__label { min-width: 0; font-weight: 600; overflow-wrap: anywhere; }
+    .sk-funnel__val { min-width: 0; text-align: right; overflow-wrap: anywhere; }
     .sk-funnel__val b { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
     .sk-funnel small { display: block; color: var(--k-muted); font-size: .76rem; font-weight: 500; }
     .sk-funnel__bar { grid-column: 1 / -1; position: relative; height: 10px; border-radius: 5px; background: var(--k-track); overflow: hidden; }
     .sk-funnel__bar::after { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 5px; background: var(--k-c1); }
-    .sk-hint { margin-top: .75rem; font-size: .78rem; color: var(--k-muted); }
-    .sk-sessions { padding: 1rem; }
+    .sk-hint { margin-top: .75rem; font-size: .78rem; color: var(--k-muted); overflow-wrap: anywhere; }
+    .sk-sessions { overflow-x: auto; }
     .sk-sessions table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: .75rem; }
-    .sk-sessions th, .sk-sessions td { padding: .5rem .5rem; text-align: left; border-bottom: 1px solid var(--k-line); }
+    .sk-sessions th, .sk-sessions td { padding: .5rem .5rem; text-align: left; border-bottom: 1px solid var(--k-line); overflow-wrap: anywhere; }
     .sk-sessions thead th { font-size: .76rem; color: var(--k-muted); }
     .sk-sessions .sk-num { text-align: right; font-variant-numeric: tabular-nums; }
     .sk-sessions tbody tr:last-child > * { border-bottom: 0; }
     @media (max-width: 700px) {
       .sk-sessions thead { display: none; }
-      .sk-sessions tr { display: grid; grid-template-columns: 1fr auto; padding: .5rem 0; border-bottom: 1px solid var(--k-line); }
+      .sk-sessions tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; padding: .5rem 0; border-bottom: 1px solid var(--k-line); }
       .sk-sessions td { border: 0; padding: .1rem 0; }
       .sk-sessions td[data-label]::before { content: attr(data-label) ' '; color: var(--k-muted); font-size: .76rem; }
       .sk-sessions .sk-num { text-align: left; }
-      .sk-pause { width: 44px; height: 44px; }
     }
+    @media (max-width: ${PHONE}px) { .sk-pause { width: 48px; height: 48px; } }
     @media print { .sk-geo, .sk-twin { break-inside: avoid; } .sk-funnel__bar, .sk-funnel__bar::after { print-color-adjust: exact; } }
   `],
   template: `

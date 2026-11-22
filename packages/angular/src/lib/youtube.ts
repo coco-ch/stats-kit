@@ -17,6 +17,7 @@ import { LAYOUT, TOKENS, resolvedMode, type HeadingLevel, type ThemeChoice } fro
     .sk-channel { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
     .sk-channel img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: var(--k-badge); }
     .sk-channel h2 { font-size: 1.15rem; }
+    .sk-channel > div { min-width: 0; }
     .sk-channel .sk-group { margin-left: auto; }
   `],
   template: `
