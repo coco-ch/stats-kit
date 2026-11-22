@@ -18,9 +18,10 @@ What an equipment-rental site's statistics page and weekly report had that the l
 - **Site data**: `extras` is read at every overview instead of being kept with Umami's figures for the cache time (2 minutes): a request received a moment ago shows at once on the page and in a report sent right after.
 - **YouTube**: the labels of the videos (`youtube.videoLabel`) are read at every answer instead of being kept with the channel data for an hour: a site that renames a film, or links a new video to it, sees it at once.
 
-### For a server written in another language (.NET report)
+### .NET server
 
-To give the same report as the Node server: show the `link` of a highlighted site tile at the end of its line ("— Open the requests"), add the links to the Google and YouTube pages at the end of their blocks (`report.googleLink`, `report.youtubeLink`), add the "Countries (Google)" ranking (4 countries by impressions) after the Google queries, and fill `eventSeries` in the overview (Umami `events/series`, same unit and time zone as `series`).
+- Same as Node for the overview: `EventSeries` (Umami `events/series`), site data (`Extras`) read at every overview instead of being kept in the cache, optional `ExtraTile.Link` (left out of the JSON when null) shown at the end of a highlighted tile's line in the report.
+- Still to take over on the .NET side (for the agent in charge of the .NET site): `theme.map` colours of the PNG map, `report.texts` read again at every report (today: options read at start-up), and, once Search Console and YouTube are connected there, the links to the Google and YouTube pages and the "Countries (Google)" ranking.
 
 ## 0.2.6
 
