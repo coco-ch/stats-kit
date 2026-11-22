@@ -139,8 +139,44 @@ public class UnitTests
         Assert.Equal("ok", second.Status);
         Assert.Equal(2, second.Totals.Visitors);
         var calls = fake.Urls.Count;
-        Assert.Same(second, await kit.OverviewAsync(RangeQuery.ForDays(7), Ct));
+        Assert.Same(second.Totals, (await kit.OverviewAsync(RangeQuery.ForDays(7), Ct)).Totals); // Umami's figures come from the cache
         Assert.Equal(calls, fake.Urls.Count);
+    }
+
+    [Fact]
+    public async Task Site_data_is_read_at_every_overview_and_events_are_counted_day_by_day()
+    {
+        var n = 0;
+        var fake = new Fake(r =>
+        {
+            var path = r.RequestUri!.AbsolutePath;
+            if (path.EndsWith("/auth/login")) return Json("{\"token\":\"t\"}");
+            if (path.EndsWith("/stats")) return Json("{\"pageviews\":5,\"visitors\":2}");
+            if (path.EndsWith("/events/series")) return Json("[{\"x\":\"call\",\"t\":\"2026-11-15 00:00:00\",\"y\":2},{\"x\":\"call\",\"t\":\"2026-11-16T00:00:00Z\",\"y\":\"x\"},{\"x\":\"call\",\"t\":\"2026-10-01 00:00:00\",\"y\":9},{\"x\":3,\"t\":\"2026-11-15 00:00:00\",\"y\":1}]");
+            return Json("[]");
+        });
+        var kit = new StatsKitServer(new StatsKitOptions
+        {
+            SiteName = "S", Umami = Account, Clock = new FixedClock(DateTimeOffset.Parse("2026-11-16T10:30:00Z")),
+            Extras = (_, _) => Task.FromResult<Extras?>(new Extras([new ExtraTile("r", "Requests", ++n, null, null, null, false)], [])),
+        }, new HttpClient(fake));
+        var a = await kit.OverviewAsync(RangeQuery.ForDays(7), Ct);
+        var b = await kit.OverviewAsync(RangeQuery.ForDays(7), Ct);
+        Assert.Equal(a.GeneratedAt, b.GeneratedAt);
+        Assert.Equal([1d, 2d], [Convert.ToDouble(a.Extras!.Tiles[0].Value), Convert.ToDouble(b.Extras!.Tiles[0].Value)]);
+        var calls = a.EventSeries!["call"];
+        Assert.Equal(8, calls.Count);
+        Assert.Equal(2, calls[^2]);
+        Assert.Equal(0, calls[^1]);
+        Assert.Single(a.EventSeries);
+    }
+
+    [Fact]
+    public void Link_of_a_highlighted_site_tile_in_the_report_and_its_JSON()
+    {
+        var tile = new ExtraTile("p", "To handle", 3d, Sub: "pending", Highlight: true, Link: new ExtraLink("https://x.test/requests?a=1&b=2", "Open the requests"));
+        Assert.Contains("\"link\":{\"url\":\"https://x.test/requests?a=1&b=2\",\"label\":\"Open the requests\"}", ContractJson.Serialize(tile));
+        Assert.DoesNotContain("link", ContractJson.Serialize(tile with { Link = null }));
     }
 
     [Fact]

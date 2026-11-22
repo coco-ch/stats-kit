@@ -52,14 +52,16 @@ public sealed class StatsKitServer
     private double Now() => _options.Clock.GetUtcNow().ToUnixTimeMilliseconds();
 
     /// <summary>Overview of a period (cached for <see cref="StatsKitOptions.CacheTtl"/>; an answer in error is not kept).</summary>
-    public Task<StatsOverview> OverviewAsync(RangeQuery? q = null, CancellationToken ct = default)
+    public async Task<StatsOverview> OverviewAsync(RangeQuery? q = null, CancellationToken ct = default)
     {
         q ??= new RangeQuery();
         var now = Now();
         var range = Time.ResolveRange(q, _options.TimeZone, now);
         var key = q.From is not null ? $"r:{range.From}:{range.To}" : $"d:{Js.Str(range.Days)}";
-        return _cache.GetAsync($"overview:{key}", _options.CacheTtl.TotalMilliseconds,
-            () => Overview.BuildAsync(Umami, range, _options, _dashboardUrl, now, _logger, ct), o => o.Status != "error");
+        var o = await _cache.GetAsync($"overview:{key}", _options.CacheTtl.TotalMilliseconds,
+            () => Overview.BuildAsync(Umami, range, _options, _dashboardUrl, now, _logger, ct, withExtras: false), x => x.Status != "error").ConfigureAwait(false);
+        // the site's own data (its database) is read at every call, never kept with Umami's figures
+        return o with { Extras = await Overview.SiteExtrasAsync(_options, range, _logger, ct).ConfigureAwait(false) }; // the period as of now
     }
 
     /// <summary>Visitors active right now.</summary>

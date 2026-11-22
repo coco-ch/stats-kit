@@ -156,7 +156,7 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
     // an answer in error (Umami unreachable, refused sign-in…) is not kept: the next call asks Umami again
     const o = await cache.get(`overview:${key}`, ttl, () => buildOverview(umami, range, { ...config, extras: undefined, timeZone: tz, dashboardUrl }, now()), (x) => x.status !== 'error');
     // the site's own data (its database: requests received, to handle…) is read at every call, never kept with Umami's figures
-    return { ...o, extras: await siteExtras({ ...config, timeZone: tz }, o.range) };
+    return { ...o, extras: await siteExtras({ ...config, timeZone: tz }, range) }; // the period as of now, not as of the cached answer
   };
 
   const live = async (): Promise<LiveResponse> => {

@@ -71,6 +71,8 @@ startWeeklyReport({
 
 The preview (`GET /report/preview`) returns the message as it would be sent, images included in the page.
 
+A site tile (`extras.tiles`) may carry a `link` (`{ url, label }`: "Open the requests"): it is shown under the figure on the Statistics page and, for a highlighted tile, at the end of its line in the report.
+
 What the report contains: key figures with their change, goals, site data, an "At a glance" card (top source, country, page and entry page, best day, busiest slot; `report.glance: false` to remove it), the world map, page views per day next to the previous period day by day, the heatmap, Google, YouTube and the rankings. Options of `report`:
 
 ```ts
@@ -78,6 +80,13 @@ report: {
   // …
   // Site-specific cards, after the rankings, in the site's language (costs, requests, news…). A failure only removes them.
   blocks: async (overview) => [{ title: 'Cost of the site', hint: 'Monthly estimate', figures: [{ value: '$14.30', label: 'per month', sub: '$171.60 per year' }], lines: ['No usage-based service'] }],
+  // Texts edited in the site's administration, read again at every report (over `texts`; the pages keep the texts of the creation).
+  texts: async () => ({ report: { subjectWeekly: await myDb.read('report.subject'), intro: await myDb.read('report.intro') } }),
+  // Links at the end of the Google and YouTube blocks, to the pages of the administration.
+  searchUrl: 'https://www.example.org/admin/google',
+  // Colours of the PNG world map (default: derived from theme.brand).
+  // theme: { brand: '#1d3c9c', map: { background: '#e9eefa', land: '#d0d7ea', low: '#96aaeb', high: '#1d3c9c' } },
+  youtubeUrl: 'https://www.example.org/admin/youtube',
 },
 // The subject, title, introduction and footer may use {site}, {period}, {from}, {to}, {days}, and the totals {visitors}, {visits},
 // {pageviews} and {change} (change of visitors, "+12 %"); empty brackets left by a missing {change} are removed from the subject.

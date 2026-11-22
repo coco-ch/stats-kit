@@ -137,8 +137,9 @@ public static partial class ReportBuilder
             var strong = extras.Tiles.Where(x => x.Highlight).ToList();
             if (plain.Count > 0)
                 rows.Add(k.KpiRow(plain.Select(x => (Value(x), x.Label, AsNumber(x.Value) is { } n ? k.Trend(n, x.Previous) : x.Sub is { Length: > 0 } sub ? MailKit.Esc(sub) : ""))));
-            foreach (var x in strong) rows.Add(k.Callout($"<b>{MailKit.Esc(Lv(x.Label, Value(x)))}</b>{(x.Sub is { Length: > 0 } sub ? $" — {MailKit.Esc(sub)}" : "")}"));
-            foreach (var x in extras.Tiles) text.Add($"{Lv(x.Label, Value(x))}{(x.Sub is { Length: > 0 } sub ? $" ({sub})" : "")}");
+            string Link(ExtraTile x) => x.Link is { } l ? $" <a href=\"{MailKit.Esc(l.Url)}\" style=\"color:{c.AccentDeep}\">{MailKit.Esc(l.Label)}</a>" : "";
+            foreach (var x in strong) rows.Add(k.Callout($"<b>{MailKit.Esc(Lv(x.Label, Value(x)))}</b>{(x.Sub is { Length: > 0 } sub ? $" — {MailKit.Esc(sub)}" : "")}{Link(x)}"));
+            foreach (var x in extras.Tiles) text.Add($"{Lv(x.Label, Value(x))}{(x.Sub is { Length: > 0 } sub ? $" ({sub})" : "")}{(x.Highlight && x.Link is { } go ? $" {go.Url}" : "")}");
         }
         rows.Add("<tr><td style=\"font-size:0;line-height:8px\">&nbsp;</td></tr>");
 

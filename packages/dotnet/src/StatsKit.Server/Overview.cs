@@ -131,8 +131,28 @@ internal static partial class Overview
         return new StatsOverview(1, status, error, Js.Iso(now), range, Totals.Zero, null, null,
             EmptySeries(Time.SlotsBetween(from, to, range.Unit, range.TimeZone), range.Unit),
             EmptySeries(Time.SlotsBetween(now - Time.Day, now, "hour", range.TimeZone), "hour"),
-            Heatmap([], range.TimeZone), Breakdowns.Empty, [], [], [], new Counts(null, null), [], null, null);
+            Heatmap([], range.TimeZone), Breakdowns.Empty, [], [], [], new Counts(null, null), [], null, null, null);
     }
+
+    /// <summary>Occurrences of each event per slot (Umami <c>events/series</c>), aligned on the slots; zero where the source has nothing.</summary>
+    internal static OrderedDictionary<string, List<double>> EventSeries(List<string> slots, JsonArray points, string unit, string timeZone)
+    {
+        var at = new Dictionary<string, int>();
+        for (var i = 0; i < slots.Count; i++) at[slots[i]] = i;
+        var output = new OrderedDictionary<string, List<double>>();
+        foreach (var p in points)
+        {
+            if (UmamiClient.Str(UmamiClient.At(p, "x")) is not { } name || UmamiClient.Str(UmamiClient.At(p, "t")) is not { } t) continue;
+            if (!at.TryGetValue(Time.SlotOfLabel(t, unit, timeZone), out var i)) continue;
+            if (!output.TryGetValue(name, out var row)) output[name] = row = [.. slots.Select(_ => 0d)];
+            var y = UmamiClient.Num(UmamiClient.At(p, "y"));
+            row[i] += double.IsFinite(y) ? y : 0;
+        }
+        return output;
+    }
+
+    /// <summary>Site extras, never making the response fail (read at every overview, never kept in the cache).</summary>
+    internal static Task<Extras?> SiteExtrasAsync(StatsKitOptions opts, Range range, ILogger logger, CancellationToken ct) => SiteExtras(opts, range, logger, ct);
 
     private static async Task<T> Settle<T>(Task<T> task, T fallback)
     {
@@ -161,9 +181,9 @@ internal static partial class Overview
     private static KeyValuePair<string, string> P(string k, string v) => new(k, v);
 
     /// <summary>Overview of a period. Without Umami: "not configured" response (with the site data).</summary>
-    internal static async Task<StatsOverview> BuildAsync(UmamiClient? umami, Range range, StatsKitOptions opts, string? dashboardUrl, double now, ILogger logger, CancellationToken ct)
+    internal static async Task<StatsOverview> BuildAsync(UmamiClient? umami, Range range, StatsKitOptions opts, string? dashboardUrl, double now, ILogger logger, CancellationToken ct, bool withExtras = true)
     {
-        var extrasTask = SiteExtras(opts, range, logger, ct);
+        var extrasTask = withExtras ? SiteExtras(opts, range, logger, ct) : Task.FromResult<Extras?>(null);
         if (umami is null) return Empty(range, "not-configured", null, now) with { Extras = await extrasTask.ConfigureAwait(false) };
         var tz = range.TimeZone;
         double from = Js.ParseInstant(range.From), to = Js.ParseInstant(range.To);
@@ -204,7 +224,8 @@ internal static partial class Overview
         var pathXT = Ex("path"); var entryXT = Ex("entry"); var exitXT = Ex("exit");
         var sessionsT = Settle(Get("sessions", [.. Q(from, to), P("pageSize", 12), P("page", 1)]), null);
         var sessionStatsT = Settle(Get("sessions/stats", Q(from, to)), null);
-        await Task.WhenAll(prevStatsT, activeT, seriesT, prevSeriesT, last24T, hourlyT, pathsT, prevPathsT, entriesT, exitsT, referrersT, prevReferrersT, channelsT, prevChannelsT,
+        var evSeriesT = Settle(Get("events/series", [.. Q(from, to), P("unit", unit), P("timezone", tz)]), null);
+        await Task.WhenAll(evSeriesT, prevStatsT, activeT, seriesT, prevSeriesT, last24T, hourlyT, pathsT, prevPathsT, entriesT, exitsT, referrersT, prevReferrersT, channelsT, prevChannelsT,
             countriesT, prevCountriesT, regionsT, citiesT, languagesT, devicesT, browsersT, osT, screensT, eventsT, prevEventsT, hostnamesT, utmST, utmMT, utmCT,
             pathXT, entryXT, exitXT, sessionsT, sessionStatsT).ConfigureAwait(false);
 
@@ -263,6 +284,7 @@ internal static partial class Overview
                     UmamiClient.Str(UmamiClient.At(s, "lastAt")) ?? UmamiClient.Str(UmamiClient.At(s, "createdAt"))))]
                 : [],
             await extrasTask.ConfigureAwait(false),
+            evSeriesT.Result is JsonArray ev ? EventSeries(slots, ev, unit, tz) : null,
             dashboardUrl);
     }
 }

@@ -59,7 +59,8 @@ A third-party server can serve the base map from [`packages/server/assets/world-
 | `goals` | `Goal[]` | goals: `id`, `label`, `value`, `previous` |
 | `counts` | | `countries`, `events`: distinct numbers over the period, or `null` |
 | `sessions` | `Session[]` | recent visits: `country`, `city`, `device`, `browser`, `os`, `views`, `lastAt` |
-| `extras` | `Extras` or `null` | site's own data: `tiles` (`id`, `label`, `value` number or text, `previous`, `sub`, `group`, `highlight`), `tables` (`id`, `title`, `sub`, `head`, `column`, `section`: `pages`, `sources`, `audience` or `actions`, `items`), `funnel` (`{ label, value }`: last step of the funnel) |
+| `extras` | `Extras` or `null` | site's own data: `tiles` (`id`, `label`, `value` number or text, `previous`, `sub`, `group`, `highlight`, optional `link`: `{ url, label }` or `null`, where to act on it), `tables` (`id`, `title`, `sub`, `head`, `column`, `section`: `pages`, `sources`, `audience` or `actions`, `items`), `funnel` (`{ label, value }`: last step of the funnel) |
+| `eventSeries` | object or `null`, optional | occurrences of each tracked event per slot of `series` (same order as `series.slots`), by event name; feeds the "Last 7 days" column of the actions table (periods of more than 7 days, by day). Missing or `null`: no column |
 | `dashboardUrl` | text or `null` | dashboard of the source ("Open Umami" button) |
 
 `Item`: `{ key, label, value, previous }` — `previous` is `null` when the previous period is not requested for this ranking.

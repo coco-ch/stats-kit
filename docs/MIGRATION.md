@@ -26,8 +26,10 @@ Environment variables keep their names (`UMAMI_*`, `GSC_*`, `YOUTUBE_*`): `sourc
 | Page and event labels (`PAGE_LABELS`, `EVENT_LABELS`…) | `pages.labels`, `events.labels` |
 | Product pages, areas, articles counted separately | `pages.groups` (one pattern per group, optional labels) |
 | "Call", "quote", "form sent" events added up | `goals` |
-| Requests received, to handle, call-backs (site database) | `extras`: tiles (highlighted with `highlight`), tables (by subject, by language), last funnel step |
-| Report texts editable in the administration (subject, title, introduction, footer) | `texts.report.subject`, `title`, `intro`, `footer`, read again at every sending (pass a function that recreates the kit, or texts read from the database at start-up); variables `{site}`, `{from}`, `{to}`, `{period}`, `{days}` |
+| Requests received, to handle, call-backs (site database) | `extras`: tiles (highlighted with `highlight`, `link` to the site's list of requests), tables (by subject, by language), last funnel step |
+| Links of the report to the Google and YouTube pages of the administration | `report.searchUrl`, `report.youtubeUrl` |
+| "Last 7 days" column of the actions table | built in (`eventSeries` of the overview) |
+| Report texts editable in the administration (subject, title, introduction, footer) | `texts.report.subject`, `title`, `intro`, `footer`, read again at every report with `report.texts: async () => ({ report: { … } })`; variables `{site}`, `{from}`, `{to}`, `{period}`, `{days}` |
 | Language of the screens and of the report | `locale` (`en`, `fr`, `de`, `es`, `it`, `pt`, `nl`, or a regional tag); in Angular, the application's `LOCALE_ID` by default |
 | Report and map colours | `report.theme.brand` (the rest derives from it), logo through `report.theme.logo` |
 | `stats-kit.ts` / `admin/stats.ts` / `admin/google.ts` / `admin/youtube.ts` / `world-map.ts` | components of `stats-kit/angular` |
@@ -67,7 +69,6 @@ startWeeklyReport({ schedule: { weekday: 1, hour: 8, timeZone: 'Europe/Paris' },
 
 Gaps to know (not taken over, keep them in the site if needed):
 
-- the "last 7 days" column of the actions table (series per event);
 - the "Where do we stand this week?" card of the Google screen;
 - the state of automatic video publishing (publishing file): only the video → content link is taken over (`videoLabel`, `extraVideoIds`).
 

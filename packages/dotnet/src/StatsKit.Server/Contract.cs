@@ -46,9 +46,14 @@ public sealed record Goal(string Id, string Label, double Value, double? Previou
 /// <summary>Group of pages defined by the site.</summary>
 public sealed record ItemGroup(string Id, string Title, IReadOnlyList<Item> Items);
 
+/// <summary>Where to act on a site tile (the site's list of requests…): under the figure on the page, at the end of its line in the report.</summary>
+public sealed record ExtraLink(string Url, string Label);
+
 /// <summary>Figure tile added by the site (data from its own database).</summary>
 /// <param name="Value">A number (<see cref="double"/>, <see cref="int"/>, <see cref="decimal"/>…) or a text already formatted.</param>
-public sealed record ExtraTile(string Id, string Label, object Value, double? Previous = null, string? Sub = null, string? Group = null, bool Highlight = false);
+/// <param name="Link">Optional; left out of the JSON when null.</param>
+public sealed record ExtraTile(string Id, string Label, object Value, double? Previous = null, string? Sub = null, string? Group = null, bool Highlight = false,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ExtraLink? Link = null);
 
 /// <summary>Table added by the site. <paramref name="Section"/>: pages, sources, audience or actions.</summary>
 public sealed record ExtraTable(string Id, string Title, string? Sub, string Head, string Column, string Section, IReadOnlyList<Item> Items);
@@ -76,7 +81,8 @@ public sealed record Counts(double? Countries, double? Events);
 public sealed record StatsOverview(
     int Version, string Status, string? Error, string GeneratedAt, Range Range, Totals Totals, Totals? Previous, double? Active,
     Series Series, Series Last24h, IReadOnlyList<IReadOnlyList<double>> Heatmap, Breakdowns Breakdowns, IReadOnlyList<PageRow> Pages,
-    IReadOnlyList<ItemGroup> Groups, IReadOnlyList<Goal> Goals, Counts Counts, IReadOnlyList<Session> Sessions, Extras? Extras, string? DashboardUrl);
+    IReadOnlyList<ItemGroup> Groups, IReadOnlyList<Goal> Goals, Counts Counts, IReadOnlyList<Session> Sessions, Extras? Extras,
+    IReadOnlyDictionary<string, List<double>>? EventSeries, string? DashboardUrl);
 
 /// <summary>Response of <c>GET {base}/live</c>: active visitors.</summary>
 public sealed record LiveResponse(int Version, double? Active, string At);

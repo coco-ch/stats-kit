@@ -387,6 +387,14 @@ describe('kit and HTTP routes', () => {
     const a = await kit.overview({ days: 7 });
     const b = await kit.overview({ days: 7 });
     expect([a.generatedAt === b.generatedAt, a.extras?.tiles[0].value, b.extras?.tiles[0].value]).toEqual([true, 1, 2]);
+    // a request received after the cached answer counts: the site data covers the period up to now
+    let t = NOW;
+    const ends: string[] = [];
+    const moving = createStatsKit(base({ now: () => t, extras: async (r) => (ends.push(r.to), null) }));
+    await moving.overview({ days: 7 });
+    t += 60_000;
+    await moving.overview({ days: 7 });
+    expect(ends).toEqual([new Date(NOW).toISOString(), new Date(NOW + 60_000).toISOString()]);
     const off = createStatsKit({ siteName: 'S', umami: null, now: () => NOW, extras: async () => ({ tiles: [], tables: [], funnel: { label: 'End', value: 3 } }) });
     expect((await off.overview()).extras?.funnel?.value).toBe(3);
   });

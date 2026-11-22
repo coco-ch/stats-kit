@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.7
+
+What an equipment-rental site's statistics page and weekly report had that the library did not, found while moving it to the library. Backward compatible: nothing to change to upgrade; the new contract fields are optional.
+
+### Added
+
+- **Statistics page**: "Last 7 days" column in the visitor actions table, for periods of more than 7 days counted by day. The overview gains `eventSeries` (occurrences of each event per slot of `series`, from Umami's `events/series`; `null` if Umami refuses it). A server that does not fill it simply has no column.
+- **Site tiles**: optional `link` (`{ url, label }`) on `extras.tiles`, shown under the figure on the Statistics page (48 px tap target on a phone) and, for a highlighted tile, at the end of its line in the report ("3 requests to handle — Open the requests") and in the text version.
+- **Report**: `report.texts`, a function read again at every report, for texts edited in the site's administration (subject, title, introduction, footer…) without recreating the kit; applied over `texts`, section by section. The pages keep the texts given at creation.
+- **Report**: `report.searchUrl` and `report.youtubeUrl`, links at the end of the Google and YouTube blocks to the pages of the administration; "Countries (Google)" ranking next to the Google queries.
+- **Report**: `theme.map` (`background`, `land`, `border`, `low`, `high`, "#rrggbb") sets the colours of the PNG world map; by default they still derive from `brand`.
+- Texts in the eleven languages: `report.googleCountries`, `report.googleCountriesHint`, `report.googleLink`, `report.youtubeLink` (`stats.colLast7` and `stats.colLast7Tip` were already there).
+
+### Changed
+
+- **Site data**: `extras` is read at every overview instead of being kept with Umami's figures for the cache time (2 minutes): a request received a moment ago shows at once on the page and in a report sent right after.
+- **YouTube**: the labels of the videos (`youtube.videoLabel`) are read at every answer instead of being kept with the channel data for an hour: a site that renames a film, or links a new video to it, sees it at once.
+
+### For a server written in another language (.NET report)
+
+To give the same report as the Node server: show the `link` of a highlighted site tile at the end of its line ("— Open the requests"), add the links to the Google and YouTube pages at the end of their blocks (`report.googleLink`, `report.youtubeLink`), add the "Countries (Google)" ranking (4 countries by impressions) after the Google queries, and fill `eventSeries` in the overview (Umami `events/series`, same unit and time zone as `series`).
+
 ## 0.2.6
 
 A .NET server, published as the NuGet package `StatsKit.Server`, and four more languages. Backward compatible: nothing changes for Node sites.
