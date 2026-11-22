@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.2.2
+
+Layout fixes found with the text enlarged to 200 % on a phone, in an administration console that embeds the three pages. Backward compatible: nothing to change to upgrade; hosts that patched these points in their own styles can drop those rules.
+
+### Fixed
+
+- **Tiles**: with enlarged text, labels and figures overflowed their tile and covered the next one. A tile now has a single fluid column, long words break, the figure may go to the line on a phone, and tiles go from two to one per row when two no longer fit (`minmax(min(9rem, 100%), 1fr)` instead of a fixed two-column grid).
+- **Ranking tables**: the head (title, filter, CSV) no longer pushes the filter and the button out of the card: it wraps, and the filter shrinks to the width available. Row labels go to the line instead of being cut with an ellipsis (the full text is visible; long labels make a row taller on a desktop too). The label column has a minimum width of `min(8.5rem, 40vw)` instead of `8.5rem`.
+- **Statistics page**: funnel labels and figures no longer overlap; the latest sessions (cards on a phone) no longer leave the window; the map legend and the live badge wrap.
+- **Inner padding** of cards, tiles, tables and charts is capped in pixels (`min(1rem, 16px)`…): the same as before at the default text size, it no longer doubles with enlarged text.
+- **Headings, leads, notes, status messages**: long words break (`overflow-wrap: anywhere`) instead of leaving the card.
+- **Tap targets**: 48 × 48 px (was 44 px) at 760 px and below (was 700 px) for every control: period buttons, buttons, date fields, CSV button, filter, sort buttons, "Show all", links of the table rows, section links, pause button, map zoom buttons (side by side on a phone).
+
+### Added
+
+- End-to-end layout check (`e2e/layout.spec.ts`, `e2e/layout.ts`): each page in both themes at 320, 375, 412, 768, 1024, 1366, 1440 and 1920 px, then at 320 and 375 px with the text at 200 %, in English and German: no horizontal scrolling, nothing out of the window or of its card, no overlap, no cut text, 48 px tap targets at phone widths.
+- The map zoom end-to-end test waits for the view to be redrawn after a click (it read it too early and failed intermittently).
+
 ## 0.2.1
 
 Fixes found while plugging the library into a multi-site administration console. Backward compatible: nothing to change to upgrade.

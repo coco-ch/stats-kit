@@ -19,7 +19,7 @@ The package installs straight from Git. Two options:
 
 ```sh
 # Released version: the tag contains the packages already built (immediate installation, recommended)
-npm i github:manueldelarque/stats-kit#v0.2.1
+npm i github:manueldelarque/stats-kit#v0.2.2
 
 # Main branch: the packages are built at installation ("prepare" script, one to two minutes)
 npm i github:manueldelarque/stats-kit
@@ -193,6 +193,10 @@ Available variables: `--sk-card`, `--sk-bg`, `--sk-ink`, `--sk-ink-2`, `--sk-mut
 
 The e-mail report has its own theme: `report.theme = { brand, head, ink, muted…, font, display, logo: { png | url, width, alt } }`; only `brand` is required.
 
+### Narrow screens and enlarged text
+
+The components have no fixed width: they fill the width they are given, from 320 px up, also with the text enlarged to 200 % (text size setting of a phone). Long words break, figures and labels go to the line instead of being cut, inner padding is capped in pixels so that it does not grow with the text, tiles go from four to two to one per row, and only the tables of figures scroll sideways, inside their card. At 760 px and below every control (period buttons, CSV, filter, sorting, links of the tables, map zoom) is a 48 × 48 px tap target. The end-to-end tests check it on every page, in both themes, at 320 to 1920 px and at 320 and 375 px with the text at 200 % (`e2e/layout.spec.ts`).
+
 All component classes start with `sk-` and their styles are encapsulated: the site's global styles (`svg { … }`, `.bar`, `.card`…) do not reach them, and vice versa.
 
 ## Upgrading from 0.1.x
@@ -220,7 +224,7 @@ Behaviour changes to check:
 6. **Report**: the map attachment is now `cid:stats-kit-map` / `map.png` (was `stats-kit-carte` / `carte.png`), and `<html lang>` carries the full tag.
 7. **Error messages for developers** (`error` fields of the responses, logs) are in English.
 
-Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.1`. Details: [CHANGELOG.md](CHANGELOG.md).
+Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.2`. Details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 
@@ -228,7 +232,7 @@ Then install the new tag: `npm i github:manueldelarque/stats-kit#v0.2.1`. Detail
 npm install          # dependencies, then build of the packages
 npm test             # server and contract: Vitest, coverage (100 % of lines)
 npm run test:angular # components: Vitest in Angular, coverage (100 % of lines)
-npm run e2e          # demo built, then Playwright (installed Chrome), accessibility included
+npm run e2e          # demo built, then Playwright (installed Chrome), accessibility and layout included
 npm run demo:build && npm run demo   # demo on http://localhost:5317, fake data
 npm run screenshots  # screenshots of the demo in screenshots/
 npm run schema       # regenerates the JSON schema from the types

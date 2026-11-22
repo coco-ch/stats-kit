@@ -1,6 +1,6 @@
 {
   "name": "@stats-kit/angular",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Angular components of stats-kit (built into packages/angular/dist, exposed by the root package as 'stats-kit/angular').",
   "license": "MIT",
   "sideEffects": false,
