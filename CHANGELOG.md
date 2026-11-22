@@ -13,6 +13,10 @@ What a site's own statistics page and report had that the library did not, found
 - **Report**: the totals are available as variables of the subject, title, introduction and footer: `{visitors}`, `{visits}`, `{pageviews}`, `{change}` (change of visitors against the previous period); empty brackets left by a missing `{change}` are removed from the subject.
 - Texts in the seven languages: `stats.groupRecent`, `stats.last7Visitors`, `stats.last7Pageviews`, `stats.vsPrevious7`, `report.glanceTitle`, `report.glanceSource`, `report.glanceCountry`, `report.glancePage`, `report.glanceEntry`, `report.glanceSlot`, `report.dailyCurrent`, `report.dailyPrevious`.
 
+### For servers written in another language (the .NET reference report)
+
+The report is built by the Node server; a site that keeps its own report (the .NET version described in docs/MIGRATION.md) should add the same parts to stay level: the "At a glance" card (top source, country, page, entry page, best day, busiest slot), the previous period day by day next to each bar of the page views per day with its legend, site-specific cards after the rankings, and the totals in the subject. Texts: the `report.glance*` and `report.daily*` keys above. The contract is unchanged.
+
 ## 0.2.4
 
 Font weights and control radii become public variables, for a host with a lighter type scale (an administration console styled after Fluent 2 / Microsoft 365). Backward compatible: the defaults are unchanged.
