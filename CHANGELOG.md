@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.8
+
+Found by the accessibility check of the site moved to the library in 0.2.7. Backward compatible.
+
+### Fixed
+
+- **Charts**: the hidden data table of a chart (read by screen readers) had an empty first column header (axe-core "empty-table-header", best practice); it is now named after the period ("Period").
+
+### Changed
+
+- **Report**: the line of a highlighted site tile (requests to handle…) is amber, as the highlighted tile on the Statistics page, instead of the light brand colour; `theme.warnSoft` and `theme.warnInk` change it. Same in the .NET server (`ReportTheme.WarnSoft`, `WarnInk`).
+
 ## 0.2.7
 
 What an equipment-rental site's statistics page and weekly report had that the library did not, found while moving it to the library. Backward compatible: nothing to change to upgrade; the new contract fields are optional.
