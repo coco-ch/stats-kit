@@ -330,6 +330,16 @@ export class SkStatistics implements OnInit {
         { id: 'duration', group: E, label: S.avgDuration, value: formatDuration(T, ratio(s, 'totaltime', 'visits')), change: p?.visits ? delta(T, ratio(s, 'totaltime', 'visits'), ratio(p, 'totaltime', 'visits')) : null, sub: S.perVisit, spark: '' },
         { id: 'engaged', group: E, label: S.engagedVisits, value: this.fmt(s.visits - s.bounces), change: p ? delta(T, s.visits - s.bounces, p.visits - p.bounces) : null, sub: s.visits ? fill(S.ofVisits, { p: formatPercent(T, (s.visits - s.bounces) / s.visits, 0) }) : '', spark: '' },
       );
+      // last 7 days against the 7 before, when the period has at least 14 days: the recent trend inside a long period
+      if (d.series.unit === 'day' && d.series.slots.length >= 14) {
+        const week = (v: number[]) => [v.slice(-7), v.slice(-14, -7)].map((x) => x.reduce((n, y) => n + y, 0));
+        const R = S.groupRecent;
+        const [vNow, vBefore] = week(d.series.visitors), [pNow, pBefore] = week(d.series.pageviews);
+        out.push(
+          { id: 'last7-visitors', group: R, label: S.last7Visitors, value: this.fmt(vNow), change: delta(T, vNow, vBefore), sub: S.vsPrevious7, spark: '' },
+          { id: 'last7-pageviews', group: R, label: S.last7Pageviews, value: this.fmt(pNow), change: delta(T, pNow, pBefore), sub: S.vsPrevious7, spark: '' },
+        );
+      }
       for (const g of d.goals) out.push({ id: `goal-${g.id}`, group: S.groupGoals, label: g.label, value: this.fmt(g.value), change: delta(T, g.value, g.previous), sub: s.visitors ? fill(S.ofVisitors, { p: formatPercent(T, g.value / s.visitors, 1) }) : '', spark: '' });
       const events = d.breakdowns.events;
       out.push({ id: 'events', group: S.groupGoals, label: S.events, value: this.fmt(d.counts.events ?? events.reduce((n, e) => n + e.value, 0)), change: null, sub: plural(T, events.length, S.eventTypesOne, S.eventTypesOther), spark: '' });

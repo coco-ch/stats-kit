@@ -54,7 +54,7 @@ describe('Statistics page', () => {
     await tick(f);
     worlds(http);
     const t = text(el);
-    for (const s of ['Statistics', 'Audience', 'Engagement', 'Goals', 'Site data', 'Requests received', 'Page views and visitors per day', 'What visitors do', 'Where visits come from', 'Last 24 hours', 'When do they come?', 'Most viewed pages', 'Product pages', 'Acquisition channels', 'Traffic sources', 'Regions', 'Browsers', 'Visitor actions', 'Requests by subject', 'Latest sessions', 'Open Umami']) expect(t).toContain(s);
+    for (const s of ['Statistics', 'Audience', 'Engagement', 'Recent days', 'Visitors, last 7 days', 'Page views, last 7 days', 'vs the 7 days before', 'Goals', 'Site data', 'Requests received', 'Page views and visitors per day', 'What visitors do', 'Where visits come from', 'Last 24 hours', 'When do they come?', 'Most viewed pages', 'Product pages', 'Acquisition channels', 'Traffic sources', 'Regions', 'Browsers', 'Visitor actions', 'Requests by subject', 'Latest sessions', 'Open Umami']) expect(t).toContain(s);
     expect(el.getAttribute('data-sk-mode')).toMatch(/light|dark/);
     expect(el.querySelectorAll('sk-metric-table').length).toBeGreaterThan(15);
     expect(el.querySelectorAll('.sk-funnel li')).toHaveLength(4);
@@ -63,6 +63,24 @@ describe('Statistics page', () => {
     expect(t).toContain('Best day:');
     expect(t).toContain('Busiest slot:');
     expect(t).toContain('Updated');
+  });
+
+  it('last 7 days against the 7 before: only for periods of at least 14 days', async () => {
+    const { f, http } = mount(SkStatistics, { liveMs: 0, refreshMs: 0 });
+    f.detectChanges();
+    const days = overview.series.slots.length;
+    const series = { ...overview.series, visitors: overview.series.visitors.map((_, i) => (i >= days - 7 ? 3 : i >= days - 14 ? 2 : 0)), pageviews: overview.series.pageviews.map((_, i) => (i >= days - 7 ? 5 : i >= days - 14 ? 10 : 0)) };
+    http.expectOne(`${API}/overview?days=30`).flush({ ...overview, series });
+    await tick(f);
+    worlds(http);
+    const recent = f.componentInstance.tiles().filter((x) => x.id?.startsWith('last7-'));
+    expect(recent.map((x) => [x.value, x.change?.tone])).toEqual([['21', 'up'], ['35', 'down']]);
+    const short = mount(SkStatistics, { liveMs: 0, refreshMs: 0, initialDays: 7 });
+    short.f.detectChanges();
+    short.http.expectOne(`${API}/overview?days=7`).flush({ ...overview, series: { ...overview.series, slots: overview.series.slots.slice(-7), pageviews: overview.series.pageviews.slice(-7), visitors: overview.series.visitors.slice(-7), previousPageviews: null } });
+    await tick(short.f);
+    worlds(short.http);
+    expect(short.f.componentInstance.tiles().some((x) => x.id?.startsWith('last7-'))).toBe(false);
   });
 
   it('changes period, dates, language; pauses the refresh', async () => {
