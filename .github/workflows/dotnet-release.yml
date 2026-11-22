@@ -1,0 +1,66 @@
+name: .NET package
+
+# For every version tag (v1.2.3, pushed by `npm run release`): tests of the .NET server, `dotnet pack` with the tag's version,
+# the .nupkg attached to the GitHub release of the tag (created if needed), then publication on nuget.org only if the
+# NUGET_API_KEY secret exists (key of the repository owner's nuget.org account, limited to StatsKit.*; see the README,
+# "Publishing the NuGet package"). Without the secret, the run ends with a note and publishes nothing.
+# Run by hand (Actions → .NET package → Run workflow) to publish a tag again, for example after adding the secret.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Version tag to package (v1.2.3)
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dotnet-release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Test, pack, attach to the release, publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - name: Version from the tag
+        run: |
+          set -euo pipefail
+          case "$TAG" in v[0-9]*.[0-9]*.[0-9]*) ;; *) echo "::error::Not a version tag: $TAG"; exit 1 ;; esac
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+      - name: Tests (xUnit, contract with the Node server)
+        working-directory: packages/dotnet
+        run: dotnet test --project test/StatsKit.Server.Tests -c Release
+      - name: Package
+        working-directory: packages/dotnet
+        run: dotnet pack src/StatsKit.Server -c Release -p:Version="$VERSION" -o artifacts
+      - name: Attach to the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" > /dev/null 2>&1 \
+            || gh release create "$TAG" -R "$GITHUB_REPOSITORY" --verify-tag --title "stats-kit $VERSION" --notes "See [CHANGELOG.md](https://github.com/$GITHUB_REPOSITORY/blob/main/CHANGELOG.md). npm: \`npm i github:$GITHUB_REPOSITORY#$TAG\` · NuGet: \`StatsKit.Server $VERSION\`."
+          gh release upload "$TAG" packages/dotnet/artifacts/*.nupkg packages/dotnet/artifacts/*.snupkg -R "$GITHUB_REPOSITORY" --clobber
+      - name: Publish on nuget.org (only with the NUGET_API_KEY secret)
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NUGET_API_KEY:-}" ]; then
+            echo "::notice::NUGET_API_KEY is not set: StatsKit.Server $VERSION is attached to the GitHub release but not published on nuget.org. See the README, \"Publishing the NuGet package\"."
+            exit 0
+          fi
+          dotnet nuget push "packages/dotnet/artifacts/StatsKit.Server.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate

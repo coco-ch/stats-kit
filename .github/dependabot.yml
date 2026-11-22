@@ -1,6 +1,7 @@
 # Automatic dependency updates, every Monday at 5 am (Paris time), majors included. The PRs go through CI and are merged
 # automatically when it is green (workflow dependabot-merge.yml); a red CI leaves the PR open.
-# Angular in its own group, the other npm minors and patches in one group, npm majors one by one, all GitHub Actions in a single PR.
+# Angular in its own group, the other npm minors and patches in one group, npm majors one by one, all GitHub Actions in a single PR,
+# the test packages of the .NET server in a single PR.
 version: 2
 
 updates:
@@ -41,4 +42,19 @@ updates:
     groups:
       # All actions in a single PR, majors included.
       actions:
+        patterns: ["*"]
+
+  - package-ecosystem: nuget
+    directory: /packages/dotnet
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Europe/Paris
+    labels: [dependencies]
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      nuget:
         patterns: ["*"]
