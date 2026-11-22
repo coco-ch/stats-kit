@@ -7,7 +7,7 @@ import { createTexts, type IndexationResponse, type Item, type LiveResponse, typ
 import { buildOverview, sourceVisits, type OverviewOptions } from './overview.ts';
 import { gscClient, gscConfigured, emptySearch, searchPeriod, type GscClient, type GscConfig } from './gsc.ts';
 import { Cache, errorMessage, type Fetch } from './http.ts';
-import { buildReport, previewHtml, type ReportMessage } from './report/report.ts';
+import { buildReport, previewHtml, type ReportBlock, type ReportMessage } from './report/report.ts';
 import { loadWorld, worldFile } from './report/map-png.ts';
 import type { ReportTheme } from './report/theme.ts';
 import { resolveRange, type RangeQuery } from './time.ts';
@@ -30,6 +30,13 @@ export interface ReportConfig {
   search?: boolean;
   /** Adds the YouTube block (true by default, if the channel is connected). */
   youtube?: boolean;
+  /** Adds the "At a glance" card: top source, country, page and entry page, best day, busiest slot (true by default). */
+  glance?: boolean;
+  /**
+   * Site-specific cards (costs, requests, news…), shown after the rankings; given in the site's language. A failure of this
+   * function is logged and the report is sent without these cards.
+   */
+  blocks?: (overview: StatsOverview) => ReportBlock[] | Promise<ReportBlock[]>;
 }
 
 export interface StatsKitConfig extends Omit<OverviewOptions, 'timeZone' | 'dashboardUrl'> {
@@ -165,8 +172,16 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
     const withYoutube = r.youtube !== false && yt ? await youtube(Math.min(90, o.range.days)) : null;
     let top: { title: string; url: string; views: number } | null = null;
     if (yt && withYoutube?.status === 'ok' && withYoutube.totals.views) top = await yt.topVideo(withYoutube.start, withYoutube.end).catch(() => null);
+    let blocks: ReportBlock[] = [];
+    if (r.blocks) {
+      try {
+        blocks = await r.blocks(o);
+      } catch (e) {
+        console.error('[stats-kit] report blocks', e);
+      }
+    }
     return buildReport({
-      overview: o, search: withSearch, youtube: withYoutube, youtubeTop: top, texts, theme: r.theme ?? { brand: '#2f5bd3' },
+      overview: o, blocks, glance: r.glance, search: withSearch, youtube: withYoutube, youtubeTop: top, texts, theme: r.theme ?? { brand: '#2f5bd3' },
       siteName: config.siteName, statsUrl: r.statsUrl ?? null, weekly, world: getWorld(),
     });
   }

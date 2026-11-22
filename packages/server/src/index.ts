@@ -6,7 +6,7 @@ export { gscClient, gscConfigured, searchPeriod, signJwt, parseCredentials, type
 export { youtubeClient, youtubeConfigured, isoSeconds, type YoutubeClient, type YoutubeConfig } from './youtube.ts';
 export { buildOverview, emptyOverview, logicalPath, toItems, groupPaths, pageRows, heatmap, alignSeries, type Labels, type PagesOptions, type OverviewOptions } from './overview.ts';
 export { resolveRange, slotsBetween, slotOf, slotOfLabel, zonedToInstant, weekId, type RangeQuery } from './time.ts';
-export { buildReport, previewHtml, MAP_CID, LOGO_CID, type ReportInput, type ReportMessage, type InlineAttachment } from './report/report.ts';
+export { buildReport, previewHtml, MAP_CID, LOGO_CID, type ReportInput, type ReportMessage, type ReportBlock, type InlineAttachment } from './report/report.ts';
 export { renderWorldMap, encodePng, loadWorld } from './report/map-png.ts';
 export { palette, type ReportTheme } from './report/theme.ts';
 export { reportDue, weeklyTick, startWeeklyReport, type WeeklySchedule, type WeeklyRunner } from './report/schedule.ts';

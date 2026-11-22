@@ -66,16 +66,27 @@ export function mailKit(C: Palette, texts: Texts) {
     };
   };
 
-  /** Vertical bars (one per slot), first and last labels below. */
-  const bars = (values: number[], first: string, last: string, titles: string[]) => {
-    const max = Math.max(1, ...values);
+  /**
+   * Vertical bars (one per slot), first and last labels below. With `previous` (same length), each slot shows the bar of the
+   * previous period next to it, lighter, and a legend (`legend`: labels of the period and of the previous period).
+   */
+  const bars = (values: number[], first: string, last: string, titles: string[], previous?: number[] | null, legend?: [string, string]) => {
+    const prev = previous && previous.length === values.length ? previous : null;
+    const max = Math.max(1, ...values, ...(prev ?? []));
     const H = 110;
-    const cells = values.map((v, i) => {
-      const h = Math.max(2, Math.round((v / max) * H));
-      return `<td valign="bottom" style="padding:0 1px" title="${esc(titles[i])}"><table ${T}><tr><td height="${h}" bgcolor="${C.accentDeep}" style="background:${C.accentDeep};border-radius:3px 3px 0 0;font-size:0;line-height:0">&nbsp;</td></tr></table></td>`;
-    });
-    return `<table ${T} height="${H}"><tr>${cells.join('')}</tr></table><table ${T} style="margin-top:6px"><tr><td style="${font('11px', 400, C.muted)}">${esc(first)}</td><td align="right" style="${font('11px', 400, C.muted)}">${esc(last)}</td></tr></table>`;
+    const ghost = mixHex(C.line, C.muted, 0.25);
+    const bar = (v: number, color: string) => `<td valign="bottom" style="padding:0"><table ${T}><tr><td height="${Math.max(2, Math.round((v / max) * H))}" bgcolor="${color}" style="background:${color};border-radius:3px 3px 0 0;font-size:0;line-height:0">&nbsp;</td></tr></table></td>`;
+    const cells = values.map((v, i) => `<td valign="bottom" style="padding:0 1px" title="${esc(titles[i])}"><table ${T}><tr>${prev ? bar(prev[i], ghost) : ''}${bar(v, C.accentDeep)}</tr></table></td>`);
+    const swatch = (color: string) => `<td width="10" height="10" bgcolor="${color}" style="background:${color};font-size:0;line-height:0">&nbsp;</td>`;
+    const key = prev && legend
+      ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px"><tr>${swatch(C.accentDeep)}<td style="padding:0 14px 0 6px;${font('11px', 400, C.muted)}">${esc(legend[0])}</td>${swatch(ghost)}<td style="padding-left:6px;${font('11px', 400, C.muted)}">${esc(legend[1])}</td></tr></table>`
+      : '';
+    return `<table ${T} height="${H}"><tr>${cells.join('')}</tr></table><table ${T} style="margin-top:6px"><tr><td style="${font('11px', 400, C.muted)}">${esc(first)}</td><td align="right" style="${font('11px', 400, C.muted)}">${esc(last)}</td></tr></table>${key}`;
   };
+
+  /** Bulleted lines (already formatted texts). */
+  const bullets = (lines: string[]) =>
+    `<table ${T}>${lines.map((l) => `<tr><td width="14" valign="top" style="padding:4px 0;${font('13px', 400, C.accentDeep)}">●</td><td style="padding:4px 0;${font('13px/1.5')}">${esc(l)}</td></tr>`).join('')}</table>`;
 
   /** 7 × 24 heatmap; `days` are the short weekday names, Monday first. */
   const heat = (grid: number[][], days: string[]) => {
@@ -108,7 +119,7 @@ ${rows}
 <!--[if mso]></td></tr></table><![endif]-->
 </td></tr></table></body></html>`;
 
-  return { trend, box, card, row, pairs, h2, kpi, kpiRow, list, bars, heat, button, header, note, callout, paragraph, footer, page, fill };
+  return { trend, box, card, row, pairs, h2, kpi, kpiRow, list, bars, bullets, heat, button, header, note, callout, paragraph, footer, page, fill };
 }
 
 export type MailKit = ReturnType<typeof mailKit>;

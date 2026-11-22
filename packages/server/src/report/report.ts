@@ -44,6 +44,20 @@ export interface ReportInput {
   weekly?: boolean;
   /** Base map; `null`: no map. */
   world: World | null;
+  /** "At a glance" card: top source, country, page and entry page, best day, busiest slot (true by default). */
+  glance?: boolean;
+  /** Site-specific cards, shown after the rankings (costs, requests, news of the site…). */
+  blocks?: ReportBlock[];
+}
+
+/** Site-specific card of the report: a title, then figures and/or lines, all given by the site in its language. */
+export interface ReportBlock {
+  title: string;
+  hint?: string;
+  /** Key figures, side by side (up to three per row). */
+  figures?: { value: string; label: string; sub?: string }[];
+  /** Lines of text, bulleted. */
+  lines?: string[];
 }
 
 export const MAP_CID = 'stats-kit-map';
@@ -67,7 +81,15 @@ export function buildReport(input: ReportInput): ReportMessage {
   const tz = o.range.timeZone;
   const last = new Date(Date.parse(o.range.to) - 1).toISOString();
   const from = shortDate(texts, o.range.from, tz), to = shortDate(texts, last, tz);
-  const vars = { site: siteName, from, to, period: fill(texts.periods.short, { from, to }), days: o.range.days };
+  const ok = o.status === 'ok';
+  const s = o.totals, p = o.previous;
+  const change = ok ? percentChange(s.visitors, p?.visitors) : null;
+  // the totals are also available to the subject, the title, the introduction and the footer ({visitors}, {change}…)
+  const vars = {
+    site: siteName, from, to, period: fill(texts.periods.short, { from, to }), days: o.range.days,
+    visitors: ok ? nf(s.visitors) : '', pageviews: ok ? nf(s.pageviews) : '', visits: ok ? nf(s.visits) : '',
+    change: change === null ? '' : formatPercent(texts, change / 100, 0, true),
+  };
   const attachments: ReportMessage['attachments'] = [];
   const rows: string[] = [];
   const text: string[] = [`${siteName} — ${R.title} (${fill(R.subtitle, vars)})`, ''];
@@ -86,8 +108,6 @@ export function buildReport(input: ReportInput): ReportMessage {
     text.push(fill(R.intro, vars), '');
   }
 
-  const ok = o.status === 'ok';
-  const s = o.totals, p = o.previous;
   if (ok) {
     const bounce = formatPercent(texts, s.visits ? s.bounces / s.visits : 0, 0);
     const avg = fill(R.avgDuration, { d: formatDuration(texts, s.visits ? Math.round(s.totaltime / s.visits) : 0) });
@@ -121,6 +141,30 @@ export function buildReport(input: ReportInput): ReportMessage {
   }
   rows.push('<tr><td style="font-size:0;line-height:8px">&nbsp;</td></tr>');
 
+  const ser = o.series;
+  const bestIndex = ser.pageviews.reduce((b, v, i) => (v > ser.pageviews[b] ? i : b), 0);
+  const label = (x: string) => slotLabel(texts, x, ser.unit);
+  const bestDay = ok && ser.pageviews[bestIndex] ? fill(R.bestDay, { d: ser.unit === 'day' ? longDay(texts, ser.slots[bestIndex]) : label(ser.slots[bestIndex]), n: nf(ser.pageviews[bestIndex]) }) : '';
+  const slot = ok ? bestSlot(o.heatmap) : null;
+  const when = slot ? fill(R.slot, { day: weekdayName(texts, slot.day), hour: hourName(texts, slot.hour) }) : '';
+
+  if (ok && input.glance !== false) {
+    const b = o.breakdowns;
+    const first = (template: string, items: Item[], name: (i: Item) => string) => (items[0]?.value ? fill(template, { label: name(items[0]), n: nf(items[0].value) }) : '');
+    const glance = [
+      first(R.glanceSource, b.referrers, (i) => i.label ?? (i.key || texts.common.direct)),
+      first(R.glanceCountry, b.countries, (i) => countryName(texts, i.key)),
+      first(R.glancePage, b.pages, (i) => i.label ?? i.key),
+      first(R.glanceEntry, b.entries, (i) => i.label ?? i.key),
+      bestDay,
+      when && fill(R.glanceSlot, { slot: when }),
+    ].filter(Boolean);
+    if (glance.length) {
+      rows.push(K.card(`${K.h2(R.glanceTitle)}${K.bullets(glance)}`));
+      text.push('', upper(R.glanceTitle), ...glance.map((x) => `  - ${x}`));
+    }
+  }
+
   if (ok && input.world && o.breakdowns.countries.length) {
     const lo = rgb(mixHex(C.brand, '#ffffff', 0.65)), hi = rgb(C.brand);
     const map = renderWorldMap(o.breakdowns.countries, input.world, { background: rgb(mixHex(C.brand, '#ffffff', 0.94)), land: rgb(mixHex(C.brand, '#d9dce4', 0.86)), border: [255, 255, 255], low: lo, high: hi });
@@ -128,17 +172,13 @@ export function buildReport(input: ReportInput): ReportMessage {
     rows.push(K.card(`${K.h2(R.mapTitle, R.mapHint)}<img src="cid:${MAP_CID}" width="${CARD_INNER}" alt="${esc(R.mapAlt)}" style="display:block;width:100%;max-width:${CARD_INNER}px;height:auto;border-radius:10px;border:0">`));
   }
 
-  if (ok && o.series.slots.length > 1) {
-    const ser = o.series;
-    const best = ser.pageviews.reduce((b, v, i) => (v > ser.pageviews[b] ? i : b), 0);
-    const hint = ser.pageviews[best] ? fill(R.bestDay, { d: ser.unit === 'day' ? longDay(texts, ser.slots[best]) : slotLabel(texts, ser.slots[best], 'hour'), n: nf(ser.pageviews[best]) }) : '';
-    const label = (slot: string) => slotLabel(texts, slot, ser.unit);
-    rows.push(K.card(`${K.h2(R.dailyTitle, hint)}${K.bars(ser.pageviews, label(ser.slots[0]), label(ser.slots.at(-1)!), ser.slots.map((x, i) => lv(label(x), nf(ser.pageviews[i]))))}`));
-    if (hint) text.push('', hint);
+  if (ok && ser.slots.length > 1) {
+    const prev = ser.previousPageviews;
+    const titles = ser.slots.map((x, i) => lv(label(x), prev ? `${nf(ser.pageviews[i])} / ${nf(prev[i] ?? 0)}` : nf(ser.pageviews[i])));
+    rows.push(K.card(`${K.h2(R.dailyTitle, bestDay)}${K.bars(ser.pageviews, label(ser.slots[0]), label(ser.slots.at(-1)!), titles, prev, [R.dailyCurrent, R.dailyPrevious])}`));
+    if (bestDay && input.glance === false) text.push('', bestDay);
   }
-  const slot = ok ? bestSlot(o.heatmap) : null;
   if (slot) {
-    const when = fill(R.slot, { day: weekdayName(texts, slot.day), hour: hourName(texts, slot.hour) });
     const days = Array.from({ length: 7 }, (_, d) => weekdayName(texts, d, 'short'));
     rows.push(K.card(`${K.h2(R.heatTitle, fill(R.heatHint, { slot: when, tz }))}${K.heat(o.heatmap, days)}`));
     text.push(fill(R.heatHint, { slot: when, tz }));
@@ -203,6 +243,15 @@ export function buildReport(input: ReportInput): ReportMessage {
   rows.push(K.pairs(shown.map((x) => x.inner)));
   for (const x of shown) if (x.text) text.push(x.text.trimEnd());
 
+  // site-specific cards
+  for (const blk of input.blocks ?? []) {
+    const figures = blk.figures ?? [], lines = blk.lines ?? [];
+    const cells = figures.map((f) => K.kpi(f.value, f.label, f.sub ? `<span style="color:${C.muted}">${esc(f.sub)}</span>` : '', '33.33%'));
+    const table = cells.length ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => `<tr>${cells.slice(i * 3, i * 3 + 3).join('')}</tr>`).join('')}</table>` : '';
+    rows.push(K.card(`${K.h2(blk.title, blk.hint ?? '')}${table}${lines.length ? K.bullets(lines) : ''}`));
+    text.push('', upper(blk.title), ...figures.map((f) => `  - ${lv(f.label, f.value)}${f.sub ? ` (${f.sub})` : ''}`), ...lines.map((l) => `  - ${l}`));
+  }
+
   if (input.statsUrl) {
     rows.push(K.button(input.statsUrl, R.button));
     text.push('', fill(R.textLink, { url: input.statsUrl }));
@@ -215,7 +264,8 @@ export function buildReport(input: ReportInput): ReportMessage {
     text.push('', fill(R.footer, vars));
   }
 
-  const subject = fill(input.weekly ? R.subjectWeekly : R.subject, vars).replace(/\s+/g, ' ').trim();
+  // a variable without value ({change} without a previous period) leaves no empty brackets behind
+  const subject = fill(input.weekly ? R.subjectWeekly : R.subject, vars).replace(/\s*\(\s*\)/g, '').replace(/\s+/g, ' ').trim();
   const pre = ok ? fill(R.preheader, { ...vars, visitors: nf(s.visitors), pageviews: nf(s.pageviews) }) : fill(R.preheaderEmpty, vars);
   return { subject, html: K.page(subject, pre, rows.join('\n')), text: text.join('\n').replace(/\n{3,}/g, '\n\n') + '\n', attachments };
 }

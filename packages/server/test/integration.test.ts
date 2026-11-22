@@ -254,13 +254,32 @@ describe('report', () => {
   });
   it('no hard-coded text: with a pseudo-locale, nothing Latin remains in the HTML or in the text version', async () => {
     const { o, search, youtube } = await full();
-    const m = buildReport({ overview: scrub(o), search: scrub(search), youtube: scrub(youtube), youtubeTop: { title: '‡', url: 'ж', views: 9 }, texts: pseudoTexts(), theme: { brand: '#1d3c9c', logo: { png: new Uint8Array([1]), alt: '‡' } }, siteName: '‡', statsUrl: 'https://x', weekly: true, world: null });
+    const m = buildReport({ overview: scrub(o), search: scrub(search), youtube: scrub(youtube), youtubeTop: { title: '‡', url: 'ж', views: 9 }, texts: pseudoTexts(), theme: { brand: '#1d3c9c', logo: { png: new Uint8Array([1]), alt: '‡' } }, siteName: '‡', statsUrl: 'https://x', weekly: true, world: null, blocks: [{ title: '‡', hint: '‡', figures: [{ value: '‡', label: '‡', sub: '‡' }], lines: ['‡'] }] });
     const visible = m.html.replace(/<!--[\s\S]*?-->/g, '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ');
     const attributes = [...m.html.matchAll(/\s(?:alt|title)="([^"]*)"/g)].map((x) => x[1]).join(' ');
     expect(latin(visible)).toEqual([]);
     expect(latin(attributes)).toEqual([]);
     expect(latin(m.text)).toEqual([]);
     expect(latin(m.subject)).toEqual([]);
+  });
+  it('at a glance, previous period next to each day, site cards, totals in the subject', async () => {
+    const { o } = await full();
+    const blocks = [
+      { title: 'Cost of the site', hint: 'Monthly estimate', figures: [{ value: '$14.30', label: 'per month', sub: '$171.60 per year' }, { value: '2', label: 'services' }, { value: '0', label: 'usage' }, { value: '1', label: 'domain' }] },
+      { title: 'News', lines: ['New page <online>'] },
+    ];
+    const texts = createTexts('en', { report: { subject: '{site}: {visitors} visitors ({change}), {visits} visits, {pageviews} page views' } });
+    const m = buildReport({ overview: o, texts, theme: { brand: '#1d3c9c' }, siteName: 'Workshop', world: null, blocks });
+    for (const s of ['At a glance', 'Top traffic source: ', 'Top country: France', 'Most viewed page: ', 'Most frequent entry page: ', 'Busiest slot: ', 'This period', 'Previous period, day by day', 'Cost of the site', 'Monthly estimate', '$171.60 per year', 'New page &#60;online&#62;']) expect(m.html).toContain(s);
+    for (const s of ['AT A GLANCE', '  - Best day: ', 'COST OF THE SITE', '  - per month: $14.30 ($171.60 per year)', '  - services: 2', '  - New page <online>']) expect(m.text).toContain(s);
+    expect(m.subject).toMatch(/^Workshop: \d+ visitors \([+−-]?\d+ ?%\), \d+ visits, \d+ page views$/);
+    expect(m.html.indexOf('At a glance')).toBeLessThan(m.html.indexOf('Page views per day'));
+    expect(m.html.indexOf('Cost of the site')).toBeGreaterThan(m.html.indexOf('Most viewed pages'));
+    // without the previous period: no empty brackets in the subject, no legend; card removed on request
+    const alone = buildReport({ overview: { ...o, previous: null, series: { ...o.series, previousPageviews: null } }, texts, theme: { brand: '#1d3c9c' }, siteName: 'Workshop', world: null, glance: false });
+    expect(alone.subject).toMatch(/^Workshop: \d+ visitors, \d+ visits/);
+    for (const s of ['At a glance', 'Previous period, day by day']) expect(alone.html).not.toContain(s);
+    expect(alone.text).toContain('Best day: ');
   });
   it('degraded: Umami missing or down, Google and YouTube down, online logo, no button', async () => {
     const range = resolveRange({ days: 7 }, 'UTC', NOW);
@@ -335,6 +354,16 @@ describe('kit and HTTP routes', () => {
     const n = calls;
     expect((await kit.overview({ days: 7 })).generatedAt).toBe(second.generatedAt); // a good answer stays in cache
     expect(calls).toBe(n);
+  });
+  it('site cards of the report: given by the site, a failure leaves the report without them', async () => {
+    const blocks = vi.fn(async (o: StatsOverview) => [{ title: `Costs over ${o.range.days} days`, lines: ['$14.30'] }]);
+    expect((await createStatsKit(base({ report: { blocks, glance: false } })).report({ days: 7 })).html).toContain('Costs over 7 days');
+    expect(blocks).toHaveBeenCalledTimes(1);
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const m = await createStatsKit(base({ report: { blocks: () => { throw new Error('db down'); } } })).report({ days: 7 });
+    expect(m.html).toContain('At a glance');
+    expect(error).toHaveBeenCalled();
+    error.mockRestore();
   });
   it('missing sources: "not configured" responses, sending refused (503), base map removed', async () => {
     const kit = createStatsKit({ siteName: 'Empty', world: null, umami: null, now: () => NOW });
