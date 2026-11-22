@@ -121,7 +121,7 @@ test.describe('languages', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'Statistiques' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'D’où viennent les visites' })).toBeVisible();
     await expect(page.getByText(/visiteurs? actifs?/)).toBeVisible();
-    await expect(page.locator('sk-tile').filter({ hasText: 'Pages vues' }).locator('.sk-tile__value')).toHaveText(/^\d{1,3}[  ]\d{3}$/);
+    await expect(page.locator('sk-tile').filter({ has: page.locator('.sk-tile__label', { hasText: /^Pages vues$/ }) }).locator('.sk-tile__value')).toHaveText(/^\d{1,3}[  ]\d{3}$/);
     await expect(page.getByText(/Créneau le plus actif : (lundi|mardi|mercredi|jeudi|vendredi|samedi|dimanche) à \d\d:00/).first()).toBeVisible();
   });
 
