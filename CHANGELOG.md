@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.10
+
+Found by the review of the 0.2.9 report. Backward compatible.
+
+### Changed
+
+- **Report, key figures**: "Visits", "Bounce" and the goals now have a trend line too, day by day, instead of two grey bars (this period against the previous one) that looked like a fault. The visits and bounces of each day come from one Umami `stats` call per day of the period (2 to 31 days counted by day: `dailyVisits`); the goals from their events per slot (`goalSeries`). The last 24 hours or a longer period: no chart for these figures, never bars. `ReportInput.daily` and `ReportInput.goalSeries` carry them; `renderCompare` stays exported but the report no longer uses it.
+- **Report, dark mode**: the empty cells of the heatmap were almost black on the dark card; they are now a little lighter than the card, so the grid reads.
+
+### .NET server
+
+- The same: `Daily.VisitsAsync` (same Umami calls, checked by the contract tests), `Daily.GoalSeries`, `ReportBuilder.Build(…, daily, goalSeries)`, the heatmap cells in dark mode.
+
 ## 0.2.9
 
 A fuller, lighter and more readable weekly report, the same in Node and .NET. Backward compatible for the code: nothing to change to upgrade. The report looks different (new sections, subject with the figures): a site that overrides `report.subject` or `report.subjectWeekly` keeps its own subject.
