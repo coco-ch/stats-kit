@@ -239,15 +239,18 @@ export async function checkLayout(p: Page, root = 'main'): Promise<Defect[]> {
 }
 
 /**
- * Enlarged text, as the text size setting of a phone: the font size of the page AND of the `rem` unit multiplied by `factor`.
- * To call before the first navigation.
+ * Enlarged text, as the text size setting of a phone: the font size of the page AND of the `rem` unit multiplied by `factor` (1:
+ * unchanged).
+ * `font` replaces the font of the page (a wide one makes the check as strict on every system as with the wide default fonts of
+ * Linux). To call before the first navigation.
  */
-export async function enlargeText(p: Page, factor = 2) {
-  await p.addInitScript((f) => document.addEventListener('DOMContentLoaded', () => {
+export async function enlargeText(p: Page, factor = 2, font?: string) {
+  await p.addInitScript(([f, family]) => document.addEventListener('DOMContentLoaded', () => {
     const size = (x: Element) => f * parseFloat(getComputedStyle(x).fontSize), s = document.createElement('style');
-    s.textContent = `html { font-size: ${size(document.documentElement)}px !important; } body { font-size: ${size(document.body)}px !important; }`;
+    s.textContent = `html { font-size: ${size(document.documentElement)}px !important; } body { font-size: ${size(document.body)}px !important; }`
+      + (family ? ` html, body { font-family: ${family} !important; }` : '');
     document.head.append(s);
-  }), factor);
+  }), [factor, font ?? ''] as const);
 }
 
 /** One line of the report for a defect. */
