@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1573</NoWarn>
+    <RootNamespace>StatsKit</RootNamespace>
+
+    <!-- NuGet package. The version comes from the release tag (dotnet pack -p:Version=x.y.z); this one is for local builds. -->
+    <PackageId>StatsKit.Server</PackageId>
+    <Version>0.0.0-local</Version>
+    <Authors>Manuel Delarque</Authors>
+    <Copyright>Copyright (c) 2026 Manuel Delarque</Copyright>
+    <Description>Website traffic statistics for a site's administration, ASP.NET Core server of stats-kit: Umami connector, previous period, live count, heatmap, world map, weekly e-mail report (Outlook-compatible HTML with a PNG world map) and its preview. Same data contract and routes as the Node server, for the stats-kit Angular components.</Description>
+    <PackageTags>statistics;analytics;umami;aspnetcore;report;dashboard;angular</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/manueldelarque/stats-kit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/manueldelarque/stats-kit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ASP.NET Core (routes, hosted service): part of the shared framework, no package to download. -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Data\locales.json" LogicalName="StatsKit.locales.json" />
+    <EmbeddedResource Include="Data\intl.json" LogicalName="StatsKit.intl.json" />
+    <EmbeddedResource Include="Data\centroids.json" LogicalName="StatsKit.centroids.json" />
+    <EmbeddedResource Include="..\..\..\server\assets\world-110m.json" LogicalName="StatsKit.world-110m.json" Link="Data\world-110m.json" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\..\..\LICENSE" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="StatsKit.Server.Tests" />
+  </ItemGroup>
+
+</Project>

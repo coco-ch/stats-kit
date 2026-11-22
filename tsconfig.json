@@ -23,5 +23,5 @@
       "stats-kit/server": ["./packages/server/src/index.ts"]
     }
   },
-  "include": ["packages/contract/src", "packages/contract/test", "packages/server/src", "packages/server/test", "demo/server", "demo/fake", "scripts/examples.ts", "vitest.config.ts"]
+  "include": ["packages/contract/src", "packages/contract/test", "packages/server/src", "packages/server/test", "demo/server", "demo/fake", "scripts/examples.ts", "scripts/dotnet-data.ts", "scripts/dotnet-golden.ts", "vitest.config.ts"]
 }

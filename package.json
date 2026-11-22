@@ -1,6 +1,6 @@
 {
   "name": "stats-kit",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Website traffic statistics for a site administration: Umami, Google Search Console and YouTube connectors, weekly e-mail report, Angular components, labels in several languages.",
   "license": "MIT",
   "type": "module",
@@ -66,7 +66,10 @@
     "screenshots": "node --conditions=stats-kit-source scripts/screenshots.ts",
     "examples": "node --conditions=stats-kit-source scripts/examples.ts",
     "schema:check": "node scripts/schema.mjs --check",
-    "release": "node scripts/publish-tag.mjs"
+    "release": "node scripts/publish-tag.mjs",
+    "dotnet:data": "node --conditions=stats-kit-source scripts/dotnet-data.ts",
+    "dotnet:golden": "node --conditions=stats-kit-source scripts/dotnet-golden.ts",
+    "dotnet:check": "node --conditions=stats-kit-source scripts/dotnet-data.ts --check && node --conditions=stats-kit-source scripts/dotnet-golden.ts --check"
   },
   "peerDependencies": {
     "@angular/common": ">=21.0.0",
