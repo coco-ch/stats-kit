@@ -184,12 +184,16 @@ describe('Search Console', () => {
 
 describe('YouTube', () => {
   it('channel, videos, 180 days, period, traffic sources, site side', async () => {
-    const y = youtubeClient({ ...sources.youtube, videoLabel: (v) => (v.id === 'vid-oak-02' ? 'Oak film' : null), extraVideoIds: async () => ['vid-workshop-01'] }, fake);
+    let oak = 'Oak film';
+    const y = youtubeClient({ ...sources.youtube, videoLabel: (v) => (v.id === 'vid-oak-02' ? oak : null), extraVideoIds: async () => ['vid-workshop-01'] }, fake);
     const site = { visits: async () => ({ visits: 5, visitors: 4, referred: 6, landing: [] }), requests: async () => ({ total: 2, bySubject: [] }) };
     const o = await y.overview(28, site, NOW);
     expect([o.status, o.channel?.handle, o.channel?.url, o.videos.length, o.series.length, o.days, o.end, o.traffic[0].source, o.site?.requests]).toEqual(['ok', '@example-workshop', 'https://www.youtube.com/@example-workshop', 4, 180, 28, '2026-11-15', 'YT_SEARCH', 2]);
     expect(o.videos[0].publishedAt! > o.videos[3].publishedAt!).toBe(true);
     expect(o.videos.find((v) => v.id === 'vid-oak-02')).toMatchObject({ label: 'Oak film', duration: 520, minutes: 7800 });
+    // the site's labels are read at every answer, while the channel data stays in cache
+    oak = 'Oak film, new name';
+    expect((await y.overview(28, site, NOW)).videos.find((v) => v.id === 'vid-oak-02')?.label).toBe('Oak film, new name');
     expect(o.totals.views).toBe(o.series.slice(-28).reduce((n, d) => n + d.views, 0));
     expect(await y.topVideo(o.start, o.end)).toMatchObject({ title: 'A tour of the workshop in three minutes', views: 4100 });
     expect((await y.overview(500, undefined, NOW)).days).toBe(90);
@@ -257,6 +261,13 @@ describe('report', () => {
     const preview = previewHtml(m);
     expect(preview).toContain('data:image/png;base64,');
     expect(preview).not.toContain('cid:');
+  });
+  it('colours of the PNG map given by the site; an invalid colour falls back to the derived one', async () => {
+    const o = await overview();
+    const png = (map?: { background?: string; land?: string; border?: string; low?: string; high?: string }) => buildReport({ overview: o, texts, theme: { brand: '#344d9b', map }, siteName: 'S', world }).attachments.find((a) => a.cid === 'stats-kit-map')!.content;
+    const base = Buffer.from(png());
+    expect(Buffer.from(png({ background: '#e9eefa', land: '#d0d7ea', border: '#fafbff', low: '#96aaeb', high: '#344d9b' })).equals(base)).toBe(false);
+    expect(Buffer.from(png({ background: 'blue', low: '#12345' })).equals(base)).toBe(true);
   });
   it('in French and in German, with the punctuation and formats of each language', async () => {
     const { o, search, youtube } = await full();
@@ -369,6 +380,15 @@ describe('kit and HTTP routes', () => {
     expect((await fresh.report()).html).toContain('Fresh');
     const noTop = createStatsKit(base({ fetch: tweak((url) => (url.includes('maxResults=1') ? new Response('', { status: 500 }) : null)) }));
     expect((await noTop.report()).html).not.toContain('Most viewed video');
+  });
+  it('site data read at every call, while the figures of Umami stay in cache', async () => {
+    let n = 0;
+    const kit = createStatsKit(base({ extras: async () => ({ tiles: [{ id: 'r', label: 'Requests', value: ++n, previous: null, sub: null, group: null, highlight: false }], tables: [], funnel: null }) }));
+    const a = await kit.overview({ days: 7 });
+    const b = await kit.overview({ days: 7 });
+    expect([a.generatedAt === b.generatedAt, a.extras?.tiles[0].value, b.extras?.tiles[0].value]).toEqual([true, 1, 2]);
+    const off = createStatsKit({ siteName: 'S', umami: null, now: () => NOW, extras: async () => ({ tiles: [], tables: [], funnel: { label: 'End', value: 3 } }) });
+    expect((await off.overview()).extras?.funnel?.value).toBe(3);
   });
   it('overview in error: not kept in cache, read again at the next call', async () => {
     let down = true, calls = 0;

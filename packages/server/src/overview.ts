@@ -166,7 +166,7 @@ export function emptyOverview(range: Range, status: 'not-configured' | 'error', 
 }
 
 /** Site extras, never making the response fail. */
-async function siteExtras(opts: OverviewOptions, range: Range): Promise<Extras | null> {
+export async function siteExtras(opts: OverviewOptions, range: Range): Promise<Extras | null> {
   if (!opts.extras) return null;
   try {
     return await opts.extras(range);

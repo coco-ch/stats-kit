@@ -6,7 +6,7 @@
  */
 import {
   bestSlot, browserName, countryName, deviceName, fill, formatDuration, formatNumber, formatPercent, hourName, labelValue, languageName, longDay,
-  mixHex, percentChange, shortDate, slotLabel, weekdayName,
+  percentChange, shortDate, slotLabel, weekdayName,
   type Item, type SearchOverview, type StatsOverview, type Texts, type World, type YoutubeOverview,
 } from 'stats-kit/contract';
 import { CARD_INNER, esc, mailKit } from './mail-kit.ts';
@@ -170,8 +170,8 @@ export function buildReport(input: ReportInput): ReportMessage {
   }
 
   if (ok && input.world && o.breakdowns.countries.length) {
-    const lo = rgb(mixHex(C.brand, '#ffffff', 0.65)), hi = rgb(C.brand);
-    const map = renderWorldMap(o.breakdowns.countries, input.world, { background: rgb(mixHex(C.brand, '#ffffff', 0.94)), land: rgb(mixHex(C.brand, '#d9dce4', 0.86)), border: [255, 255, 255], low: lo, high: hi });
+    const M = C.map;
+    const map = renderWorldMap(o.breakdowns.countries, input.world, { background: rgb(M.background), land: rgb(M.land), border: rgb(M.border), low: rgb(M.low), high: rgb(M.high) });
     attachments.push({ cid: MAP_CID, filename: 'map.png', contentType: 'image/png', content: map.png });
     rows.push(K.card(`${K.h2(R.mapTitle, R.mapHint)}<img src="cid:${MAP_CID}" width="${CARD_INNER}" alt="${esc(R.mapAlt)}" style="display:block;width:100%;max-width:${CARD_INNER}px;height:auto;border-radius:10px;border:0">`));
   }

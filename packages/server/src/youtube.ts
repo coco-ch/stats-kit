@@ -163,7 +163,7 @@ export function youtubeClient(config: YoutubeConfig, fetchFn: Fetch = fetch): Yo
         const a = stats.get(v.id);
         const title = v.snippet?.title ?? v.id;
         return {
-          id: v.id, url: `https://www.youtube.com/watch?v=${v.id}`, title, label: config.videoLabel?.({ id: v.id, title }) ?? null,
+          id: v.id, url: `https://www.youtube.com/watch?v=${v.id}`, title, label: null,
           publishedAt: v.snippet?.publishedAt ?? null, duration: isoSeconds(v.contentDetails?.duration), visibility: v.status?.privacyStatus ?? 'public',
           views: Number(v.statistics?.viewCount ?? 0), likes: num(v.statistics?.likeCount), comments: num(v.statistics?.commentCount),
           minutes: num(a?.['estimatedMinutesWatched']), averageViewDuration: num(a?.['averageViewDuration']), averageViewPercentage: num(a?.['averageViewPercentage']),
@@ -173,6 +173,9 @@ export function youtubeClient(config: YoutubeConfig, fetchFn: Fetch = fetch): Yo
       return { channel, videos, series, traffic, analyticsError };
     }, (d) => !d.analyticsError); // YouTube Analytics refused: shown this time, asked again at the next call
 
+  /** Label given by the site, read at every answer (the channel data stays in cache for an hour, the site's labels may change). */
+  const labelled = (v: YoutubeVideo): YoutubeVideo => ({ ...v, label: config.videoLabel?.({ id: v.id, title: v.title }) ?? null });
+
   async function overview(days: number, site?: SiteCounter, now = Date.now()): Promise<YoutubeOverview> {
     const n = Math.min(90, Math.max(1, Math.floor(days) || 28));
     const sideP = siteSide(site, source, n, now);
@@ -180,7 +183,7 @@ export function youtubeClient(config: YoutubeConfig, fetchFn: Fetch = fetch): Yo
       const d = await channelData(now);
       const p = lastDays(d.series, n);
       return {
-        version: 1, status: 'ok', error: null, generatedAt: new Date(now).toISOString(), channelUrl: d.channel.url, channel: d.channel, videos: d.videos,
+        version: 1, status: 'ok', error: null, generatedAt: new Date(now).toISOString(), channelUrl: d.channel.url, channel: d.channel, videos: d.videos.map(labelled),
         days: n, start: p.start, end: p.end, totals: p.totals, previous: p.previous, series: d.series, traffic: d.traffic, analyticsError: d.analyticsError, site: await sideP,
       };
     } catch (e) {
@@ -191,7 +194,8 @@ export function youtubeClient(config: YoutubeConfig, fetchFn: Fetch = fetch): Yo
   async function topVideo(start: string, end: string) {
     const d = await channelData(Date.now());
     const top = await cache.get(`top:${start}:${end}`, 3_600_000, () => report({ startDate: start, endDate: end, metrics: 'views', dimensions: 'video', sort: '-views', maxResults: 1 }));
-    const v = d.videos.find((x) => x.id === top[0]?.['video']);
+    const found = d.videos.find((x) => x.id === top[0]?.['video']);
+    const v = found && labelled(found);
     return v ? { title: v.label ?? v.title, url: v.url, views: Number(top[0]['views']) } : null;
   }
 

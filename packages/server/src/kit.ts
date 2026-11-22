@@ -4,7 +4,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { createTexts, type IndexationResponse, type Item, type LiveResponse, type ReportPreview, type ReportSendResult, type SearchOverview, type StatsOverview, type TextOverrides, type Texts, type World, type YoutubeOverview } from 'stats-kit/contract';
-import { buildOverview, sourceVisits, type OverviewOptions } from './overview.ts';
+import { buildOverview, siteExtras, sourceVisits, type OverviewOptions } from './overview.ts';
 import { gscClient, gscConfigured, emptySearch, searchPeriod, type GscClient, type GscConfig } from './gsc.ts';
 import { Cache, errorMessage, type Fetch } from './http.ts';
 import { buildReport, previewHtml, type ReportBlock, type ReportMessage } from './report/report.ts';
@@ -150,11 +150,13 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
     return world;
   };
 
-  const overview = (q: RangeQuery = {}): Promise<StatsOverview> => {
+  const overview = async (q: RangeQuery = {}): Promise<StatsOverview> => {
     const range = resolveRange(q, tz, now());
     const key = typeof q.from === 'string' ? `r:${range.from}:${range.to}` : `d:${range.days}`;
     // an answer in error (Umami unreachable, refused sign-in…) is not kept: the next call asks Umami again
-    return cache.get(`overview:${key}`, ttl, () => buildOverview(umami, range, { ...config, timeZone: tz, dashboardUrl }, now()), (o) => o.status !== 'error');
+    const o = await cache.get(`overview:${key}`, ttl, () => buildOverview(umami, range, { ...config, extras: undefined, timeZone: tz, dashboardUrl }, now()), (x) => x.status !== 'error');
+    // the site's own data (its database: requests received, to handle…) is read at every call, never kept with Umami's figures
+    return { ...o, extras: await siteExtras({ ...config, timeZone: tz }, o.range) };
   };
 
   const live = async (): Promise<LiveResponse> => {
