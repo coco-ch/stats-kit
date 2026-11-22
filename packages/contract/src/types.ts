@@ -141,6 +141,11 @@ export interface ExtraTile {
   group: string | null;
   /** Highlighted (to handle, pending…). */
   highlight: boolean;
+  /**
+   * Where to act on it (the site's list of requests…): a link under the figure in the page and, for a highlighted tile, at the end
+   * of its line in the report. Optional; `null` or missing: no link.
+   */
+  link?: { url: string; label: string } | null;
 }
 
 /** Table added by the site. */
@@ -233,6 +238,11 @@ export interface StatsOverview {
   counts: Counts;
   sessions: Session[];
   extras: Extras | null;
+  /**
+   * Occurrences of each tracked event per slot of `series` (same order as `series.slots`), by event name; `null` if the source
+   * does not give them. Optional: a server that does not fill it leaves the "last 7 days" column of the actions table out.
+   */
+  eventSeries?: Record<string, number[]> | null;
   /** Address of the source dashboard (Umami), to go further; `null` to hide it. */
   dashboardUrl: string | null;
 }

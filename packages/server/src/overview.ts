@@ -113,6 +113,22 @@ export function alignSeries(slots: string[], points: Point[] | undefined, unit: 
   return slots.map((s) => m.get(s) ?? 0);
 }
 
+/** Point of Umami's `events/series`: event name, slot, occurrences. */
+export type EventPoint = { x: string; t: string; y: number };
+
+/** Occurrences of each event per slot, aligned on `slots` (zero where the source has nothing). */
+export function eventSeries(slots: string[], points: EventPoint[], unit: Unit, timeZone: string): Record<string, number[]> {
+  const at = new Map(slots.map((s, i) => [s, i]));
+  const out: Record<string, number[]> = {};
+  for (const p of points) {
+    if (typeof p?.x !== 'string' || typeof p.t !== 'string') continue;
+    const i = at.get(slotOfLabel(p.t, unit, timeZone));
+    if (i === undefined) continue;
+    (out[p.x] ??= slots.map(() => 0))[i] += Number(p.y) || 0;
+  }
+  return out;
+}
+
 /** Page views by weekday (Monday = 0) and hour, from hourly slots. */
 export function heatmap(points: Point[] | undefined, timeZone: string): number[][] {
   const grid = Array.from({ length: 7 }, () => new Array<number>(24).fill(0));
@@ -145,7 +161,7 @@ export function emptyOverview(range: Range, status: 'not-configured' | 'error', 
     series: emptySeries(slotsBetween(from, to, range.unit, range.timeZone), range.unit),
     last24h: emptySeries(slotsBetween(now - DAY, now, 'hour', range.timeZone), 'hour'),
     heatmap: heatmap([], range.timeZone), breakdowns: emptyBreakdowns(), pages: [], groups: [], goals: [], counts: { countries: null, events: null },
-    sessions: [], extras: null, dashboardUrl: null,
+    sessions: [], extras: null, eventSeries: null, dashboardUrl: null,
   };
 }
 
@@ -185,7 +201,7 @@ export async function buildOverview(umami: UmamiClient | null, range: Range, opt
 
   const [prevStats, active, series, prevSeries, last24, hourly, paths, prevPaths, entries, exits, referrers, prevReferrers, channels, prevChannels,
     countries, prevCountries, regions, cities, languages, devices, browsers, os, screens, events, prevEvents, hostnames, utmS, utmM, utmC,
-    pathX, entryX, exitX, sessions, sessionStats] = await Promise.all([
+    pathX, entryX, exitX, sessions, sessionStats, evSeries] = await Promise.all([
     settle(umami.get<Record<string, unknown>>('stats', pq), null),
     settle(umami.get<{ visitors?: number; x?: number }>('active').then((a) => a.visitors ?? a.x ?? 0), null),
     pv(from, to, unit), pv(pFrom, pTo, unit), pv(now - DAY, now, 'hour'), unit === 'hour' ? Promise.resolve(null) : pv(from, to, 'hour'),
@@ -196,6 +212,7 @@ export async function buildOverview(umami: UmamiClient | null, range: Range, opt
     expanded('path'), expanded('entry'), expanded('exit'),
     settle(umami.get<{ data?: UmamiSession[] }>('sessions', { ...q, pageSize: 12, page: 1 }), {} as { data?: UmamiSession[] }),
     settle(umami.get<Record<string, { value?: number }>>('sessions/stats', q), {} as Record<string, { value?: number }>),
+    settle(umami.get<EventPoint[]>('events/series', { ...q, unit, timezone: tz }), null),
   ]);
 
   const pages = opts.pages ?? {};
@@ -254,6 +271,7 @@ export async function buildOverview(umami: UmamiClient | null, range: Range, opt
     counts: { countries: sessionStats['countries']?.value ?? null, events: sessionStats['events']?.value ?? null },
     sessions: (sessions.data ?? []).map(session),
     extras: await extrasP,
+    eventSeries: Array.isArray(evSeries) ? eventSeries(slots, evSeries, unit, tz) : null,
     dashboardUrl: opts.dashboardUrl ?? null,
   };
 }

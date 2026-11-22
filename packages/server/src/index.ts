@@ -4,7 +4,7 @@ export { umamiFromEnv, gscFromEnv, youtubeFromEnv, sourcesFromEnv } from './env.
 export { umamiClient, umamiConfigured, umamiDefaultAccount, parseStats, type UmamiClient, type UmamiConfig } from './umami.ts';
 export { gscClient, gscConfigured, searchPeriod, signJwt, parseCredentials, type GscClient, type GscConfig, type ServiceKey, type OauthCredentials } from './gsc.ts';
 export { youtubeClient, youtubeConfigured, isoSeconds, type YoutubeClient, type YoutubeConfig } from './youtube.ts';
-export { buildOverview, emptyOverview, logicalPath, toItems, groupPaths, pageRows, heatmap, alignSeries, type Labels, type PagesOptions, type OverviewOptions } from './overview.ts';
+export { buildOverview, emptyOverview, logicalPath, toItems, groupPaths, pageRows, heatmap, alignSeries, eventSeries, type EventPoint, type Labels, type PagesOptions, type OverviewOptions } from './overview.ts';
 export { resolveRange, slotsBetween, slotOf, slotOfLabel, zonedToInstant, weekId, type RangeQuery } from './time.ts';
 export { buildReport, previewHtml, MAP_CID, LOGO_CID, type ReportInput, type ReportMessage, type ReportBlock, type InlineAttachment } from './report/report.ts';
 export { renderWorldMap, encodePng, loadWorld } from './report/map-png.ts';

@@ -131,6 +131,12 @@ function umami(url: URL, init: RequestInit | undefined, now: number): Response {
       const systems = ['Android OS', 'iOS', 'Windows 10', 'Mac OS', 'iOS', 'Linux'];
       return json({ data: places.map(([country, city], i) => ({ country, city, device: devices[i % 6], browser: browsers[i % 6], os: systems[i % 6], views: 1 + Math.floor(noise(i) * 7), lastAt: new Date(now - (i * 17 + 3) * 60_000).toISOString() })), count: 12, page: 1, pageSize: 12 });
     }
+    case 'events/series': {
+      const unit = p.get('unit') ?? 'day';
+      const views = new Map<string, number>();
+      for (let h = Math.floor(from / HOUR) * HOUR; h < to; h += HOUR) views.set(wall(h, unit), (views.get(wall(h, unit)) ?? 0) + hourViews(h));
+      return json([...views].flatMap(([t, v]) => DIMENSIONS['event'].map(([x, w]) => ({ x, t, y: Math.round(v * w) }))).filter((r) => r.y > 0));
+    }
     case 'sessions/stats': return json({ pageviews: { value: t.pageviews }, visitors: { value: t.visitors }, visits: { value: t.visits }, countries: { value: 15 }, events: { value: Math.round(t.pageviews * 0.11) } });
     default: return json({ error: 'not found' }, 404);
   }

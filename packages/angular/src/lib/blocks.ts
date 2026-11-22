@@ -22,6 +22,8 @@ export interface TileData {
   spark: string;
   group?: string;
   highlight?: boolean;
+  /** Where to act on it (site's own page), shown under the figure. */
+  link?: { url: string; label: string } | null;
 }
 
 const ZERO = /^(?:0(?:[,.]0+)?(?:\s?%)?|—)$/;
@@ -33,7 +35,7 @@ const ZERO = /^(?:0(?:[,.]0+)?(?:\s?%)?|—)$/;
   template: `
     <span class="sk-tile__label">{{ label() }}</span>
     <span class="sk-tile__row"><b class="sk-tile__value">{{ value() }}</b>@if (change()?.text) { <i [class]="'sk-d sk-d--' + change()!.tone">{{ change()!.text }}</i> }</span>
-    <span class="sk-tile__sub">{{ sub() }}</span>
+    <span class="sk-tile__sub">@if (sub()) { {{ sub() }} }@if (link(); as l) { @if (sub()) { <br /> }<a class="sk-tile__link" [href]="l.url">{{ l.label }}</a> }</span>
     <span class="sk-tile__trend">@if (spark()) { <svg class="sk-spark" [class.sk-spark--down]="change()?.tone === 'down'" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path [attr.d]="spark()" /></svg> }</span>
   `,
   styles: [TOKENS, `
@@ -47,6 +49,9 @@ const ZERO = /^(?:0(?:[,.]0+)?(?:\s?%)?|—)$/;
     :host(.sk-zero) .sk-tile__value { color: var(--k-muted); font-weight: var(--k-w-label); }
     .sk-tile__sub { font-size: .76rem; line-height: 1.35; color: var(--k-muted); }
     .sk-tile__sub:empty, .sk-tile__trend:empty { display: none; }
+    .sk-tile__link { display: inline-flex; align-items: center; min-height: 24px; font-weight: var(--k-w-label); color: var(--k-brand); }
+    .sk-tile__link:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
+    @media (max-width: ${PHONE}px) { .sk-tile__link { min-height: 48px; } }
     .sk-d { display: inline-block; max-width: 100%; padding: .05rem .45rem; border-radius: 999px; font-style: normal; font-size: .74rem; font-weight: var(--k-w-strong); line-height: 1.45; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--k-badge); color: var(--k-muted); }
     .sk-d--up { background: var(--k-up-soft); color: var(--k-up); }
     .sk-d--down { background: var(--k-down-soft); color: var(--k-down); }
@@ -62,6 +67,7 @@ export class SkTile {
   readonly sub = input('');
   readonly spark = input('');
   readonly highlight = input(false);
+  readonly link = input<{ url: string; label: string } | null>(null);
   protected readonly zero = computed(() => ZERO.test(this.value()));
 }
 
@@ -74,7 +80,7 @@ export class SkTile {
     @for (g of groups(); track g.title) {
       <section class="sk-tg" [style.--n]="g.tiles.length" [attr.aria-label]="g.title || null">
         @if (g.title) { <h2 class="sk-tg__title">{{ g.title }}</h2> }
-        <div class="sk-tg__tiles">@for (k of g.tiles; track k.id ?? k.label) { <sk-tile [label]="k.label" [value]="k.value" [change]="k.change" [sub]="k.sub" [spark]="k.spark" [highlight]="!!k.highlight" /> }</div>
+        <div class="sk-tg__tiles">@for (k of g.tiles; track k.id ?? k.label) { <sk-tile [label]="k.label" [value]="k.value" [change]="k.change" [sub]="k.sub" [spark]="k.spark" [highlight]="!!k.highlight" [link]="k.link ?? null" /> }</div>
       </section>
     }
   `,

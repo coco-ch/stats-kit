@@ -345,7 +345,7 @@ export class SkStatistics implements OnInit {
       out.push({ id: 'events', group: S.groupGoals, label: S.events, value: this.fmt(d.counts.events ?? events.reduce((n, e) => n + e.value, 0)), change: null, sub: plural(T, events.length, S.eventTypesOne, S.eventTypesOther), spark: '' });
     }
     for (const x of d.extras?.tiles ?? []) {
-      out.push({ id: `x-${x.id}`, group: x.group ?? S.groupSite, label: x.label, value: typeof x.value === 'number' ? this.fmt(x.value) : x.value, change: typeof x.value === 'number' && x.previous !== null ? delta(T, x.value, x.previous) : null, sub: x.sub ?? '', spark: '', highlight: x.highlight });
+      out.push({ id: `x-${x.id}`, group: x.group ?? S.groupSite, label: x.label, value: typeof x.value === 'number' ? this.fmt(x.value) : x.value, change: typeof x.value === 'number' && x.previous !== null ? delta(T, x.value, x.previous) : null, sub: x.sub ?? '', spark: '', highlight: x.highlight, link: x.link ?? null });
     }
     return out;
   });
@@ -430,7 +430,12 @@ export class SkStatistics implements OnInit {
       add({ id: 'os', section: 'audience', title: S.osTitle, head: S.colSystem, cols: visits, rows: this.itemRows(b.os, capitalize) });
       add({ id: 'screens', section: 'audience', title: S.screensTitle, head: S.colScreen, cols: visits, rows: this.itemRows(b.screens, page) });
 
-      add({ id: 'events', section: 'actions', title: S.eventsTitle, sub: S.eventsSub, head: S.colAction, cols: [{ key: 'y', label: S.colTotal, delta: true }, { key: 'share', label: T.common.share, kind: 'pct' }], rows: this.itemRows(b.events, page), limit: 16 });
+      // "last 7 days" column: when the source gives the events day by day and the period is longer than a week
+      const es = d.eventSeries;
+      const recent = !!es && d.series.unit === 'day' && d.series.slots.length > 7;
+      const eventCols: Col[] = [{ key: 'y', label: S.colTotal, delta: true }, ...(recent ? [{ key: 'last7', label: S.colLast7, tip: S.colLast7Tip }] : []), { key: 'share', label: T.common.share, kind: 'pct' }];
+      const eventRows = this.itemRows(b.events, page).map((r, i) => (recent ? { ...r, values: { ...r.values, last7: (es![b.events[i].key] ?? []).slice(-7).reduce((n, v) => n + v, 0) } } : r));
+      add({ id: 'events', section: 'actions', title: S.eventsTitle, sub: S.eventsSub, head: S.colAction, cols: eventCols, rows: eventRows, limit: 16 });
     }
     for (const t of d.extras?.tables ?? []) {
       const total = Math.max(1, t.items.reduce((n, i) => n + i.value, 0));

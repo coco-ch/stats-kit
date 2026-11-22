@@ -40,6 +40,9 @@ export interface ReportInput {
   siteName: string;
   /** Statistics page of the administration (report button). */
   statsUrl?: string | null;
+  /** Google and YouTube pages of the administration (link at the end of their block). */
+  searchUrl?: string | null;
+  youtubeUrl?: string | null;
   /** Weekly report (different subject). */
   weekly?: boolean;
   /** Base map; `null`: no map. */
@@ -136,8 +139,9 @@ export function buildReport(input: ReportInput): ReportMessage {
     const strong = extras.tiles.filter((x) => x.highlight);
     const value = (x: { value: number | string }) => (typeof x.value === 'number' ? nf(x.value) : x.value);
     if (plain.length) rows.push(K.kpiRow(plain.map((x) => ({ value: value(x), label: x.label, sub: typeof x.value === 'number' ? K.trend(x.value, x.previous) : x.sub ? esc(x.sub) : '' }))));
-    for (const x of strong) rows.push(K.callout(`<b>${esc(lv(x.label, value(x)))}</b>${x.sub ? ` — ${esc(x.sub)}` : ''}`));
-    for (const x of extras.tiles) text.push(`${lv(x.label, value(x))}${x.sub ? ` (${x.sub})` : ''}`);
+    const link = (x: (typeof strong)[number]) => (x.link ? ` <a href="${esc(x.link.url)}" style="color:${C.accentDeep}">${esc(x.link.label)}</a>` : '');
+    for (const x of strong) rows.push(K.callout(`<b>${esc(lv(x.label, value(x)))}</b>${x.sub ? ` — ${esc(x.sub)}` : ''}${link(x)}`));
+    for (const x of extras.tiles) text.push(`${lv(x.label, value(x))}${x.sub ? ` (${x.sub})` : ''}${x.highlight && x.link ? ` ${x.link.url}` : ''}`);
   }
   rows.push('<tr><td style="font-size:0;line-height:8px">&nbsp;</td></tr>');
 
@@ -184,6 +188,9 @@ export function buildReport(input: ReportInput): ReportMessage {
     text.push(fill(R.heatHint, { slot: when, tz }));
   }
 
+  /** Link to a page of the administration, at the end of a block. */
+  const pageLink = (url: string | null | undefined, label: string) => (url ? `<div style="font:12px ${C.font};margin-top:8px"><a href="${esc(url)}" style="color:${C.accentDeep}">${esc(label)}</a></div>` : '');
+
   // Google
   const g = input.search;
   if (g?.status === 'ok') {
@@ -192,7 +199,7 @@ export function buildReport(input: ReportInput): ReportMessage {
     const inner = g.totals.impressions
       ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>${cell(nf(g.totals.clicks), R.googleClicks, K.trend(g.totals.clicks, g.previous.clicks))}${cell(nf(g.totals.impressions), R.googleImpressions, K.trend(g.totals.impressions, g.previous.impressions))}${cell(nf(g.totals.position, 1), R.googlePosition, '')}</tr></table>`
       : `<div style="font:13px/1.5 ${C.font};color:${C.muted}">${esc(R.googleNothing)}</div>`;
-    rows.push(K.card(`${K.h2(R.googleTitle, fill(R.googleHint, gv))}${inner}`));
+    rows.push(K.card(`${K.h2(R.googleTitle, fill(R.googleHint, gv))}${inner}${pageLink(input.searchUrl, R.googleLink)}`));
     text.push('', `${upper(R.googleTitle)} (${fill(texts.periods.short, gv)})`, `  - ${lv(R.googleClicks, nf(g.totals.clicks))}`, `  - ${lv(R.googleImpressions, nf(g.totals.impressions))}`, `  - ${lv(R.googlePosition, g.totals.impressions ? nf(g.totals.position, 1) : '—')}`);
   } else if (g?.status === 'error') {
     rows.push(K.note(R.googleUnavailable));
@@ -210,7 +217,7 @@ export function buildReport(input: ReportInput): ReportMessage {
     const line1 = `<tr>${cell(nf(y.totals.views), R.youtubeViews, K.trend(y.totals.views, y.previous.views))}${cell(nf(y.totals.minutes), R.youtubeMinutes, K.trend(y.totals.minutes, y.previous.minutes))}${cell(subscribers, R.youtubeSubscribers, muted(fill(R.youtubeBalance, { gained: nf(y.totals.gained), lost: nf(y.totals.lost) })))}</tr>`;
     const line2 = site ? `<tr>${cell(site.visits === null ? '—' : nf(site.visits), R.youtubeSiteVisits, site.visits === null ? '' : K.trend(site.visits, site.previousVisits))}${site.requests === null ? '<td width="33.33%"></td>' : cell(nf(site.requests), R.youtubeRequests, K.trend(site.requests, site.previousRequests))}<td width="33.33%"></td></tr>` : '';
     const topV = input.youtubeTop ? `<div style="font:13px/1.5 ${C.font};color:${C.text};margin-top:6px">${esc(fill(R.youtubeTop, { title: '§', n: nf(input.youtubeTop.views) })).replace('§', `<a href="${esc(input.youtubeTop.url)}" style="color:${C.accentDeep}">${esc(input.youtubeTop.title)}</a>`)}</div>` : '';
-    rows.push(K.card(`${K.h2(R.youtubeTitle, fill(R.youtubeHint, yv))}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${line1}${line2}</table>${topV}`));
+    rows.push(K.card(`${K.h2(R.youtubeTitle, fill(R.youtubeHint, yv))}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${line1}${line2}</table>${topV}${pageLink(input.youtubeUrl, R.youtubeLink)}`));
     text.push('', `${upper(R.youtubeTitle)} (${fill(texts.periods.short, yv)})`, `  - ${lv(R.youtubeViews, nf(y.totals.views))}`, `  - ${lv(R.youtubeMinutes, nf(y.totals.minutes))}`, `  - ${lv(R.youtubeSubscribers, subscribers)}`);
     if (site?.visits !== null && site?.visits !== undefined) text.push(`  - ${lv(R.youtubeSiteVisits, nf(site.visits))}`);
     if (site?.requests !== null && site?.requests !== undefined) text.push(`  - ${lv(R.youtubeRequests, nf(site.requests))}`);
@@ -238,7 +245,10 @@ export function buildReport(input: ReportInput): ReportMessage {
     lists.push({ title: R.browsers, rows: top(b.browsers, (i) => i.label ?? browserName(i.key)) });
   }
   for (const t of extras?.tables ?? []) lists.push({ title: t.title, rows: top(t.items, own), hint: t.sub ?? '' });
-  if (g?.status === 'ok' && g.totals.impressions) lists.push({ title: R.googleQueries, rows: [...g.queries].sort((a, b) => b.impressions - a.impressions).slice(0, 6).map((q) => [q.key, q.impressions]), hint: R.googleQueriesHint });
+  if (g?.status === 'ok' && g.totals.impressions) {
+    lists.push({ title: R.googleQueries, rows: [...g.queries].sort((a, b) => b.impressions - a.impressions).slice(0, 6).map((q) => [q.key, q.impressions]), hint: R.googleQueriesHint });
+    lists.push({ title: R.googleCountries, rows: [...g.countries].sort((a, b) => b.impressions - a.impressions).slice(0, 4).map((c) => [countryName(texts, c.key), c.impressions]), hint: R.googleCountriesHint });
+  }
   const shown = lists.map((x) => K.list(x.title, x.rows, x.hint));
   rows.push(K.pairs(shown.map((x) => x.inner)));
   for (const x of shown) if (x.text) text.push(x.text.trimEnd());

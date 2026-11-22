@@ -1548,5 +1548,6 @@
    "value": 12
   }
  },
+ "eventSeries": {},
  "dashboardUrl": "https://umami.example.test/websites/site-demo"
 }

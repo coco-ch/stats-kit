@@ -141,6 +141,23 @@
             }
           ]
         },
+        "eventSeries": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Occurrences of each tracked event per slot of `series` (same order as `series.slots`), by event name; `null` if the source does not give them. Optional: a server that does not fill it leaves the \"last 7 days\" column of the actions table out."
+        },
         "dashboardUrl": {
           "type": [
             "string",
@@ -791,6 +808,30 @@
         "highlight": {
           "type": "boolean",
           "description": "Highlighted (to handle, pending…)."
+        },
+        "link": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "url",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Where to act on it (the site's list of requests…): a link under the figure in the page and, for a highlighted tile, at the end of its line in the report. Optional; `null` or missing: no link."
         }
       },
       "required": [

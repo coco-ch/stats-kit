@@ -354,5 +354,6 @@
  },
  "sessions": [],
  "extras": null,
+ "eventSeries": null,
  "dashboardUrl": null
 }

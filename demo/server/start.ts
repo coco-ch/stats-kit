@@ -28,7 +28,7 @@ const extras: StatsKitConfig['extras'] = async (range) => {
   return {
     tiles: [
       { id: 'requests', label: 'Requests received', value: total, previous: before, sub: 'through the site form', group: null, highlight: false },
-      { id: 'to-handle', label: 'To handle', value: 3, previous: null, sub: 'all periods', group: null, highlight: true },
+      { id: 'to-handle', label: 'To handle', value: 3, previous: null, sub: 'all periods', group: null, highlight: true, link: { url: '#requests', label: 'Open the requests' } },
     ],
     tables: [{ id: 'subjects', title: 'Requests received by subject', sub: null, head: 'Subject', column: 'Requests', section: 'actions', items: [
       { key: 'quote', label: 'Quote request', value: Math.round(total * 0.5), previous: Math.round(before * 0.45) },

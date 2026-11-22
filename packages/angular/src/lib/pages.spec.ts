@@ -190,6 +190,28 @@ describe('Statistics page', () => {
     worlds(http);
   });
 
+  it('link of a site tile; "last 7 days" column of the actions only with day-by-day events over more than a week', async () => {
+    const tiles = [{ id: 'p', label: 'To handle', value: 3, previous: null, sub: 'all periods', group: null, highlight: true, link: { url: '/admin/requests', label: 'Open the requests' } }, { id: 'q', label: 'Call-backs', value: 1, previous: null, sub: null, group: null, highlight: false, link: { url: '/admin/calls', label: 'Calls' } }];
+    const key = overview.breakdowns.events[0].key;
+    const { f, http, el } = mount(SkStatistics, { liveMs: 0, refreshMs: 0 });
+    f.detectChanges();
+    http.expectOne(`${API}/overview?days=30`).flush({ ...overview, extras: { ...overview.extras!, tiles }, eventSeries: { [key]: overview.series.slots.map((_, i) => (i >= overview.series.slots.length - 7 ? 2 : 1)) } });
+    await tick(f);
+    worlds(http);
+    const links = [...el.querySelectorAll<HTMLAnchorElement>('.sk-tile__link')].map((a) => [a.textContent, a.getAttribute('href')]);
+    expect(links).toEqual([['Open the requests', '/admin/requests'], ['Calls', '/admin/calls']]);
+    const events = [...el.querySelectorAll('sk-metric-table')].find((t) => text(t).includes('Visitor actions'))!;
+    expect(text(events)).toContain('Last 7 days');
+    expect(text(events)).toContain('14');
+    // without day-by-day events (another server) or over 24 hours: no column
+    const again = mount(SkStatistics, { liveMs: 0, refreshMs: 0 });
+    again.f.detectChanges();
+    again.http.expectOne(`${API}/overview?days=30`).flush({ ...overview, eventSeries: undefined });
+    await tick(again.f);
+    worlds(again.http);
+    expect(text([...again.el.querySelectorAll('sk-metric-table')].find((t) => text(t).includes('Visitor actions'))!)).not.toContain('Last 7 days');
+  });
+
   it('funnel: last step without engaged visit', async () => {
     const { f, http, el } = mount(SkStatistics, { liveMs: 0, refreshMs: 0 });
     f.detectChanges();

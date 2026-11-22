@@ -37,6 +37,15 @@ export interface ReportConfig {
    * function is logged and the report is sent without these cards.
    */
   blocks?: (overview: StatsOverview) => ReportBlock[] | Promise<ReportBlock[]>;
+  /** Google page of the administration: link at the end of the Google block of the report. */
+  searchUrl?: string | null;
+  /** YouTube page of the administration: link at the end of the YouTube block of the report. */
+  youtubeUrl?: string | null;
+  /**
+   * Text overrides read again at every report (texts edited in the site's administration: subject, title, introduction, footer…),
+   * applied over `texts`. The pages and the other routes keep the texts given at creation.
+   */
+  texts?: () => TextOverrides | null | undefined | Promise<TextOverrides | null | undefined>;
 }
 
 export interface StatsKitConfig extends Omit<OverviewOptions, 'timeZone' | 'dashboardUrl'> {
@@ -102,6 +111,16 @@ export interface NodeResponse {
   statusCode: number;
   setHeader(name: string, value: string): unknown;
   end(body?: string): unknown;
+}
+
+/** Overrides given at creation, completed section by section by those read at report time. */
+function mergeOverrides(base: TextOverrides | undefined, extra: TextOverrides): TextOverrides {
+  const out: Record<string, unknown> = { ...base };
+  for (const [k, v] of Object.entries(extra)) {
+    const b = out[k];
+    out[k] = v && typeof v === 'object' && b && typeof b === 'object' ? { ...b, ...v } : v;
+  }
+  return out as TextOverrides;
 }
 
 export function createStatsKit(config: StatsKitConfig): StatsKit {
@@ -180,9 +199,11 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
         console.error('[stats-kit] report blocks', e);
       }
     }
+    const extra = r.texts ? await r.texts() : null;
+    const reportTexts = extra ? createTexts(config.locale ?? 'en', mergeOverrides(config.texts, extra), config.baseTexts) : texts;
     return buildReport({
-      overview: o, blocks, glance: r.glance, search: withSearch, youtube: withYoutube, youtubeTop: top, texts, theme: r.theme ?? { brand: '#2f5bd3' },
-      siteName: config.siteName, statsUrl: r.statsUrl ?? null, weekly, world: getWorld(),
+      overview: o, blocks, glance: r.glance, search: withSearch, youtube: withYoutube, youtubeTop: top, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
+      siteName: config.siteName, statsUrl: r.statsUrl ?? null, searchUrl: r.searchUrl ?? null, youtubeUrl: r.youtubeUrl ?? null, weekly, world: getWorld(),
     });
   }
 
