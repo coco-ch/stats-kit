@@ -44,7 +44,7 @@ export interface ReportInput {
   youtube?: YoutubeOverview | null;
   /** Most viewed videos of the period, most viewed first (report). */
   youtubeVideos?: ReportVideo[] | null;
-  /** @deprecated since 0.2.8, use `youtubeVideos`. Most viewed video of the period. */
+  /** @deprecated since 0.2.9, use `youtubeVideos`. Most viewed video of the period. */
   youtubeTop?: ReportVideo | null;
   texts: Texts;
   theme: ReportTheme;

@@ -1,6 +1,6 @@
 {
   "name": "stats-kit",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Website traffic statistics for a site administration: Umami, Google Search Console and YouTube connectors, weekly e-mail report, Angular components, labels in several languages.",
   "license": "MIT",
   "type": "module",
@@ -64,6 +64,7 @@
     "demo": "node --conditions=stats-kit-source demo/server/start.ts",
     "e2e": "npm run demo:build && playwright test",
     "screenshots": "node --conditions=stats-kit-source scripts/screenshots.ts",
+    "report:previews": "node --conditions=stats-kit-source scripts/report-previews.ts",
     "examples": "node --conditions=stats-kit-source scripts/examples.ts",
     "schema:check": "node scripts/schema.mjs --check",
     "release": "node scripts/publish-tag.mjs",

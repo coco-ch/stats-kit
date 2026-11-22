@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.2.9
+
+A fuller, lighter and more readable weekly report, the same in Node and .NET. Backward compatible for the code: nothing to change to upgrade. The report looks different (new sections, subject with the figures): a site that overrides `report.subject` or `report.subjectWeekly` keeps its own subject.
+
+### Fixed
+
+- **Report, "Languages"**: the ranking showed the language of the pages viewed (the sum of the /en/, /fr/… paths, counted per page, so more than the visitors of the period: "English 713" for 404 visitors) under the title "Languages". It now shows the browser languages of the visitors, counted in visitors, the variants of a language together ("fr-FR", "fr-CH" and "fr" → French); the language of the pages viewed comes apart ("Site language viewed", in pages), for a multilingual site. A test checks that no ranking counted in visitors adds up to more than the visitors of the period. The fake Umami of the demo and the tests counts its dimensions in visitors, as Umami does (it counted some in visits).
+- **Report on a phone**: the four key figures overflowed the screen; under 600 px they now go two by two and the cards one above the other, without horizontal scrolling and without a word cut over two lines (checked in Chrome at 375 and 320 px by the tests).
+
+### Added
+
+- **A sentence that sums up the period**, under the header and as the preheader of the message: "Quieter week: 404 visitors, 4% fewer; France still in the lead" (`report.headline*` texts, in the eleven languages).
+- **Subject with the figures**: "Example Workshop — 404 visitors this week (−4%)" (`report.subject`, `report.subjectWeekly`); without figures (Umami not connected or down), the former subjects (`report.subjectEmpty`, `report.subjectWeeklyEmpty`).
+- **A small chart in each key figure** (PNG attached, transparent background): the trend of the period for visitors and page views, this period against the previous one for visits, the bounce rate and the goals. `renderSparkline` and `renderCompare` are exported.
+- **Changes for the bounce rate (in points; a fall is good news) and the duration**, and two figures: pages per visit, visits per visitor.
+- **Rising and falling**: pages and sources that gained or lost the most against the previous period.
+- **Google**: click-through rate and average position with their change, the five top queries (clicks and impressions) and the pages gaining clicks, in the Google block (the "Google queries" ranking moves there).
+- **YouTube**: the most viewed videos of the period (three), with their views (`ReportInput.youtubeVideos`; `youtubeTop` still works).
+- **Amounts in the language of the report**: `formatMoney(texts, 12.5, 'USD')` → "$12.50", "12,50 $", "1 490 €" (Intl, narrow symbol, no decimals for a whole amount), for the site's own cards; `CURRENCIES` lists the currencies written with their symbol.
+- **Dark mode** for the mail clients that apply a style sheet (Apple Mail, iOS, Outlook.com…): dark backgrounds, light texts (`theme.dark` to change the colours); the others get plain colours that they invert well.
+- `npm run report:previews -- <dir> en,fr`: the report on the fake data, as images (computer and phone, light and dark).
+
+### Changed
+
+- **Site cards** (`report.blocks`): their figures are a light line (three per row, two on a phone) instead of framed cards inside the card.
+- **A lighter message** (about 25% less HTML): the font of the text is set once per card, the heatmap cells are only coloured.
+
+### .NET server
+
+- The same report, checked by the contract tests in the eleven languages (HTML, text, subject, pixels of the map and of the charts): `SparkPng`, `Format.Money`, `Format.MergeLanguages`, `Format.PathOf`.
+- Google and YouTube blocks: the server does not connect to them, the site gives their figures with `Report.Sources` (`ReportSources(SearchOverview, YoutubeOverview, Videos)`, read for instance from a Node stats-kit server with `ContractJson.Deserialize<SearchOverview>`). No figures, no block.
+- What 0.2.7 left to do on the .NET side: `ReportTheme.Map` (colours of the PNG map), `Report.Texts` (texts read again at every report), `Report.SearchUrl` and `Report.YoutubeUrl`, the "Countries (Google)" ranking. `ReportTheme.Dark` for the dark mode.
+
 ## 0.2.8
 
 Found by the accessibility check of the site moved to the library in 0.2.7. Backward compatible.

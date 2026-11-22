@@ -12,7 +12,7 @@ No runtime dependency on the server; in the browser, only Angular.
 
 ![Statistics page of the demo](screenshots/statistics-light.png)
 
-More screenshots (fake demo data): [dark](screenshots/statistics-dark.png), [phone](screenshots/statistics-phone.png), [Google](screenshots/google.png), [YouTube](screenshots/youtube-dark.png), [e-mail report](screenshots/report.png), [French](screenshots/statistics-french.png), [German](screenshots/statistics-german.png).
+More screenshots (fake demo data): [dark](screenshots/statistics-dark.png), [phone](screenshots/statistics-phone.png), [Google](screenshots/google.png), [YouTube](screenshots/youtube-dark.png), [e-mail report](screenshots/report.png) (on a [phone](screenshots/report-phone.png), in [dark mode](screenshots/report-phone-dark.png)), [French](screenshots/statistics-french.png), [German](screenshots/statistics-german.png).
 
 ## Installation (without an npm registry)
 
@@ -73,7 +73,15 @@ The preview (`GET /report/preview`) returns the message as it would be sent, ima
 
 A site tile (`extras.tiles`) may carry a `link` (`{ url, label }`: "Open the requests"): it is shown under the figure on the Statistics page and, for a highlighted tile, at the end of its line in the report.
 
-What the report contains: key figures with their change, goals, site data, an "At a glance" card (top source, country, page and entry page, best day, busiest slot; `report.glance: false` to remove it), the world map, page views per day next to the previous period day by day, the heatmap, Google, YouTube and the rankings. Options of `report`:
+What the report contains, in this order:
+
+- a **sentence that sums up the period**, also the preheader of the message ("Quieter week: 404 visitors, 4% fewer; France still in the lead"), and a **subject with the figures** ("Example Workshop — 404 visitors this week (−4%)");
+- the **key figures** (visitors, page views, visits, bounce rate) with their change and a **small chart** each (the trend of the period, or this period against the previous one), then the average duration, pages per visit and visits per visitor, each with its change; the goals;
+- the site data, an "At a glance" card (top source, country, page and entry page, best day, busiest slot; `report.glance: false` to remove it), **rising and falling** pages and sources, the world map, page views per day next to the previous period day by day, the heatmap;
+- **Google** (clicks, impressions, click-through rate, average position, each with its change; top queries; pages gaining clicks) and **YouTube** (views, minutes watched, subscribers, visits and requests from YouTube; most viewed videos), only when the source is connected: no empty block;
+- the rankings (the languages are the browser languages of the visitors, "fr-FR" and "fr" together, in visitors; the language of the pages viewed comes apart, for a multilingual site), then the site's own cards.
+
+Under 600 px the key figures go two by two and the cards one above the other (Apple Mail, iOS, Gmail, Outlook.com…); clients that read a style sheet get dark colours in dark mode, the others get plain colours that they invert well and images on a transparent background. Tables and inline styles only (Outlook), a plain-text version, images attached as PNG (`cid:`). Amounts in the site's cards are best written with `formatMoney(stats.texts, 12.5, 'USD')` ("$12.50", "12,50 $", "1 490 €"). Options of `report`:
 
 ```ts
 report: {
@@ -87,6 +95,8 @@ report: {
   // Colours of the PNG world map (default: derived from theme.brand).
   // theme: { brand: '#1d3c9c', map: { background: '#e9eefa', land: '#d0d7ea', low: '#96aaeb', high: '#1d3c9c' } },
   youtubeUrl: 'https://www.example.org/admin/youtube',
+  // Colours in dark mode, for the clients that apply them (default: dark neutral backgrounds, light texts).
+  // theme: { brand: '#1d3c9c', dark: { page: '#111318', card: '#1b1e26', accent: '#8fa6e8' } },
 },
 // The subject, title, introduction and footer may use {site}, {period}, {from}, {to}, {days}, and the totals {visitors}, {visits},
 // {pageviews} and {change} (change of visitors, "+12 %"); empty brackets left by a missing {change} are removed from the subject.
@@ -123,10 +133,10 @@ app.MapStatsKit("/api/admin/audience").RequireAuthorization("admin");
 - The same settings as in Node: `Pages` (languages, labels, groups), `EventLabels`, `Goals`, `Extras` (site data, shown even without Umami), `Report.Blocks` (site-specific cards), `Report.Glance`, `Texts["report.footer"] = "…"` (overrides by path), `BaseTexts` (a language the library does not ship), `CacheTtl`.
 - Without ASP.NET routing: `kit.HandleAsync(new KitRequest("GET", "/overview", query))` returns `{ Status, Headers, Body }`; `kit.OverviewAsync()`, `kit.LiveAsync()`, `kit.ReportAsync()`, `kit.SendReportAsync()` give the data. `kit.Umami.GetAsync("stats", …)` reads Umami directly with the same account (for a site's own alerts).
 - Weekly report: register a `WeeklyReportService` (hosted service) with a `WeeklySchedule { Weekday = 1, Hour = 8, TimeZone = "Europe/Paris" }` (a missed report is caught up during `CatchUpDays` days, 3 by default, as in Node), the reading and writing of the last week sent (database: once a week only, even with several instances) and the sending (`(await kit.SendReportAsync(RangeQuery.ForDays(7), weekly: true)).Ok`).
-- Search Console and YouTube are not connected by the .NET server yet: `/search`, `/search/indexation` and `/youtube` answer "not configured" (the pages then show what to do).
+- Search Console and YouTube are not connected by the .NET server yet: `/search`, `/search/indexation` and `/youtube` answer "not configured" (the pages then show what to do). Their blocks of the report are there: give their figures with `Report.Sources = (range, ct) => …` (`ReportSources(SearchOverview, YoutubeOverview, Videos)`, read for instance from a Node stats-kit server with `ContractJson.Deserialize<SearchOverview>(json)`); without them, no block. Links to the Google and YouTube pages: `Report.SearchUrl`, `Report.YoutubeUrl`; texts read again at every report: `Report.Texts = ct => …` (overrides by path); map and dark-mode colours: `ReportTheme.Map`, `ReportTheme.Dark`; amounts: `Format.Money(kit.Texts, 12.5, "USD")`.
 - Formats do not depend on the machine: numbers, dates, units, country and language names are rebuilt from a snapshot of Intl shipped with the package (`npm run dotnet:data`), so a container in invariant globalization mode writes the same report. Regional tags outside the snapshot use the formats of their language.
 
-**Same answers as Node, checked**: `npm run dotnet:golden` runs the Node server on the simulated Umami of the demo and records every call it makes and every answer it gives (overview, live count, report preview in every language, errors, unconfigured source); the .NET tests (`packages/dotnet`) replay the same calls and require the same JSON, the same report HTML and text, and the same map pixels. CI fails if the fixtures are not up to date.
+**Same answers as Node, checked**: `npm run dotnet:golden` runs the Node server on the simulated Umami of the demo and records every call it makes and every answer it gives (overview, live count, report preview in every language with Google and YouTube, errors, unconfigured source); the .NET tests (`packages/dotnet`) replay the same calls and require the same JSON, the same report HTML and text, and the same pixels for the map and the charts. CI fails if the fixtures are not up to date.
 
 ### Publishing the NuGet package
 
@@ -311,6 +321,7 @@ npm run test:angular # components: Vitest in Angular, coverage (100 % of lines)
 npm run e2e          # demo built, then Playwright (installed Chrome), accessibility and layout included
 npm run demo:build && npm run demo   # demo on http://localhost:5317, fake data
 npm run screenshots  # screenshots of the demo in screenshots/
+npm run report:previews -- <dir> en,fr  # the e-mail report on the fake data: computer and phone, light and dark
 npm run schema       # regenerates the JSON schema from the types
 npm run examples     # regenerates the example responses (packages/contract/examples)
 npm run release      # builds and pushes the v<version> tag with the built packages
