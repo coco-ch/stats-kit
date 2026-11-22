@@ -191,8 +191,8 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
     const o = await overview({ ...q, days });
     const withSearch = r.search !== false && gsc ? await search({ days: o.range.days }) : null;
     const withYoutube = r.youtube !== false && yt ? await youtube(Math.min(90, o.range.days)) : null;
-    let top: { title: string; url: string; views: number } | null = null;
-    if (yt && withYoutube?.status === 'ok' && withYoutube.totals.views) top = await yt.topVideo(withYoutube.start, withYoutube.end).catch(() => null);
+    let videos: { title: string; url: string; views: number }[] = [];
+    if (yt && withYoutube?.status === 'ok' && withYoutube.totals.views) videos = await yt.topVideos(withYoutube.start, withYoutube.end, 3, now()).catch(() => []);
     let blocks: ReportBlock[] = [];
     if (r.blocks) {
       try {
@@ -204,7 +204,7 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
     const extra = r.texts ? await r.texts() : null;
     const reportTexts = extra ? createTexts(config.locale ?? 'en', mergeOverrides(config.texts, extra), config.baseTexts) : texts;
     return buildReport({
-      overview: o, blocks, glance: r.glance, search: withSearch, youtube: withYoutube, youtubeTop: top, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
+      overview: o, blocks, glance: r.glance, search: withSearch, youtube: withYoutube, youtubeVideos: videos, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
       siteName: config.siteName, statsUrl: r.statsUrl ?? null, searchUrl: r.searchUrl ?? null, youtubeUrl: r.youtubeUrl ?? null, weekly, world: getWorld(),
     });
   }

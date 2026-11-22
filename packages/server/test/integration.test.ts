@@ -249,15 +249,15 @@ describe('report', () => {
   it('complete: figures, goals, site data, map, Google, YouTube, attached logo', async () => {
     const { o, search, youtube } = await full();
     const m = buildReport({ overview: o, search, youtube, youtubeTop: { title: 'Film <1>', url: 'https://youtube.example.test/v', views: 9 }, texts: createTexts('en', { report: { intro: 'Hello,\nhere is the report.' } }), theme: { brand: '#1d3c9c', logo: { png: new Uint8Array([1, 2, 3]), alt: 'Logo' } }, siteName: 'Example Workshop', statsUrl: 'https://www.example.test/admin', searchUrl: 'https://www.example.test/admin/google', youtubeUrl: 'https://www.example.test/admin/youtube', weekly: true, world });
-    expect(m.subject).toBe('Example Workshop — weekly traffic report');
+    expect(m.subject).toMatch(/^Example Workshop — \d+ visitors this week \([+−-]?\d+%\)$/);
     // link of a highlighted tile, links to the Google and YouTube pages, countries seen in Google
     for (const s of ['href="https://www.example.test/admin/requests?a=1&#38;b=2"', '>Open the requests</a>', 'href="https://www.example.test/admin/google"', 'Google page of the administration →', 'href="https://www.example.test/admin/youtube"', 'YouTube page of the administration →', 'Countries (Google)', 'France']) expect(m.html).toContain(s);
     expect(m.text).toContain('To handle: 3 (pending) https://www.example.test/admin/requests?a=1&b=2');
     expect(m.text).toContain('COUNTRIES (GOOGLE)');
-    expect(m.attachments.map((a) => [a.cid, a.filename])).toEqual([['stats-kit-logo', 'logo.png'], ['stats-kit-map', 'map.png']]);
+    expect(m.attachments.map((a) => [a.cid, a.filename])).toEqual([['stats-kit-logo', 'logo.png'], ['stats-kit-visitors', 'visitors.png'], ['stats-kit-pageviews', 'pageviews.png'], ['stats-kit-visits', 'visits.png'], ['stats-kit-bounce', 'bounce.png'], ['stats-kit-goal-tel', 'goal-tel.png'], ['stats-kit-map', 'map.png']]);
     for (const s of ['width="760"', 'lang="en-GB"', 'cid:stats-kit-map', 'cid:stats-kit-logo', 'Calls', 'Requests', 'To handle: 3', 'In Google', 'On YouTube', 'Film &#60;1&#62;', 'Subjects', 'Hello,<br>here', 'See all statistics', '<!--[if mso]>', 'Monday']) expect(m.html).toContain(s);
     expect(m.html).not.toMatch(/<script|<svg/i);
-    for (const s of ['Visitors: ', 'IN GOOGLE', 'ON YOUTUBE', 'Statistics: https://www.example.test/admin', 'Most viewed video: Film <1>']) expect(m.text).toContain(s);
+    for (const s of ['Visitors: ', 'IN GOOGLE', 'ON YOUTUBE', 'Statistics: https://www.example.test/admin', 'Film <1>: 9 https://youtube.example.test/v']) expect(m.text).toContain(s);
     const preview = previewHtml(m);
     expect(preview).toContain('data:image/png;base64,');
     expect(preview).not.toContain('cid:');
@@ -271,12 +271,12 @@ describe('report', () => {
     // highlighted site data in amber by default, colours given by the site otherwise
     const { o: full0 } = await full();
     expect(buildReport({ overview: full0, texts, theme: { brand: '#344d9b' }, siteName: 'S', world: null }).html).toContain('background:#fff3d6');
-    expect(buildReport({ overview: full0, texts, theme: { brand: '#344d9b', warnSoft: '#ffeeaa', warnInk: 'x' }, siteName: 'S', world: null }).html).toMatch(/background:#ffeeaa[^>]*><tr><td style="padding:14px 16px;[^"]*color:#5a3b00/);
+    expect(buildReport({ overview: full0, texts, theme: { brand: '#344d9b', warnSoft: '#ffeeaa', warnInk: 'x' }, siteName: 'S', world: null }).html).toMatch(/background:#ffeeaa[^>]*><tr><td [^>]*color:#5a3b00/);
   });
   it('in French and in German, with the punctuation and formats of each language', async () => {
     const { o, search, youtube } = await full();
     const fr = buildReport({ overview: o, search, youtube, texts: createTexts('fr'), theme: { brand: '#1d3c9c' }, siteName: 'Atelier', world: null });
-    expect(fr.subject).toMatch(/^Atelier — rapport de fréquentation \(/);
+    expect(fr.subject).toMatch(/^Atelier — \d+ visiteurs, /);
     for (const s of ['Visiteurs : ', 'DANS GOOGLE', 'Rebond : ']) expect(fr.text).toContain(s);
     expect(fr.html).toContain('lundi');
     expect(fr.html).toMatch(/\d[\u00a0\u202f ]%/);
@@ -329,7 +329,7 @@ describe('report', () => {
   });
   it('no visits, no countries, no Google impressions; Umami dashboard as fallback; footer removed', async () => {
     const o = await overview(1);
-    const quiet: StatsOverview = { ...o, totals: { pageviews: 0, visitors: 0, visits: 0, bounces: 0, totaltime: 0 }, previous: null, series: { ...o.series, pageviews: o.series.pageviews.map(() => 0) }, heatmap: o.heatmap.map((r) => r.map(() => 0)), breakdowns: { ...o.breakdowns, countries: [] }, goals: [], dashboardUrl: 'https://umami.example.test/d' };
+    const quiet: StatsOverview = { ...o, totals: { pageviews: 0, visitors: 0, visits: 0, bounces: 0, totaltime: 0 }, previous: null, series: { ...o.series, pageviews: o.series.pageviews.map(() => 0), visitors: o.series.visitors.map(() => 0) }, heatmap: o.heatmap.map((r) => r.map(() => 0)), breakdowns: { ...o.breakdowns, countries: [] }, goals: [], dashboardUrl: 'https://umami.example.test/d' };
     const search = await gscClient(sources.gsc, fake).overview({ days: 7 }, NOW);
     const m = buildReport({ overview: quiet, search: { ...search, totals: { clicks: 0, impressions: 0, ctr: 0, position: 0 } }, youtube: null, texts: createTexts('en', { report: { footer: '' } }), theme: { brand: '#2244aa' }, siteName: 'Demo', world });
     expect(m.attachments).toEqual([]);
@@ -359,7 +359,7 @@ describe('kit and HTTP routes', () => {
     expect([yt.status, yt.days, yt.site.requests]).toEqual(['ok', 7, 1]);
     expect((await get('/youtube')).body.days).toBe(28);
     const pv = await get('/report/preview');
-    expect(pv.body.subject).toMatch(/^Example Workshop — traffic report/);
+    expect(pv.body.subject).toMatch(/^Example Workshop — \d+ visitors, /);
     expect(pv.body.html).toContain('data:image/png;base64,');
     const w = await get('/world.json');
     expect([w.status, w.headers['Cache-Control'], w.body.features.length > 100]).toEqual([200, 'public, max-age=604800', true]);
@@ -379,11 +379,11 @@ describe('kit and HTTP routes', () => {
     expect((await edited.report({ days: 7 }, true)).html).toContain('Second footer');
     expect(edited.texts.stats.title).toBe('Audience');
     const none = createStatsKit(base({ report: { texts: () => null } }));
-    expect((await none.report()).subject).toMatch(/^Example Workshop — traffic report/);
+    expect((await none.report()).subject).toMatch(/^Example Workshop — \d+ visitors, /);
     const fresh = createStatsKit(base({ report: { texts: () => ({ report: { title: 'Fresh' } }) } }));
     expect((await fresh.report()).html).toContain('Fresh');
-    const noTop = createStatsKit(base({ fetch: tweak((url) => (url.includes('maxResults=1') ? new Response('', { status: 500 }) : null)) }));
-    expect((await noTop.report()).html).not.toContain('Most viewed video');
+    const noTop = createStatsKit(base({ fetch: tweak((url) => (url.includes('maxResults=3') ? new Response('', { status: 500 }) : null)) }));
+    expect((await noTop.report()).html).not.toContain('Most viewed videos');
   });
   it('site data read at every call, while the figures of Umami stay in cache', async () => {
     let n = 0;
@@ -452,7 +452,7 @@ describe('kit and HTTP routes', () => {
     expect((await down.live()).active).toBeNull();
     const boom = createStatsKit(base({ world: 'missing-file.json', extras: async () => { throw new Error('x'); } }));
     expect(boom.worldJson()).toBeNull();
-    expect((await boom.report()).attachments.map((a) => a.cid)).toEqual([]);
+    expect((await boom.report()).attachments.map((a) => a.cid)).not.toContain('stats-kit-map');
     const crash = createStatsKit(base());
     vi.spyOn(crash, 'overview');
     const badHandle = await createStatsKit({ ...base(), timeZone: 'Not/A_Zone' }).handle({ method: 'GET', path: '/overview', query: {} });

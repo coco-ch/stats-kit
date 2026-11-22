@@ -1,6 +1,13 @@
 /*
  * HTML building blocks of the e-mail report: tables and inline styles only (Outlook shows neither SVG, nor JavaScript, nor most
  * modern CSS). Usable width: 760 px. Every visible text comes from the texts of the chosen language.
+ *
+ * Two additions read by the clients that support a style sheet (Apple Mail, iOS, Gmail, Outlook.com, Outlook for Mac…), and
+ * ignored without harm by the others:
+ *  - under 600 px, key figures two by two and cards on a single column (classes `sk-q`, `sk-col`, `sk-px`, `sk-in`);
+ *  - in dark mode, dark backgrounds and light texts (classes `sk-bg`, `sk-card`, `sk-ink`…; `[data-ogsc]` for Outlook.com).
+ * A client that inverts the colours itself (Gmail apps, Outlook) gets plain colours on plain backgrounds, which it inverts well,
+ * and images on a transparent background.
  */
 import { fill, formatNumber, formatPercent, labelValue, mixHex, percentChange, type Texts } from 'stats-kit/contract';
 import type { Palette } from './theme.ts';
@@ -16,40 +23,102 @@ export const escLines = (s: string): string => esc(s).replace(/\n/g, '<br>');
 
 const T = 'role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"';
 
-export function mailKit(C: Palette, texts: Texts) {
-  const font = (size: string, weight = 400, color = C.text, family = C.font) => `font:${weight} ${size} ${family};color:${color}`;
+/** A figure of a row: value, label, line under it (HTML), optional image (HTML). */
+export interface Figure {
+  value: string;
+  label: string;
+  sub: string;
+  image?: string;
+}
 
-  const trend = (now: number, before: number | null | undefined): string => {
-    const p = percentChange(now, before);
-    if (p === null) return '&nbsp;';
-    return `<span style="color:${p >= 0 ? C.up : C.down};font-weight:700">${p >= 0 ? '▲' : '▼'} ${esc(formatPercent(texts, p / 100, 0, true))}</span> <span style="color:${C.muted}">${esc(texts.report.vsPrevious)}</span>`;
+/** Tone of a change: good news, bad news, neither. */
+export type Tone = 'up' | 'down' | 'flat';
+
+export function mailKit(C: Palette, texts: Texts) {
+  const D = C.dark;
+  /** Class of a text colour (dark mode). */
+  const role = (color: string) => (color === C.ink ? 'sk-ink' : color === C.text ? 'sk-tx' : color === C.muted ? 'sk-mu' : color === C.accentDeep ? 'sk-ac' : color === C.up ? 'sk-up' : color === C.down ? 'sk-dn' : '');
+  /** `class` and `style` attributes of a text: size ("13px" or "13px/1.5"), weight, colour, font; `more`: other styles. */
+  const ts = (size: string, weight = 400, color = C.text, family = C.font, more = '', extraClass = '') => {
+    const cls = [role(color), extraClass].filter(Boolean).join(' ');
+    const [px, lh] = size.split('/');
+    // the text font is inherited from the card (set once per card: lighter message); only another font is repeated
+    const font = family === C.font ? `font-size:${px}${lh ? `;line-height:${lh}` : ''}${weight === 400 ? '' : `;font-weight:${weight}`}` : `font:${weight} ${size} ${family}`;
+    return `${cls ? `class="${cls}" ` : ''}style="${font};color:${color}${more ? `;${more}` : ''}"`;
   };
 
-  const box = (inner: string) => `<table ${T} style="background:${C.card};border:1px solid ${C.line};border-radius:14px"><tr><td style="padding:18px">${inner}</td></tr></table>`;
-  const card = (inner: string) => `<tr><td style="padding:0 24px 16px 24px">${box(inner)}</td></tr>`;
-  /** Two cards side by side (a single one if the number is odd). */
+  /** Change shown under a figure: arrow, text, tone; "vs previous period" after it. */
+  const delta = (text: string, tone: Tone, arrow: '▲' | '▼' | '=') => {
+    const color = tone === 'up' ? C.up : tone === 'down' ? C.down : C.muted;
+    return `<span class="${role(color)}" style="color:${color};font-weight:700">${arrow} ${esc(text)}</span> <span class="sk-mu" style="color:${C.muted}">${esc(texts.report.vsPrevious)}</span>`;
+  };
+
+  /** Relative change (whole percentage); `lowerIsBetter` for a figure that should go down. */
+  const trend = (now: number, before: number | null | undefined, lowerIsBetter = false): string => {
+    const p = percentChange(now, before);
+    if (p === null) return '&nbsp;';
+    if (p === 0) return delta(formatPercent(texts, 0, 0), 'flat', '=');
+    const good = lowerIsBetter ? p < 0 : p > 0;
+    return delta(formatPercent(texts, p / 100, 0, true), good ? 'up' : 'down', p >= 0 ? '▲' : '▼');
+  };
+
+  /** Absolute change (rounded to `digits`), with a unit template ("{n} pts"); `lowerIsBetter` for a rate of bounces, a position. */
+  const gap = (now: number, before: number | null | undefined, digits: number, unit: string | null, lowerIsBetter: boolean): string => {
+    if (before === null || before === undefined || !Number.isFinite(before)) return '&nbsp;';
+    const f = 10 ** digits;
+    const d = Math.round((now - before) * f) / f;
+    const n = (v: number, signed: boolean) => { const s = formatNumber(texts, v, digits, signed); return unit ? fill(unit, { n: s }) : s; };
+    if (d === 0) return delta(n(0, false), 'flat', '=');
+    const good = lowerIsBetter ? d < 0 : d > 0;
+    return delta(n(d, true), good ? 'up' : 'down', d > 0 ? '▲' : '▼');
+  };
+
+  const box = (inner: string) => `<table ${T} class="sk-card" style="background:${C.card};border:1px solid ${C.line};border-radius:14px"><tr><td class="sk-in" style="padding:18px;font-family:${C.font}">${inner}</td></tr></table>`;
+  const card = (inner: string) => `<tr><td class="sk-px" style="padding:0 24px 16px 24px">${box(inner)}</td></tr>`;
+  /** Two cards side by side (a single one if the number is odd); one above the other on a phone. */
   const row = (cells: string[]) => cells.length === 1
     ? card(cells[0])
-    : `<tr><td style="padding:0 20px 16px 20px"><table ${T}><tr>${cells.map((c) => `<td width="50%" valign="top" style="padding:0 4px">${box(c)}</td>`).join('')}</tr></table></td></tr>`;
+    : `<tr><td class="sk-px sk-pr" style="padding:0 20px 16px 20px"><table ${T}><tr>${cells.map((c) => `<td class="sk-col" width="50%" valign="top" style="padding:0 4px">${box(c)}</td>`).join('')}</tr></table></td></tr>`;
   const pairs = (cells: string[]) => {
     const list = cells.filter(Boolean);
     return Array.from({ length: Math.ceil(list.length / 2) }, (_, i) => row(list.slice(i * 2, i * 2 + 2))).join('\n');
   };
+  /** Two blocks side by side inside a card (one above the other on a phone). */
+  const split = (a: string, b: string) =>
+    `<table ${T}><tr><td class="sk-col" width="50%" valign="top" style="padding:0 10px 0 0">${a}</td><td class="sk-col" width="50%" valign="top" style="padding:0 0 0 10px">${b}</td></tr></table>`;
 
   const h2 = (title: string, hint = '') =>
-    `<div style="${font('15px', 700, C.ink)};letter-spacing:-0.01em">${esc(title)}</div>${hint ? `<div style="${font('12px', 400, C.muted)};margin-top:2px">${esc(hint)}</div>` : ''}<div style="height:6px;line-height:6px;font-size:0">&nbsp;</div>`;
+    `<div ${ts('15px', 700, C.ink, C.font, 'letter-spacing:-0.01em')}>${esc(title)}</div>${hint ? `<div ${ts('12px', 400, C.muted, C.font, 'margin-top:2px')}>${esc(hint)}</div>` : ''}<div style="height:6px;line-height:6px;font-size:0">&nbsp;</div>`;
+  const h3 = (title: string) => `<div ${ts('12px', 700, C.muted, C.font, 'text-transform:uppercase;letter-spacing:0.08em;padding:6px 0 2px')}>${esc(title)}</div>`;
 
-  const kpi = (value: string, label: string, sub: string, width: string) =>
-    `<td width="${width}" valign="top" style="padding:0 4px 8px"><table ${T} style="background:${C.card};border:1px solid ${C.line};border-radius:12px"><tr><td style="padding:14px 14px 12px"><div style="${font('28px/1.1', 800, C.ink, C.display)};letter-spacing:-0.03em">${esc(value)}</div><div style="${font('12px', 400, C.muted)};margin-top:2px">${esc(label)}</div><div style="${font('11px')};margin-top:6px;min-height:14px">${sub}</div></td></tr></table></td>`;
+  /** Small chart of a figure (attached PNG, shown at half its size). */
+  const spark = (cid: string, width: number, height: number) =>
+    `<img src="cid:${cid}" width="${width / 2}" height="${height / 2}" alt="" style="display:block;width:100%;max-width:${width / 2}px;height:auto;border:0;margin-top:8px">`;
 
-  /** Row of key figures, completed to keep cards of the same width. */
-  const kpiRow = (kpis: { value: string; label: string; sub: string }[], columns = 4) => {
+  const kpi = (f: Figure, width: string) =>
+    `<td class="sk-q" width="${width}" valign="top" style="padding:0 4px 8px"><table ${T} class="sk-card" style="background:${C.card};border:1px solid ${C.line};border-radius:12px"><tr><td style="padding:14px 14px 12px;font-family:${C.font}"><div ${ts('28px/1.1', 800, C.ink, C.display, 'letter-spacing:-0.03em', 'sk-fig')}>${esc(f.value)}</div><div ${ts('12px', 400, C.muted, C.font, 'margin-top:2px')}>${esc(f.label)}</div><div ${ts('11px/1.45', 400, C.text, C.font, 'margin-top:6px;min-height:14px')}>${f.sub}</div>${f.image ?? ''}</td></tr></table></td>`;
+
+  /** Row of key figures, completed to keep cards of the same width; two by two on a phone. */
+  const kpiRow = (kpis: Figure[], columns = 4) => {
     const width = `${(100 / columns).toFixed(2)}%`;
-    const cells = kpis.map((k) => kpi(k.value, k.label, k.sub, width));
-    while (cells.length % columns) cells.push(`<td width="${width}"></td>`);
+    const cells = kpis.map((k) => kpi(k, width));
+    while (cells.length % columns) cells.push(`<td class="sk-q" width="${width}"></td>`);
     const rows: string[] = [];
-    for (let i = 0; i < cells.length; i += columns) rows.push(`<tr><td style="padding:0 20px"><table ${T}><tr>${cells.slice(i, i + columns).join('')}</tr></table></td></tr>`);
+    for (let i = 0; i < cells.length; i += columns) rows.push(`<tr><td class="sk-px" style="padding:0 20px"><table ${T}><tr>${cells.slice(i, i + columns).join('')}</tr></table></td></tr>`);
     return rows.join('');
+  };
+
+  /** Light row of figures inside a card: no frame, a line of figures (two by two on a phone). */
+  const figures = (list: Figure[], columns = 3) => {
+    const width = `${(100 / columns).toFixed(2)}%`;
+    const cell = (f: Figure) => `<td class="sk-q" width="${width}" valign="top" style="padding:4px 12px 8px 0"><div ${ts('20px/1.2', 800, C.ink, C.display, 'letter-spacing:-0.02em')}>${esc(f.value)}</div><div ${ts('12px/1.4', 400, C.muted, C.font, 'margin-top:2px')}>${esc(f.label)}</div>${f.sub ? `<div ${ts('11px/1.45', 400, C.text, C.font, 'margin-top:3px')}>${f.sub}</div>` : ''}</td>`;
+    const rows: string[] = [];
+    for (let i = 0; i < list.length; i += columns) {
+      const part = list.slice(i, i + columns).map(cell);
+      while (part.length < columns) part.push(`<td class="sk-q" width="${width}"></td>`);
+      rows.push(`<tr>${part.join('')}</tr>`);
+    }
+    return `<table ${T}>${rows.join('')}</table>`;
   };
 
   /** Ranking: label and number, proportional bar below. */
@@ -58,13 +127,27 @@ export function mailKit(C: Palette, texts: Texts) {
     const max = Math.max(1, ...rows.map((r) => r[1]));
     const html = rows.map(([label, n]) => {
       const w = Math.min(100, Math.max(4, Math.round((n / max) * 100)));
-      return `<tr><td style="padding-top:7px;${font('13px')}">${esc(label)}</td><td align="right" style="padding-top:7px;${font('13px', 700, C.ink)}">${esc(formatNumber(texts, n))}</td></tr><tr><td colspan="2" style="padding-top:3px"><table ${T}><tr><td width="${w}%" height="6" bgcolor="${C.accent}" style="background:${C.accent};border-radius:3px;font-size:0;line-height:0">&nbsp;</td>${w < 100 ? '<td style="font-size:0;line-height:0">&nbsp;</td>' : ''}</tr></table></td></tr>`;
+      return `<tr><td ${ts('13px', 400, C.text, C.font, 'padding-top:7px')}>${esc(label)}</td><td align="right" ${ts('13px', 700, C.ink, C.font, 'padding-top:7px;padding-left:8px')}>${esc(formatNumber(texts, n))}</td></tr><tr><td colspan="2" style="padding-top:3px"><table ${T} style="font-size:0;line-height:0"><tr><td width="${w}%" height="6" bgcolor="${C.accent}" style="border-radius:3px">&nbsp;</td>${w < 100 ? '<td>&nbsp;</td>' : ''}</tr></table></td></tr>`;
     });
     return {
       inner: `${h2(title, hint)}<table ${T}>${html.join('')}</table>`,
       text: `\n${title.toLocaleUpperCase(texts.locale)}\n${rows.map(([l, n]) => `  - ${labelValue(texts, l, formatNumber(texts, n))}`).join('\n')}\n`,
     };
   };
+
+  /** Table with a label column and number columns (HTML already escaped in the cells). */
+  const grid = (head: string[], rows: string[][]) => {
+    const th = head.map((h, i) => `<td${i ? ' align="right"' : ''} ${ts('11px', 700, C.muted, C.font, `padding:0 ${i ? '0 4px 8px' : '0 4px 0'}`)}>${esc(h)}</td>`).join('');
+    const tr = rows.map((r) => `<tr>${r.map((c, i) => `<td${i ? ' align="right"' : ''} ${ts('13px/1.4', i ? 700 : 400, i ? C.ink : C.text, C.font, `padding:6px ${i ? '0 0 8px' : '0 0 0'};border-top:1px solid ${C.line}`, 'sk-bd')}>${c}</td>`).join('')}</tr>`).join('');
+    return `<table ${T}><tr>${th}</tr>${tr}</table>`;
+  };
+
+  /** Lines with a change at the right ("+12" in green, "-3" in red); `tag`: small grey word after the label. */
+  const moves = (rows: { label: string; tag: string; text: string; tone: Tone }[]) =>
+    `<table ${T}>${rows.map((r) => {
+      const color = r.tone === 'up' ? C.up : r.tone === 'down' ? C.down : C.muted;
+      return `<tr><td ${ts('13px/1.4', 400, C.text, C.font, `padding:6px 0;border-top:1px solid ${C.line}`, 'sk-bd')}>${esc(r.label)}${r.tag ? ` <span ${ts('11px', 400, C.muted)}>· ${esc(r.tag)}</span>` : ''}</td><td align="right" valign="top" ${ts('13px/1.4', 700, color, C.font, `padding:6px 0 6px 8px;border-top:1px solid ${C.line};white-space:nowrap`, 'sk-bd')}>${esc(r.text)}</td></tr>`;
+    }).join('')}</table>`;
 
   /**
    * Vertical bars (one per slot), first and last labels below. With `previous` (same length), each slot shows the bar of the
@@ -75,43 +158,63 @@ export function mailKit(C: Palette, texts: Texts) {
     const max = Math.max(1, ...values, ...(prev ?? []));
     const H = 110;
     const ghost = mixHex(C.line, C.muted, 0.25);
-    const bar = (v: number, color: string) => `<td valign="bottom" style="padding:0"><table ${T}><tr><td height="${Math.max(2, Math.round((v / max) * H))}" bgcolor="${color}" style="background:${color};border-radius:3px 3px 0 0;font-size:0;line-height:0">&nbsp;</td></tr></table></td>`;
-    const cells = values.map((v, i) => `<td valign="bottom" style="padding:0 1px" title="${esc(titles[i])}"><table ${T}><tr>${prev ? bar(prev[i], ghost) : ''}${bar(v, C.accentDeep)}</tr></table></td>`);
-    const swatch = (color: string) => `<td width="10" height="10" bgcolor="${color}" style="background:${color};font-size:0;line-height:0">&nbsp;</td>`;
+    // `sk-b1` / `sk-b0`: bars of the period and of the previous period, lighter in dark mode
+    const bar = (v: number, color: string, cls: string) => `<td valign="bottom" style="padding:0"><table ${T} style="font-size:0;line-height:0"><tr><td class="${cls}" height="${Math.max(2, Math.round((v / max) * H))}" bgcolor="${color}" style="border-radius:3px 3px 0 0">&nbsp;</td></tr></table></td>`;
+    const cells = values.map((v, i) => `<td valign="bottom" style="padding:0 1px" title="${esc(titles[i])}"><table ${T}><tr>${prev ? bar(prev[i], ghost, 'sk-b0') : ''}${bar(v, C.accentDeep, 'sk-b1')}</tr></table></td>`);
+    // legend: one line per series, the swatch kept square whatever the width
+    const item = (color: string, cls: string, text: string) => `<tr><td width="10" style="padding:3px 0"><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-size:0;line-height:0"><tr><td class="${cls}" width="10" height="10" bgcolor="${color}">&nbsp;</td></tr></table></td><td ${ts('11px/1.3', 400, C.muted, C.font, 'padding:3px 0 3px 6px')}>${esc(text)}</td></tr>`;
     const key = prev && legend
-      ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:8px"><tr>${swatch(C.accentDeep)}<td style="padding:0 14px 0 6px;${font('11px', 400, C.muted)}">${esc(legend[0])}</td>${swatch(ghost)}<td style="padding-left:6px;${font('11px', 400, C.muted)}">${esc(legend[1])}</td></tr></table>`
+      ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin-top:6px">${item(C.accentDeep, 'sk-b1', legend[0])}${item(ghost, 'sk-b0', legend[1])}</table>`
       : '';
-    return `<table ${T} height="${H}"><tr>${cells.join('')}</tr></table><table ${T} style="margin-top:6px"><tr><td style="${font('11px', 400, C.muted)}">${esc(first)}</td><td align="right" style="${font('11px', 400, C.muted)}">${esc(last)}</td></tr></table>${key}`;
+    return `<table ${T} height="${H}"><tr>${cells.join('')}</tr></table><table ${T} style="margin-top:6px"><tr><td ${ts('11px', 400, C.muted)}>${esc(first)}</td><td align="right" ${ts('11px', 400, C.muted)}>${esc(last)}</td></tr></table>${key}`;
   };
 
   /** Bulleted lines (already formatted texts). */
   const bullets = (lines: string[]) =>
-    `<table ${T}>${lines.map((l) => `<tr><td width="14" valign="top" style="padding:4px 0;${font('13px', 400, C.accentDeep)}">●</td><td style="padding:4px 0;${font('13px/1.5')}">${esc(l)}</td></tr>`).join('')}</table>`;
+    `<table ${T}>${lines.map((l) => `<tr><td width="14" valign="top" ${ts('13px', 400, C.accentDeep, C.font, 'padding:4px 0')}>●</td><td ${ts('13px/1.5', 400, C.text, C.font, 'padding:4px 0')}>${esc(l)}</td></tr>`).join('')}</table>`;
 
   /** 7 × 24 heatmap; `days` are the short weekday names, Monday first. */
-  const heat = (grid: number[][], days: string[]) => {
-    const max = Math.max(1, ...grid.flat());
-    const head = `<tr><td width="4%"></td>${Array.from({ length: 24 }, (_, h) => `<td width="4%" align="center" style="${font('9px', 400, C.muted)}">${h % 3 === 0 ? esc(formatNumber(texts, h)) : ''}</td>`).join('')}</tr>`;
-    const rows = grid.map((r, d) => `<tr><td style="${font('10px', 400, C.muted)};padding-right:4px">${esc(days[d])}</td>${r.map((y) => `<td width="4%" height="15" bgcolor="${y ? mixHex(C.soft, C.accentDeep, 0.15 + 0.85 * (y / max)) : C.page}" style="border:1px solid ${C.card};font-size:0;line-height:0">&nbsp;</td>`).join('')}</tr>`);
-    return `<table ${T}>${head}${rows.join('')}</table>`;
+  const heat = (gridValues: number[][], days: string[]) => {
+    const max = Math.max(1, ...gridValues.flat());
+    const head = `<tr><td width="4%"></td>${Array.from({ length: 24 }, (_, h) => `<td width="4%" align="center" ${ts('9px/1.4', 400, C.muted)}>${h % 3 === 0 ? esc(formatNumber(texts, h)) : ''}</td>`).join('')}</tr>`;
+    // the cells are only coloured (the heatmap has 168 of them): gaps from the table spacing, height on the row
+    const rows = gridValues.map((r, d) => `<tr style="height:15px"><td ${ts('10px', 400, C.muted, C.font, 'padding-right:4px;line-height:1')}>${esc(days[d])}</td>${r.map((y) => y
+      ? `<td bgcolor="${mixHex(C.soft, C.accentDeep, 0.15 + 0.85 * (y / max))}">&nbsp;</td>`
+      : `<td class="sk-bg" bgcolor="${C.page}">&nbsp;</td>`).join('')}</tr>`);
+    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="2" border="0" style="font-size:0;line-height:0">${head}${rows.join('')}</table>`;
   };
 
   const button = (href: string, label: string) =>
-    `<tr><td align="center" style="padding:8px 24px 8px"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${C.accentDeep}" style="background:${C.accentDeep};border-radius:999px"><a href="${esc(href)}" style="display:inline-block;padding:13px 26px;${font('14px', 700, '#ffffff')};text-decoration:none">${esc(label)}</a></td></tr></table></td></tr>`;
+    `<tr><td align="center" style="padding:8px 24px 8px"><table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="${C.accentDeep}" style="background:${C.accentDeep};border-radius:999px"><a href="${esc(href)}" style="display:inline-block;padding:13px 26px;font:700 14px ${C.font};color:#ffffff;text-decoration:none">${esc(label)}</a></td></tr></table></td></tr>`;
 
   const header = (eyebrow: string, title: string, subtitle: string, logo: string) =>
-    `<tr><td style="padding:0 24px 16px 24px"><table ${T} bgcolor="${C.head}" style="background:${C.head};border-radius:16px"><tr><td style="padding:26px 28px">${logo ? `<div style="margin-bottom:14px">${logo}</div>` : ''}<div style="${font('12px', 700, C.eyebrow)};letter-spacing:0.14em;text-transform:uppercase">${esc(eyebrow)}</div><div style="${font('26px/1.2', 800, C.headText, C.display)};margin-top:8px;letter-spacing:-0.02em">${esc(title)}</div><div style="${font('14px', 400, C.headMuted)};margin-top:6px">${esc(subtitle)}</div></td></tr></table></td></tr>`;
+    `<tr><td class="sk-px" style="padding:0 24px 16px 24px"><table ${T} bgcolor="${C.head}" style="background:${C.head};border-radius:16px"><tr><td class="sk-in" style="padding:26px 28px">${logo ? `<div style="margin-bottom:14px">${logo}</div>` : ''}<div style="font:700 12px ${C.font};color:${C.eyebrow};letter-spacing:0.14em;text-transform:uppercase">${esc(eyebrow)}</div><div class="sk-h1" style="font:800 26px/1.2 ${C.display};color:${C.headText};margin-top:8px;letter-spacing:-0.02em">${esc(title)}</div><div style="font:400 14px/1.45 ${C.font};color:${C.headMuted};margin-top:6px">${esc(subtitle)}</div></td></tr></table></td></tr>`;
 
-  const note = (text: string) => `<tr><td style="padding:0 24px 16px;${font('13px/1.5', 400, C.muted)}">${esc(text)}</td></tr>`;
-  const callout = (html: string) => `<tr><td style="padding:0 24px 16px"><table ${T} style="background:${C.warnSoft};border-radius:12px"><tr><td style="padding:14px 16px;${font('14px/1.5', 400, C.warnInk)}">${html}</td></tr></table></td></tr>`;
-  const paragraph = (text: string) => `<tr><td style="padding:0 24px 16px;${font('15px/1.6', 400, C.ink)}">${escLines(text)}</td></tr>`;
-  const footer = (text: string) => `<tr><td align="center" style="padding:14px 24px 0;${font('12px/1.6', 400, C.muted)}">${escLines(text)}</td></tr>`;
+  /** Sentence that sums up the period, large, under the header. */
+  const headline = (text: string) =>
+    `<tr><td class="sk-px" style="padding:0 24px 16px"><table ${T} class="sk-soft" bgcolor="${C.soft}" style="background:${C.soft};border-radius:12px"><tr><td style="padding:14px 18px;border-left:4px solid ${C.accentDeep};border-radius:12px;font-family:${C.font}"><div ${ts('17px/1.45', 700, C.ink, C.display)}>${esc(text)}</div></td></tr></table></td></tr>`;
+
+  const note = (text: string) => `<tr><td class="sk-px" ${ts('13px/1.5', 400, C.muted, C.font, `padding:0 24px 16px;font-family:${C.font}`)}>${esc(text)}</td></tr>`;
+  /** Highlighted site data (requests to handle…), in amber: `sk-warn` / `sk-wi` in dark mode. */
+  const callout = (html: string) => `<tr><td class="sk-px" style="padding:0 24px 16px"><table ${T} class="sk-warn" bgcolor="${C.warnSoft}" style="background:${C.warnSoft};border-radius:12px"><tr><td ${ts('14px/1.5', 400, C.warnInk, C.font, `padding:14px 16px;font-family:${C.font}`, 'sk-wi')}>${html}</td></tr></table></td></tr>`;
+  const paragraph = (text: string) => `<tr><td class="sk-px" ${ts('15px/1.6', 400, C.ink, C.font, `padding:0 24px 16px;font-family:${C.font}`)}>${escLines(text)}</td></tr>`;
+  const footer = (text: string) => `<tr><td align="center" class="sk-px" ${ts('12px/1.6', 400, C.muted, C.font, `padding:14px 24px 0;font-family:${C.font}`)}>${escLines(text)}</td></tr>`;
+  /** Link to a page of the administration, at the end of a block. */
+  const link = (url: string, label: string) => `<div style="font:12px ${C.font};margin-top:10px"><a href="${esc(url)}" class="sk-ac" style="color:${C.accentDeep}">${esc(label)}</a></div>`;
+
+  /** Style sheet: phone layout and dark mode (clients that read it; the others keep the inline styles). */
+  const css = () => {
+    const dark = `.sk-bg{background:${D.page}!important;background-color:${D.page}!important}.sk-card{background:${D.card}!important;background-color:${D.card}!important;border-color:${D.line}!important}.sk-soft{background:${D.soft}!important;background-color:${D.soft}!important}.sk-ink{color:${D.ink}!important}.sk-tx{color:${D.text}!important}.sk-mu{color:${D.muted}!important}.sk-ac{color:${D.accent}!important}.sk-up{color:${D.up}!important}.sk-dn{color:${D.down}!important}.sk-bd{border-color:${D.line}!important}.sk-warn{background:#3a2f16!important;background-color:#3a2f16!important}.sk-wi{color:#ffd98c!important}.sk-b1{background:${D.accent}!important;background-color:${D.accent}!important}.sk-b0{background:${mixHex(D.line, D.muted, 0.4)}!important;background-color:${mixHex(D.line, D.muted, 0.4)}!important}`;
+    const ogsc = dark.replace(/\.sk-/g, '[data-ogsc] .sk-');
+    return `<style>:root{color-scheme:light dark;supported-color-schemes:light dark}@media only screen and (max-width:600px){.sk-px{padding-left:10px!important;padding-right:10px!important}.sk-in{padding:14px!important}.sk-q{display:inline-block!important;width:50%!important;box-sizing:border-box}.sk-col{display:block!important;width:100%!important;box-sizing:border-box;padding:0 0 12px 0!important}.sk-pr{padding-bottom:4px!important}.sk-h1{font-size:22px!important}.sk-fig{font-size:24px!important}}@media (prefers-color-scheme:dark){${dark}}${ogsc}</style>`;
+  };
 
   /** Complete document: `rows` = <tr> rows already assembled. */
-  const page = (title: string, preheader: string, rows: string) => `<!doctype html><html lang="${esc(texts.locale)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>${esc(title)}</title>
+  const page = (title: string, preheader: string, rows: string) => `<!doctype html><html lang="${esc(texts.locale)}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><meta name="x-apple-disable-message-reformatting"><title>${esc(title)}</title>
+${css()}
 <!--[if mso]><style>table{border-collapse:collapse}td{font-family:Arial,sans-serif}</style><![endif]--></head>
-<body style="margin:0;padding:0;background:${C.page}"><div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;color:${C.page}">${esc(preheader)}</div>
-<table ${T} bgcolor="${C.page}" style="background:${C.page}"><tr><td align="center" style="padding:24px 8px">
+<body class="sk-bg" style="margin:0;padding:0;background:${C.page};-webkit-text-size-adjust:100%"><div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:${C.page}">${esc(preheader)}${'&#8199;&#65279;&#847; '.repeat(40)}</div>
+<table ${T} class="sk-bg" bgcolor="${C.page}" style="background:${C.page}"><tr><td align="center" style="padding:24px 8px">
 <!--[if mso]><table role="presentation" width="${MAIL_WIDTH}" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
 <table role="presentation" width="${MAIL_WIDTH}" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:${MAIL_WIDTH}px">
 ${rows}
@@ -119,7 +222,7 @@ ${rows}
 <!--[if mso]></td></tr></table><![endif]-->
 </td></tr></table></body></html>`;
 
-  return { trend, box, card, row, pairs, h2, kpi, kpiRow, list, bars, bullets, heat, button, header, note, callout, paragraph, footer, page, fill };
+  return { trend, gap, delta, box, card, row, pairs, split, h2, h3, spark, kpi, kpiRow, figures, list, grid, moves, bars, bullets, heat, button, header, headline, note, callout, paragraph, footer, link, page, fill, ts };
 }
 
 export type MailKit = ReturnType<typeof mailKit>;

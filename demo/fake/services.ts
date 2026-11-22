@@ -60,11 +60,12 @@ const PATHS: [string, number][] = [
 ];
 const DIMENSIONS: Record<string, [string, number][]> = {
   referrer: [['', 0.46], ['google.com', 0.27], ['bing.com', 0.05], ['duckduckgo.com', 0.04], ['youtube.com', 0.04], ['linkedin.com', 0.03], ['craft-directory.example', 0.02], ['facebook.com', 0.02], ['qwant.com', 0.012]],
-  channel: [['direct', 0.44], ['organicSearch', 0.37], ['organicSocial', 0.08], ['referral', 0.06], ['organicVideo', 0.04], ['email', 0.01]],
+  channel: [['direct', 0.43], ['organicSearch', 0.37], ['organicSocial', 0.08], ['referral', 0.06], ['organicVideo', 0.04], ['email', 0.01]],
   country: [['FR', 0.58], ['CH', 0.09], ['BE', 0.08], ['CA', 0.06], ['US', 0.04], ['DE', 0.035], ['GB', 0.02], ['ES', 0.015], ['IT', 0.015], ['MA', 0.012], ['SN', 0.008], ['LU', 0.007], ['JP', 0.005], ['BR', 0.004], ['AU', 0.003]],
   region: [['FR-ARA', 0.18], ['FR-IDF', 0.16], ['FR-PAC', 0.1], ['CH-GE', 0.05], ['BE-BRU', 0.04], ['CA-QC', 0.05], ['FR-OCC', 0.04]],
   city: [['Lyon', 0.11], ['Paris', 0.1], ['Grenoble', 0.06], ['Geneva', 0.05], ['Brussels', 0.04], ['Montreal', 0.04], ['Marseille', 0.035], ['Annecy', 0.03], ['Lausanne', 0.025], ['Toulouse', 0.02], ['Nantes', 0.015], ['Liege', 0.01]],
-  language: [['fr', 0.71], ['en', 0.15], ['de', 0.06], ['es', 0.025], ['it', 0.02], ['ja', 0.005]],
+  // browser languages arrive with or without a region, as Umami records them
+  language: [['fr-FR', 0.5], ['fr', 0.13], ['en-US', 0.09], ['fr-CH', 0.08], ['en-GB', 0.06], ['de-DE', 0.04], ['de-CH', 0.02], ['es', 0.025], ['it', 0.02], ['ja', 0.005]],
   device: [['mobile', 0.52], ['desktop', 0.3], ['laptop', 0.12], ['tablet', 0.06]],
   browser: [['chrome', 0.46], ['ios', 0.21], ['safari', 0.1], ['firefox', 0.08], ['edge-chromium', 0.07], ['samsung', 0.04], ['android', 0.02]],
   os: [['Android OS', 0.31], ['iOS', 0.27], ['Windows 10', 0.24], ['Mac OS', 0.13], ['Linux', 0.04]],
@@ -113,7 +114,9 @@ function umami(url: URL, init: RequestInit | undefined, now: number): Response {
       if (type === 'url') return json({ error: 'type' }, 400);
       const weights = type === 'path' || type === 'entry' || type === 'exit' ? PATHS.map(([x, w], i) => [x, type === 'path' ? w : w * (type === 'entry' ? 0.56 : 0.5) * (1 + (i % 3) * 0.1)] as [string, number]) : DIMENSIONS[type];
       if (!weights) return json([]);
-      const base = type === 'path' || type === 'event' ? t.pageviews : t.visits;
+      // as Umami does: pages and events in views, entry and exit pages in visits, the other dimensions (country, language,
+      // device, source…) in distinct visitors, so that a ranking never adds up to more visitors than the period had
+      const base = type === 'path' || type === 'event' ? t.pageviews : type === 'entry' || type === 'exit' ? t.visits : t.visitors;
       return json(weights.map(([x, w]) => ({ x, y: Math.round(base * w) })).filter((r) => r.y > 0).sort((a, b) => b.y - a.y).slice(0, limit));
     }
     case 'metrics/expanded': {

@@ -64,10 +64,11 @@ function line(x1: number, y1: number, x2: number, y2: number, paint: (x: number,
   }
 }
 
-/** RGB pixels (8 bits) → PNG. */
-export function encodePng(rgb: Uint8Array, width: number, height: number): Buffer {
-  const raw = Buffer.alloc((width * 3 + 1) * height);
-  for (let y = 0; y < height; y++) Buffer.from(rgb.buffer, rgb.byteOffset + y * width * 3, width * 3).copy(raw, y * (width * 3 + 1) + 1);
+/** RGB pixels (8 bits; RGBA with `channels` = 4) → PNG. */
+export function encodePng(rgb: Uint8Array, width: number, height: number, channels: 3 | 4 = 3): Buffer {
+  const row = width * channels;
+  const raw = Buffer.alloc((row + 1) * height);
+  for (let y = 0; y < height; y++) Buffer.from(rgb.buffer, rgb.byteOffset + y * row, row).copy(raw, y * (row + 1) + 1);
   const chunk = (type: string, data: Buffer) => {
     const head = Buffer.alloc(8);
     head.writeUInt32BE(data.length, 0);
@@ -80,7 +81,7 @@ export function encodePng(rgb: Uint8Array, width: number, height: number): Buffe
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
   ihdr[8] = 8; // 8 bits per channel
-  ihdr[9] = 2; // RGB
+  ihdr[9] = channels === 4 ? 6 : 2; // RGBA or RGB
   return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]);
 }
 

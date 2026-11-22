@@ -32,10 +32,29 @@ export interface ReportTheme {
   map?: { background?: string; land?: string; border?: string; low?: string; high?: string };
   /** Header logo: PNG attached to the message (`png`) or online image (`url`). */
   logo?: { png?: Uint8Array; url?: string; width?: number; height?: number; alt?: string };
+  /**
+   * Colours in dark mode, for the mail clients that apply a style sheet (Apple Mail, iOS, Outlook.com…), "#rrggbb". Default:
+   * dark neutral backgrounds, light texts, the brand lightened for links. The header keeps its colours.
+   */
+  dark?: Partial<DarkColors>;
+}
+
+/** Colours of the report in dark mode. */
+export interface DarkColors {
+  page: string;
+  card: string;
+  line: string;
+  soft: string;
+  ink: string;
+  text: string;
+  muted: string;
+  accent: string;
+  up: string;
+  down: string;
 }
 
 /** Complete theme, all shades computed. */
-export type Palette = Required<Omit<ReportTheme, 'logo' | 'map'>> & { accentDeep: string; logo: ReportTheme['logo'] | null; map: Required<NonNullable<ReportTheme['map']>> };
+export type Palette = Required<Omit<ReportTheme, 'logo' | 'map' | 'dark'>> & { accentDeep: string; logo: ReportTheme['logo'] | null; map: Required<NonNullable<ReportTheme['map']>>; dark: DarkColors };
 
 const HEX = /^#[0-9a-f]{6}$/i;
 const hexOr = (v: string | undefined, fallback: string) => (v && HEX.test(v) ? v : fallback);
@@ -70,6 +89,18 @@ export function palette(t: ReportTheme): Palette {
       border: hexOr(t.map?.border, '#ffffff'),
       low: hexOr(t.map?.low, mixHex(brand, '#ffffff', 0.65)),
       high: hexOr(t.map?.high, brand),
+    },
+    dark: {
+      page: hexOr(t.dark?.page, '#111318'),
+      card: hexOr(t.dark?.card, '#1b1e26'),
+      line: hexOr(t.dark?.line, '#2e323d'),
+      soft: hexOr(t.dark?.soft, mixHex(brand, '#1b1e26', 0.8)),
+      ink: hexOr(t.dark?.ink, '#f3f4f8'),
+      text: hexOr(t.dark?.text, '#d5d9e2'),
+      muted: hexOr(t.dark?.muted, '#a3aab8'),
+      accent: hexOr(t.dark?.accent, mixHex(brand, '#ffffff', 0.4)),
+      up: hexOr(t.dark?.up, '#4fc28e'),
+      down: hexOr(t.dark?.down, '#ff8a80'),
     },
   };
 }

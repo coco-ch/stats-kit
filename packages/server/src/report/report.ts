@@ -1,16 +1,18 @@
 /*
- * Traffic report by e-mail (weekly or on demand): key figures with trends, goals, site data, world map (attached PNG, "cid:"),
- * page views per day, heatmap, Google, YouTube, rankings. A plain-text version comes with it. Every text comes from the texts
- * of the chosen language; numbers, dates, weekdays and hours are formatted with Intl.
+ * Traffic report by e-mail (weekly or on demand): a sentence that sums up the period, key figures with their change and a small
+ * chart, goals, site data, rising and falling pages and sources, world map, page views per day, heatmap, Google, YouTube,
+ * rankings, site-specific cards. A plain-text version comes with it. Every text comes from the texts of the chosen language;
+ * numbers, amounts, dates, weekdays and hours are formatted with Intl. Images (map, charts) are PNG attachments ("cid:").
  * The library sends nothing: the message is handed to the site's sending function.
  */
 import {
   bestSlot, browserName, countryName, deviceName, fill, formatDuration, formatNumber, formatPercent, hourName, labelValue, languageName, longDay,
-  percentChange, shortDate, slotLabel, weekdayName,
+  mergeLanguages, mixHex, pathOf, percentChange, shortDate, slotLabel, weekdayName,
   type Item, type SearchOverview, type StatsOverview, type Texts, type World, type YoutubeOverview,
 } from 'stats-kit/contract';
-import { CARD_INNER, esc, mailKit } from './mail-kit.ts';
+import { CARD_INNER, esc, mailKit, type Figure } from './mail-kit.ts';
 import { renderWorldMap } from './map-png.ts';
+import { SPARK_HEIGHT, SPARK_WIDTH, renderCompare, renderSparkline } from './spark-png.ts';
 import { palette, rgb, type ReportTheme } from './theme.ts';
 
 /** Attachment shown in the message ("cid:"). */
@@ -29,12 +31,21 @@ export interface ReportMessage {
   attachments: InlineAttachment[];
 }
 
+/** Video of the report: title (or the site's label), address, views over the period. */
+export interface ReportVideo {
+  title: string;
+  url: string;
+  views: number;
+}
+
 export interface ReportInput {
   overview: StatsOverview;
   search?: SearchOverview | null;
   youtube?: YoutubeOverview | null;
-  /** Most viewed video of the period (report). */
-  youtubeTop?: { title: string; url: string; views: number } | null;
+  /** Most viewed videos of the period, most viewed first (report). */
+  youtubeVideos?: ReportVideo[] | null;
+  /** @deprecated since 0.2.8, use `youtubeVideos`. Most viewed video of the period. */
+  youtubeTop?: ReportVideo | null;
   texts: Texts;
   theme: ReportTheme;
   siteName: string;
@@ -53,11 +64,14 @@ export interface ReportInput {
   blocks?: ReportBlock[];
 }
 
-/** Site-specific card of the report: a title, then figures and/or lines, all given by the site in its language. */
+/**
+ * Site-specific card of the report: a title, then figures and/or lines, all given by the site in its language. Amounts are best
+ * formatted with `formatMoney(kit.texts, 12.5, 'USD')` ("$12.50", "12,50 $").
+ */
 export interface ReportBlock {
   title: string;
   hint?: string;
-  /** Key figures, side by side (up to three per row). */
+  /** Key figures, on one light line (three per row, two on a phone). */
   figures?: { value: string; label: string; sub?: string }[];
   /** Lines of text, bulleted. */
   lines?: string[];
@@ -78,14 +92,16 @@ export function buildReport(input: ReportInput): ReportMessage {
   const R = texts.report;
   const C = palette(input.theme);
   const K = mailKit(C, texts);
-  const nf = (v: number, d = 0) => formatNumber(texts, v, d);
+  const nf = (v: number, d = 0, signed = false) => formatNumber(texts, v, d, signed);
   const lv = (label: string, value: string | number) => labelValue(texts, label, value);
   const upper = (s: string) => s.toLocaleUpperCase(texts.locale);
+  const muted = (x: string) => `<span class="sk-mu" style="color:${C.muted}">${esc(x)}</span>`;
   const tz = o.range.timeZone;
   const last = new Date(Date.parse(o.range.to) - 1).toISOString();
   const from = shortDate(texts, o.range.from, tz), to = shortDate(texts, last, tz);
   const ok = o.status === 'ok';
   const s = o.totals, p = o.previous;
+  const ser = o.series;
   const change = ok ? percentChange(s.visitors, p?.visitors) : null;
   // the totals are also available to the subject, the title, the introduction and the footer ({visitors}, {change}…)
   const vars = {
@@ -96,6 +112,21 @@ export function buildReport(input: ReportInput): ReportMessage {
   const attachments: ReportMessage['attachments'] = [];
   const rows: string[] = [];
   const text: string[] = [`${siteName} — ${R.title} (${fill(R.subtitle, vars)})`, ''];
+  /** Change in brackets for the text version. */
+  const t = (n: number, b: number | null | undefined) => { const c = percentChange(n, b); return c === null ? '' : `  (${formatPercent(texts, c / 100, 0, true)})`; };
+  const tpts = (n: number, b: number | null, digits: number) => (b === null ? '' : `  (${fill(texts.common.points, { n: nf(Math.round((n - b) * 10 ** digits) / 10 ** digits, digits, true) })})`);
+
+  // small charts of the figures (attached PNG, transparent background), in the light shade of the brand: readable on a white
+  // card and on a dark one
+  const accent = rgb(C.accent), ghost = rgb(mixHex(C.line, C.muted, 0.25));
+  const image = (name: string, png: Uint8Array | null) => {
+    if (!png) return '';
+    const cid = `stats-kit-${name}`;
+    attachments.push({ cid, filename: `${name}.png`, contentType: 'image/png', content: png });
+    return K.spark(cid, SPARK_WIDTH, SPARK_HEIGHT);
+  };
+  const line = (name: string, values: number[]) => image(name, renderSparkline(values, accent));
+  const compare = (name: string, before: number | null | undefined, now: number) => (before === null || before === undefined ? '' : image(name, renderCompare(before, now, accent, ghost)));
 
   let logo = '';
   const l = C.logo;
@@ -106,25 +137,57 @@ export function buildReport(input: ReportInput): ReportMessage {
     logo = `<img src="${esc(l.url)}" width="${l.width ?? 120}"${l.height ? ` height="${l.height}"` : ''} alt="${esc(l.alt ?? siteName)}" style="display:block;border:0;height:auto">`;
   }
   rows.push(K.header(siteName, R.title, fill(R.subtitle, vars), logo));
+
+  // the period in one sentence: "Quieter week: 404 visitors, 4% fewer; France still in the lead"
+  let headline = '';
+  if (ok) {
+    const week = o.range.days === 7;
+    const tpl = change === null ? (week ? R.headlineNewWeek : R.headlineNew)
+      : change > 0 ? (week ? R.headlineUpWeek : R.headlineUp)
+        : change < 0 ? (week ? R.headlineDownWeek : R.headlineDown)
+          : (week ? R.headlineFlatWeek : R.headlineFlat);
+    headline = fill(tpl, { visitors: nf(s.visitors), change: change === null ? '' : formatPercent(texts, Math.abs(change) / 100, 0) });
+    const cs = o.breakdowns.countries;
+    if (cs[0]?.value && cs.some((c) => c.previous)) {
+      let before = cs[0];
+      for (const c of cs) if ((c.previous ?? 0) > (before.previous ?? 0)) before = c;
+      headline = fill(R.headlineJoin, { a: headline, b: fill(before.key === cs[0].key ? R.headlineLeadSame : R.headlineLeadNew, { country: countryName(texts, cs[0].key) }) });
+    }
+    rows.push(K.headline(headline));
+    text.push(headline, '');
+  }
   if (R.intro) {
     rows.push(K.paragraph(fill(R.intro, vars)));
     text.push(fill(R.intro, vars), '');
   }
 
   if (ok) {
-    const bounce = formatPercent(texts, s.visits ? s.bounces / s.visits : 0, 0);
-    const avg = fill(R.avgDuration, { d: formatDuration(texts, s.visits ? Math.round(s.totaltime / s.visits) : 0) });
+    const bounceNow = s.visits ? s.bounces / s.visits : 0;
+    const bounceBefore = p && p.visits ? p.bounces / p.visits : null;
+    const avgNow = s.visits ? s.totaltime / s.visits : 0;
+    const avgBefore = p && p.visits ? p.totaltime / p.visits : null;
+    const ppvNow = s.visits ? s.pageviews / s.visits : 0;
+    const ppvBefore = p && p.visits ? p.pageviews / p.visits : null;
+    const vpvNow = s.visitors ? s.visits / s.visitors : 0;
+    const vpvBefore = p && p.visitors ? p.visits / p.visitors : null;
+    const bounce = formatPercent(texts, bounceNow, 0);
+    const avg = formatDuration(texts, Math.round(avgNow));
     rows.push(K.kpiRow([
-      { value: nf(s.visitors), label: R.visitors, sub: K.trend(s.visitors, p?.visitors) },
-      { value: nf(s.pageviews), label: R.pageviews, sub: K.trend(s.pageviews, p?.pageviews) },
-      { value: nf(s.visits), label: R.visits, sub: K.trend(s.visits, p?.visits) },
-      { value: bounce, label: R.bounce, sub: `<span style="color:${C.muted}">${esc(avg)}</span>` },
+      { value: nf(s.visitors), label: R.visitors, sub: K.trend(s.visitors, p?.visitors), image: line('visitors', ser.visitors) },
+      { value: nf(s.pageviews), label: R.pageviews, sub: K.trend(s.pageviews, p?.pageviews), image: line('pageviews', ser.pageviews) },
+      { value: nf(s.visits), label: R.visits, sub: K.trend(s.visits, p?.visits), image: compare('visits', p?.visits, s.visits) },
+      { value: bounce, label: R.bounce, sub: K.gap(bounceNow * 100, bounceBefore === null ? null : bounceBefore * 100, 0, texts.common.points, true), image: compare('bounce', bounceBefore, bounceNow) },
     ]));
-    const t = (n: number, b: number | null | undefined) => { const c = percentChange(n, b); return c === null ? '' : `  (${formatPercent(texts, c / 100, 0, true)})`; };
+    rows.push(K.card(K.figures([
+      { value: avg, label: R.avgDurationLabel, sub: K.trend(avgNow, avgBefore) },
+      { value: nf(ppvNow, 1), label: R.pagesPerVisit, sub: K.trend(ppvNow, ppvBefore) },
+      { value: nf(vpvNow, 1), label: R.visitsPerVisitor, sub: K.trend(vpvNow, vpvBefore) },
+    ])));
     text.push(lv(R.visitors, `${nf(s.visitors)}${t(s.visitors, p?.visitors)}`), lv(R.pageviews, `${nf(s.pageviews)}${t(s.pageviews, p?.pageviews)}`),
-      lv(R.visits, `${nf(s.visits)}${t(s.visits, p?.visits)}`), lv(R.bounce, `${bounce}, ${avg}`));
+      lv(R.visits, `${nf(s.visits)}${t(s.visits, p?.visits)}`), lv(R.bounce, `${bounce}${tpts(bounceNow * 100, bounceBefore === null ? null : bounceBefore * 100, 0)}`),
+      lv(R.avgDurationLabel, `${avg}${t(avgNow, avgBefore)}`), lv(R.pagesPerVisit, `${nf(ppvNow, 1)}${t(ppvNow, ppvBefore)}`), lv(R.visitsPerVisitor, `${nf(vpvNow, 1)}${t(vpvNow, vpvBefore)}`));
     if (o.goals.length) {
-      rows.push(K.kpiRow(o.goals.map((g) => ({ value: nf(g.value), label: g.label, sub: K.trend(g.value, g.previous) }))));
+      rows.push(K.kpiRow(o.goals.map((g) => ({ value: nf(g.value), label: g.label, sub: K.trend(g.value, g.previous), image: compare(`goal-${g.id.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`, g.previous, g.value) }))));
       for (const g of o.goals) text.push(lv(g.label, `${nf(g.value)}${t(g.value, g.previous)}`));
     }
   } else {
@@ -138,34 +201,54 @@ export function buildReport(input: ReportInput): ReportMessage {
     const plain = extras.tiles.filter((x) => !x.highlight);
     const strong = extras.tiles.filter((x) => x.highlight);
     const value = (x: { value: number | string }) => (typeof x.value === 'number' ? nf(x.value) : x.value);
-    if (plain.length) rows.push(K.kpiRow(plain.map((x) => ({ value: value(x), label: x.label, sub: typeof x.value === 'number' ? K.trend(x.value, x.previous) : x.sub ? esc(x.sub) : '' }))));
-    const link = (x: (typeof strong)[number]) => (x.link ? ` <a href="${esc(x.link.url)}" style="color:${C.accentDeep}">${esc(x.link.label)}</a>` : '');
+    if (plain.length) rows.push(K.kpiRow(plain.map((x): Figure => ({ value: value(x), label: x.label, sub: typeof x.value === 'number' ? K.trend(x.value, x.previous) : x.sub ? esc(x.sub) : '' }))));
+    const link = (x: (typeof strong)[number]) => (x.link ? ` <a href="${esc(x.link.url)}" class="sk-ac" style="color:${C.accentDeep}">${esc(x.link.label)}</a>` : '');
     for (const x of strong) rows.push(K.callout(`<b>${esc(lv(x.label, value(x)))}</b>${x.sub ? ` — ${esc(x.sub)}` : ''}${link(x)}`));
     for (const x of extras.tiles) text.push(`${lv(x.label, value(x))}${x.sub ? ` (${x.sub})` : ''}${x.highlight && x.link ? ` ${x.link.url}` : ''}`);
   }
   rows.push('<tr><td style="font-size:0;line-height:8px">&nbsp;</td></tr>');
 
-  const ser = o.series;
   const bestIndex = ser.pageviews.reduce((b, v, i) => (v > ser.pageviews[b] ? i : b), 0);
   const label = (x: string) => slotLabel(texts, x, ser.unit);
   const bestDay = ok && ser.pageviews[bestIndex] ? fill(R.bestDay, { d: ser.unit === 'day' ? longDay(texts, ser.slots[bestIndex]) : label(ser.slots[bestIndex]), n: nf(ser.pageviews[bestIndex]) }) : '';
   const slot = ok ? bestSlot(o.heatmap) : null;
   const when = slot ? fill(R.slot, { day: weekdayName(texts, slot.day), hour: hourName(texts, slot.hour) }) : '';
+  const own = (i: Item) => i.label ?? i.key;
+  const source = (i: Item) => i.label ?? (i.key || texts.common.direct);
 
   if (ok && input.glance !== false) {
     const b = o.breakdowns;
     const first = (template: string, items: Item[], name: (i: Item) => string) => (items[0]?.value ? fill(template, { label: name(items[0]), n: nf(items[0].value) }) : '');
     const glance = [
-      first(R.glanceSource, b.referrers, (i) => i.label ?? (i.key || texts.common.direct)),
+      first(R.glanceSource, b.referrers, source),
       first(R.glanceCountry, b.countries, (i) => countryName(texts, i.key)),
-      first(R.glancePage, b.pages, (i) => i.label ?? i.key),
-      first(R.glanceEntry, b.entries, (i) => i.label ?? i.key),
+      first(R.glancePage, b.pages, own),
+      first(R.glanceEntry, b.entries, own),
       bestDay,
       when && fill(R.glanceSlot, { slot: when }),
     ].filter(Boolean);
     if (glance.length) {
       rows.push(K.card(`${K.h2(R.glanceTitle)}${K.bullets(glance)}`));
       text.push('', upper(R.glanceTitle), ...glance.map((x) => `  - ${x}`));
+    }
+  }
+
+  // rising and falling: pages and sources that gained or lost the most against the previous period
+  if (ok) {
+    type Move = { label: string; tag: string; d: number };
+    const moves = (items: Item[], tag: string, name: (i: Item) => string): Move[] =>
+      items.filter((i) => i.previous !== null && i.value !== i.previous).map((i) => ({ label: name(i), tag, d: i.value - (i.previous ?? 0) }));
+    const pool = [...moves(o.breakdowns.pages, R.moverPage, own), ...moves(o.breakdowns.referrers, R.moverSource, source)];
+    const up = pool.filter((m) => m.d > 0).sort((a, b) => b.d - a.d || a.label.localeCompare(b.label)).slice(0, 4);
+    const down = pool.filter((m) => m.d < 0).sort((a, b) => a.d - b.d || a.label.localeCompare(b.label)).slice(0, 4);
+    if (up.length || down.length) {
+      const col = (title: string, list: Move[], tone: 'up' | 'down') => (list.length ? `${K.h3(title)}${K.moves(list.map((m) => ({ label: m.label, tag: m.tag, text: nf(m.d, 0, true), tone })))}` : '');
+      const a = col(R.moversUp, up, 'up'), b = col(R.moversDown, down, 'down');
+      rows.push(K.card(`${K.h2(R.moversTitle, R.moversHint)}${a && b ? K.split(a, b) : a || b}`));
+      text.push('', upper(R.moversTitle));
+      for (const [title, list] of [[R.moversUp, up], [R.moversDown, down]] as const) {
+        if (list.length) text.push(`  ${title}`, ...list.map((m) => `    - ${lv(`${m.label} (${m.tag})`, nf(m.d, 0, true))}`));
+      }
     }
   }
 
@@ -188,19 +271,39 @@ export function buildReport(input: ReportInput): ReportMessage {
     text.push(fill(R.heatHint, { slot: when, tz }));
   }
 
-  /** Link to a page of the administration, at the end of a block. */
-  const pageLink = (url: string | null | undefined, label: string) => (url ? `<div style="font:12px ${C.font};margin-top:8px"><a href="${esc(url)}" style="color:${C.accentDeep}">${esc(label)}</a></div>` : '');
-
   // Google
   const g = input.search;
   if (g?.status === 'ok') {
     const gv = { from: shortDate(texts, g.start), to: shortDate(texts, g.end) };
-    const cell = (value: string, label: string, sub: string) => K.kpi(value, label, sub, '33.33%');
-    const inner = g.totals.impressions
-      ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>${cell(nf(g.totals.clicks), R.googleClicks, K.trend(g.totals.clicks, g.previous.clicks))}${cell(nf(g.totals.impressions), R.googleImpressions, K.trend(g.totals.impressions, g.previous.impressions))}${cell(nf(g.totals.position, 1), R.googlePosition, '')}</tr></table>`
-      : `<div style="font:13px/1.5 ${C.font};color:${C.muted}">${esc(R.googleNothing)}</div>`;
-    rows.push(K.card(`${K.h2(R.googleTitle, fill(R.googleHint, gv))}${inner}${pageLink(input.searchUrl, R.googleLink)}`));
-    text.push('', `${upper(R.googleTitle)} (${fill(texts.periods.short, gv)})`, `  - ${lv(R.googleClicks, nf(g.totals.clicks))}`, `  - ${lv(R.googleImpressions, nf(g.totals.impressions))}`, `  - ${lv(R.googlePosition, g.totals.impressions ? nf(g.totals.position, 1) : '—')}`);
+    const gt = g.totals, gp = g.previous;
+    const before = gp.impressions > 0;
+    let inner = `<div ${K.ts('13px/1.5', 400, C.muted)}>${esc(R.googleNothing)}</div>`;
+    text.push('', `${upper(R.googleTitle)} (${fill(texts.periods.short, gv)})`);
+    if (gt.impressions) {
+      inner = K.figures([
+        { value: nf(gt.clicks), label: R.googleClicks, sub: K.trend(gt.clicks, gp.clicks) },
+        { value: nf(gt.impressions), label: R.googleImpressions, sub: K.trend(gt.impressions, gp.impressions) },
+        { value: formatPercent(texts, gt.ctr, 1), label: R.googleCtr, sub: before ? K.gap(gt.ctr * 100, gp.ctr * 100, 1, texts.common.points, false) : '&nbsp;' },
+        { value: nf(gt.position, 1), label: R.googlePosition, sub: before ? K.gap(gt.position, gp.position, 1, null, true) : '&nbsp;' },
+      ], 4);
+      text.push(`  - ${lv(R.googleClicks, `${nf(gt.clicks)}${t(gt.clicks, gp.clicks)}`)}`, `  - ${lv(R.googleImpressions, `${nf(gt.impressions)}${t(gt.impressions, gp.impressions)}`)}`,
+        `  - ${lv(R.googleCtr, `${formatPercent(texts, gt.ctr, 1)}${before ? tpts(gt.ctr * 100, gp.ctr * 100, 1) : ''}`)}`, `  - ${lv(R.googlePosition, nf(gt.position, 1))}`);
+      const queries = [...g.queries].sort((a, b) => b.clicks - a.clicks || b.impressions - a.impressions || a.key.localeCompare(b.key)).slice(0, 5);
+      if (queries.length) {
+        inner += `<div style="height:10px;line-height:10px;font-size:0">&nbsp;</div>${K.grid([R.googleTopQueries, R.googleColClicks, R.googleColImpressions], queries.map((q) => [esc(q.key), esc(nf(q.clicks)), esc(nf(q.impressions))]))}`;
+        text.push(`  ${R.googleTopQueries}`, ...queries.map((q) => `    - ${lv(q.key, `${nf(q.clicks)} / ${nf(q.impressions)}`)}`));
+      }
+      const prevPages = new Map(g.previousPages.map((x) => [x.key, x.clicks]));
+      const gains = g.pages.map((x) => ({ label: pathOf(x.key), d: x.clicks - (prevPages.get(x.key) ?? 0) })).filter((x) => x.d > 0)
+        .sort((a, b) => b.d - a.d || a.label.localeCompare(b.label)).slice(0, 3);
+      if (gains.length) {
+        inner += `<div style="height:10px;line-height:10px;font-size:0">&nbsp;</div>${K.h3(R.googlePagesUp)}${K.moves(gains.map((x) => ({ label: x.label, tag: '', text: nf(x.d, 0, true), tone: 'up' })))}`;
+        text.push(`  ${R.googlePagesUp} (${R.googlePagesUpHint})`, ...gains.map((x) => `    - ${lv(x.label, nf(x.d, 0, true))}`));
+      }
+    } else {
+      text.push(`  - ${R.googleNothing}`);
+    }
+    rows.push(K.card(`${K.h2(R.googleTitle, fill(R.googleHint, gv))}${inner}${input.searchUrl ? K.link(input.searchUrl, R.googleLink) : ''}`));
   } else if (g?.status === 'error') {
     rows.push(K.note(R.googleUnavailable));
     text.push('', R.googleUnavailable);
@@ -210,18 +313,25 @@ export function buildReport(input: ReportInput): ReportMessage {
   const y = input.youtube;
   if (y?.status === 'ok' && y.channel) {
     const yv = { from: shortDate(texts, y.start), to: shortDate(texts, y.end) };
-    const cell = (value: string, label: string, sub: string) => K.kpi(value, label, sub, '33.33%');
-    const muted = (x: string) => `<span style="color:${C.muted}">${esc(x)}</span>`;
     const site = y.site;
     const subscribers = y.channel.subscribers === null ? '—' : nf(y.channel.subscribers);
-    const line1 = `<tr>${cell(nf(y.totals.views), R.youtubeViews, K.trend(y.totals.views, y.previous.views))}${cell(nf(y.totals.minutes), R.youtubeMinutes, K.trend(y.totals.minutes, y.previous.minutes))}${cell(subscribers, R.youtubeSubscribers, muted(fill(R.youtubeBalance, { gained: nf(y.totals.gained), lost: nf(y.totals.lost) })))}</tr>`;
-    const line2 = site ? `<tr>${cell(site.visits === null ? '—' : nf(site.visits), R.youtubeSiteVisits, site.visits === null ? '' : K.trend(site.visits, site.previousVisits))}${site.requests === null ? '<td width="33.33%"></td>' : cell(nf(site.requests), R.youtubeRequests, K.trend(site.requests, site.previousRequests))}<td width="33.33%"></td></tr>` : '';
-    const topV = input.youtubeTop ? `<div style="font:13px/1.5 ${C.font};color:${C.text};margin-top:6px">${esc(fill(R.youtubeTop, { title: '§', n: nf(input.youtubeTop.views) })).replace('§', `<a href="${esc(input.youtubeTop.url)}" style="color:${C.accentDeep}">${esc(input.youtubeTop.title)}</a>`)}</div>` : '';
-    rows.push(K.card(`${K.h2(R.youtubeTitle, fill(R.youtubeHint, yv))}<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${line1}${line2}</table>${topV}${pageLink(input.youtubeUrl, R.youtubeLink)}`));
-    text.push('', `${upper(R.youtubeTitle)} (${fill(texts.periods.short, yv)})`, `  - ${lv(R.youtubeViews, nf(y.totals.views))}`, `  - ${lv(R.youtubeMinutes, nf(y.totals.minutes))}`, `  - ${lv(R.youtubeSubscribers, subscribers)}`);
-    if (site?.visits !== null && site?.visits !== undefined) text.push(`  - ${lv(R.youtubeSiteVisits, nf(site.visits))}`);
-    if (site?.requests !== null && site?.requests !== undefined) text.push(`  - ${lv(R.youtubeRequests, nf(site.requests))}`);
-    if (input.youtubeTop) text.push(`  - ${fill(R.youtubeTop, { title: input.youtubeTop.title, n: nf(input.youtubeTop.views) })} ${input.youtubeTop.url}`);
+    const figs: Figure[] = [
+      { value: nf(y.totals.views), label: R.youtubeViews, sub: K.trend(y.totals.views, y.previous.views) },
+      { value: nf(y.totals.minutes), label: R.youtubeMinutes, sub: K.trend(y.totals.minutes, y.previous.minutes) },
+      { value: subscribers, label: R.youtubeSubscribers, sub: muted(fill(R.youtubeBalance, { gained: nf(y.totals.gained), lost: nf(y.totals.lost) })) },
+    ];
+    if (site && site.visits !== null) figs.push({ value: nf(site.visits), label: R.youtubeSiteVisits, sub: K.trend(site.visits, site.previousVisits) });
+    if (site && site.requests !== null) figs.push({ value: nf(site.requests), label: R.youtubeRequests, sub: K.trend(site.requests, site.previousRequests) });
+    const videos = (input.youtubeVideos ?? (input.youtubeTop ? [input.youtubeTop] : [])).filter((v) => v.views > 0);
+    const list = videos.length
+      ? `<div style="height:10px;line-height:10px;font-size:0">&nbsp;</div>${K.grid([R.youtubeVideos, R.youtubeViews], videos.map((v) => [`<a href="${esc(v.url)}" class="sk-ac" style="color:${C.accentDeep}">${esc(v.title)}</a>`, esc(nf(v.views))]))}`
+      : '';
+    rows.push(K.card(`${K.h2(R.youtubeTitle, fill(R.youtubeHint, yv))}${K.figures(figs)}${list}${input.youtubeUrl ? K.link(input.youtubeUrl, R.youtubeLink) : ''}`));
+    text.push('', `${upper(R.youtubeTitle)} (${fill(texts.periods.short, yv)})`, `  - ${lv(R.youtubeViews, `${nf(y.totals.views)}${t(y.totals.views, y.previous.views)}`)}`,
+      `  - ${lv(R.youtubeMinutes, `${nf(y.totals.minutes)}${t(y.totals.minutes, y.previous.minutes)}`)}`, `  - ${lv(R.youtubeSubscribers, subscribers)}`);
+    if (site && site.visits !== null) text.push(`  - ${lv(R.youtubeSiteVisits, nf(site.visits))}`);
+    if (site && site.requests !== null) text.push(`  - ${lv(R.youtubeRequests, nf(site.requests))}`);
+    if (videos.length) text.push(`  ${R.youtubeVideos} (${R.youtubeVideosHint})`, ...videos.map((v) => `    - ${lv(v.title, nf(v.views))} ${v.url}`));
   } else if (y?.status === 'error') {
     rows.push(K.note(R.youtubeUnavailable));
     text.push('', R.youtubeUnavailable);
@@ -229,37 +339,36 @@ export function buildReport(input: ReportInput): ReportMessage {
 
   // rankings
   const lists: { title: string; rows: [string, number][]; hint?: string }[] = [];
-  const own = (i: Item) => i.label ?? i.key;
   if (ok) {
     const b = o.breakdowns;
     lists.push({ title: R.pages, rows: top(b.pages, own) });
-    lists.push({ title: R.referrers, rows: top(b.referrers, (i) => i.label ?? (i.key || texts.common.direct)) });
+    lists.push({ title: R.referrers, rows: top(b.referrers, source) });
     lists.push({ title: R.countries, rows: top(b.countries, (i) => countryName(texts, i.key)) });
     lists.push({ title: R.cities, rows: top(b.cities, own) });
     lists.push({ title: R.entries, rows: top(b.entries, own), hint: R.entriesHint });
     lists.push({ title: R.exits, rows: top(b.exits, own), hint: R.exitsHint });
     lists.push({ title: R.events, rows: top(b.events, own), hint: R.eventsHint });
     for (const grp of o.groups) lists.push({ title: grp.title, rows: top(grp.items, own) });
-    lists.push({ title: R.languages, rows: top(b.siteLanguages.length ? b.siteLanguages : b.languages, (i) => languageName(texts, i.key)) });
+    // browser languages, in visitors ("fr-FR" and "fr" together); the language of the pages viewed apart, in pages
+    lists.push({ title: R.languages, rows: top(mergeLanguages(b.languages), (i) => languageName(texts, i.key)), hint: R.languagesHint });
+    if (b.siteLanguages.length) lists.push({ title: R.siteLanguages, rows: top(b.siteLanguages, (i) => languageName(texts, i.key)), hint: R.siteLanguagesHint });
     lists.push({ title: R.devices, rows: top(b.devices, (i) => deviceName(texts, i.key)) });
     lists.push({ title: R.browsers, rows: top(b.browsers, (i) => i.label ?? browserName(i.key)) });
   }
-  for (const t of extras?.tables ?? []) lists.push({ title: t.title, rows: top(t.items, own), hint: t.sub ?? '' });
+  for (const tb of extras?.tables ?? []) lists.push({ title: tb.title, rows: top(tb.items, own), hint: tb.sub ?? '' });
   if (g?.status === 'ok' && g.totals.impressions) {
-    lists.push({ title: R.googleQueries, rows: [...g.queries].sort((a, b) => b.impressions - a.impressions).slice(0, 6).map((q) => [q.key, q.impressions]), hint: R.googleQueriesHint });
     lists.push({ title: R.googleCountries, rows: [...g.countries].sort((a, b) => b.impressions - a.impressions).slice(0, 4).map((c) => [countryName(texts, c.key), c.impressions]), hint: R.googleCountriesHint });
   }
   const shown = lists.map((x) => K.list(x.title, x.rows, x.hint));
   rows.push(K.pairs(shown.map((x) => x.inner)));
   for (const x of shown) if (x.text) text.push(x.text.trimEnd());
 
-  // site-specific cards
+  // site-specific cards: a light line of figures, then the lines
   for (const blk of input.blocks ?? []) {
     const figures = blk.figures ?? [], lines = blk.lines ?? [];
-    const cells = figures.map((f) => K.kpi(f.value, f.label, f.sub ? `<span style="color:${C.muted}">${esc(f.sub)}</span>` : '', '33.33%'));
-    const table = cells.length ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">${Array.from({ length: Math.ceil(cells.length / 3) }, (_, i) => `<tr>${cells.slice(i * 3, i * 3 + 3).join('')}</tr>`).join('')}</table>` : '';
-    rows.push(K.card(`${K.h2(blk.title, blk.hint ?? '')}${table}${lines.length ? K.bullets(lines) : ''}`));
-    text.push('', upper(blk.title), ...figures.map((f) => `  - ${lv(f.label, f.value)}${f.sub ? ` (${f.sub})` : ''}`), ...lines.map((l) => `  - ${l}`));
+    const figs = figures.length ? K.figures(figures.map((f) => ({ value: f.value, label: f.label, sub: f.sub ? muted(f.sub) : '' }))) : '';
+    rows.push(K.card(`${K.h2(blk.title, blk.hint ?? '')}${figs}${lines.length ? K.bullets(lines) : ''}`));
+    text.push('', upper(blk.title), ...figures.map((f) => `  - ${lv(f.label, f.value)}${f.sub ? ` (${f.sub})` : ''}`), ...lines.map((x) => `  - ${x}`));
   }
 
   if (input.statsUrl) {
@@ -274,8 +383,9 @@ export function buildReport(input: ReportInput): ReportMessage {
     text.push('', fill(R.footer, vars));
   }
 
-  // a variable without value ({change} without a previous period) leaves no empty brackets behind
-  const subject = fill(input.weekly ? R.subjectWeekly : R.subject, vars).replace(/\s*\(\s*\)/g, '').replace(/\s+/g, ' ').trim();
-  const pre = ok ? fill(R.preheader, { ...vars, visitors: nf(s.visitors), pageviews: nf(s.pageviews) }) : fill(R.preheaderEmpty, vars);
+  // with figures when there are some; a variable without value ({change} without a previous period) leaves no empty brackets
+  const tpl = ok ? (input.weekly ? R.subjectWeekly : R.subject) : (input.weekly ? R.subjectWeeklyEmpty : R.subjectEmpty);
+  const subject = fill(tpl, vars).replace(/\s*[(（]\s*[)）]/g, '').replace(/\s+/g, ' ').trim();
+  const pre = ok ? headline : fill(R.preheaderEmpty, vars);
   return { subject, html: K.page(subject, pre, rows.join('\n')), text: text.join('\n').replace(/\n{3,}/g, '\n\n') + '\n', attachments };
 }

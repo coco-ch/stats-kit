@@ -3,6 +3,7 @@
  * durations, dates, weekdays and hours come from Intl in the locale of the texts. No dependency on the browser or on Node.
  */
 import { fill, formatNumber, type Texts } from './texts.ts';
+import type { Item } from './types.ts';
 
 /** Displayable change: text ("▲ +12 %") and direction (`up` = good news, `down` = bad news). */
 export interface Delta {
@@ -191,6 +192,44 @@ export function toCsv(rows: (string | number | null | undefined)[][], separator 
 /** Safe file name from a title. */
 export const fileName = (title: string): string =>
   title.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'export';
+
+/**
+ * Currencies written with their symbol by `formatMoney` (Intl, narrow symbol: "12,50 $", "1 490 €", "CHF 30"); any other
+ * code is written after the amount ("12.50 XYZ"). A server in another language reproduces exactly these.
+ */
+export const CURRENCIES = ['EUR', 'USD', 'CHF', 'GBP', 'CAD', 'AUD', 'JPY', 'CNY', 'KRW', 'RUB', 'BRL', 'MXN', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'INR', 'MAD', 'XOF'] as const;
+
+/**
+ * Amount of money in the locale of the texts: "$12.50", "12,50 $", "1 490 €" (a whole amount has no decimals). For the site's
+ * own figures in the report (costs, orders…): `formatMoney(kit.texts, 12.5, 'USD')`.
+ */
+export function formatMoney(texts: Texts, amount: number, currency: string): string {
+  if (!Number.isFinite(amount)) return '—';
+  const code = currency.trim().toUpperCase();
+  if (!(CURRENCIES as readonly string[]).includes(code)) {
+    const cents = Math.round(amount * 100) / 100;
+    return `${formatNumber(texts, cents, Number.isInteger(cents) ? 0 : 2)} ${code}`.trim();
+  }
+  return amount.toLocaleString(texts.locale, { style: 'currency', currency: code, currencyDisplay: 'narrowSymbol', trailingZeroDisplay: 'stripIfInteger' } as Intl.NumberFormatOptions);
+}
+
+/**
+ * Languages by their main code ("fr-FR", "fr-CH" and "fr" → "fr"), numbers summed: the browser languages of the visitors, each
+ * visitor counted once. Sorted by decreasing value, then by code.
+ */
+export function mergeLanguages(items: Item[]): Item[] {
+  const merged = new Map<string, Item>();
+  for (const i of items) {
+    const key = i.key.split(/[-_]/)[0].toLowerCase();
+    const m = merged.get(key);
+    if (!m) merged.set(key, { key, label: null, value: i.value, previous: i.previous });
+    else {
+      m.value += i.value;
+      m.previous = m.previous === null || i.previous === null ? null : m.previous + i.previous;
+    }
+  }
+  return [...merged.values()].sort((a, b) => b.value - a.value || a.key.localeCompare(b.key));
+}
 
 /** Alpha-3 codes returned by Search Console → alpha-2 (most frequent countries; the others keep their code). */
 const ALPHA3: Record<string, string> = {

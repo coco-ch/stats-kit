@@ -68,14 +68,14 @@ test.describe('Statistics page', () => {
     const tab = await popup;
     await expect(tab.getByText('Site traffic')).toBeVisible();
     await expect(tab.locator('img[alt="World map of visits by country"]')).toBeVisible();
-    expect(await tab.locator('img').first().evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(600);
+    expect(await tab.locator('img[alt="World map of visits by country"]').evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(600);
     const before = (await (await request.get('/api/demo/outbox')).json()).length;
     page.once('dialog', (d) => d.accept());
     await page.getByRole('button', { name: 'Send report' }).click();
     await expect(page.getByText('Report sent to 2 recipients.')).toBeVisible();
     const outbox = await (await request.get('/api/demo/outbox')).json();
     expect(outbox.length).toBe(before + 1);
-    expect(outbox.at(-1).attachments).toBe(1);
+    expect(outbox.at(-1).attachments).toBe(7); // the map, the charts of the four key figures and of the two goals
     page.once('dialog', (d) => d.dismiss());
     await page.getByRole('button', { name: 'Send report' }).click();
     expect((await (await request.get('/api/demo/outbox')).json()).length).toBe(before + 1);

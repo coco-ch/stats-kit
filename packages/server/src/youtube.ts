@@ -62,6 +62,8 @@ export interface YoutubeClient {
   overview(days: number, site?: SiteCounter, now?: number): Promise<YoutubeOverview>;
   /** Most viewed video over a period (report). */
   topVideo(start: string, end: string): Promise<{ title: string; url: string; views: number } | null>;
+  /** Most viewed videos over a period, most viewed first (report). */
+  topVideos(start: string, end: string, count?: number, now?: number): Promise<{ title: string; url: string; views: number }[]>;
   reset(): void;
 }
 
@@ -191,13 +193,21 @@ export function youtubeClient(config: YoutubeConfig, fetchFn: Fetch = fetch): Yo
     }
   }
 
-  async function topVideo(start: string, end: string) {
-    const d = await channelData(Date.now());
-    const top = await cache.get(`top:${start}:${end}`, 3_600_000, () => report({ startDate: start, endDate: end, metrics: 'views', dimensions: 'video', sort: '-views', maxResults: 1 }));
-    const found = d.videos.find((x) => x.id === top[0]?.['video']);
-    const v = found && labelled(found);
-    return v ? { title: v.label ?? v.title, url: v.url, views: Number(top[0]['views']) } : null;
+  async function topVideos(start: string, end: string, count = 3, now = Date.now()) {
+    const d = await channelData(now);
+    const top = await cache.get(`top:${start}:${end}:${count}`, 3_600_000, () => report({ startDate: start, endDate: end, metrics: 'views', dimensions: 'video', sort: '-views', maxResults: count }));
+    const out: { title: string; url: string; views: number }[] = [];
+    for (const row of top) {
+      const found = d.videos.find((x) => x.id === row['video']);
+      const v = found && labelled(found);
+      if (v) out.push({ title: v.label ?? v.title, url: v.url, views: Number(row['views']) });
+    }
+    return out;
   }
 
-  return { overview, topVideo, reset: () => { cache.clear(); tokens.reset(); } };
+  async function topVideo(start: string, end: string) {
+    return (await topVideos(start, end, 1))[0] ?? null;
+  }
+
+  return { overview, topVideo, topVideos, reset: () => { cache.clear(); tokens.reset(); } };
 }
