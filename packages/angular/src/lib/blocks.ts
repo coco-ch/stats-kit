@@ -41,9 +41,9 @@ const ZERO = /^(?:0(?:[,.]0+)?(?:\s?%)?|—)$/;
     :host(.sk-hl) { background: var(--k-warn-soft); }
     .sk-tile__label { align-self: end; font-size: .82rem; font-weight: 600; line-height: 1.3; color: var(--k-muted); }
     .sk-tile__row { display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .55rem; }
-    .sk-tile__value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; color: var(--k-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
-    /* phone (narrow tiles, possibly enlarged text): the figure may go to the line between its words */
-    @media (max-width: ${PHONE}px) { :host .sk-tile__value, :host .sk-d { white-space: normal; } }
+    .sk-tile__value { font-size: 1.6rem; font-weight: 700; line-height: 1.1; letter-spacing: -.02em; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+    /* a figure goes to the line between its words when the tile is too narrow ("1 min 36 s"); badges too on a phone */
+    @media (max-width: ${PHONE}px) { :host .sk-d { white-space: normal; } }
     :host(.sk-zero) .sk-tile__value { color: var(--k-muted); font-weight: 600; }
     .sk-tile__sub { font-size: .76rem; line-height: 1.35; color: var(--k-muted); }
     .sk-tile__sub:empty, .sk-tile__trend:empty { display: none; }
@@ -434,7 +434,7 @@ export class SkTrendChart {
   template: `
     <div class="sk-heat" role="img" [attr.aria-label]="aria()">
       <span></span>
-      @for (h of hours(); track h.hour) { <span class="sk-heat__hr" aria-hidden="true">{{ h.label }}</span> }
+      @for (h of hours(); track h.hour) { <span class="sk-heat__hr" [class.sk-heat__hr--minor]="h.hour % 6 !== 0" aria-hidden="true">{{ h.label }}</span> }
       @for (row of rows(); track row.day) {
         <span class="sk-heat__day" aria-hidden="true">{{ row.day }}</span>
         @for (c of row.cells; track c.hour) { <span class="sk-heat__cell" [style.opacity]="c.opacity" [title]="c.title"></span> }
@@ -442,11 +442,13 @@ export class SkTrendChart {
     </div>
   `,
   styles: [TOKENS, `
-    :host { display: block; min-width: 0; }
+    :host { display: block; min-width: 0; container-type: inline-size; }
     .sk-heat { display: grid; grid-template-columns: auto repeat(24, minmax(0, 1fr)); gap: 2px; font-size: .72rem; color: var(--k-muted); }
     .sk-heat__cell { aspect-ratio: 1.3; border-radius: 3px; background: var(--k-c1); min-height: 8px; }
     .sk-heat__day { align-self: center; padding-right: 6px; }
-    .sk-heat__hr { text-align: center; }
+    .sk-heat__hr { text-align: center; white-space: nowrap; }
+    /* narrow (in rem: the threshold grows with enlarged text): hour labels every 6 hours instead of 3, so they never collide */
+    @container (max-width: 15rem) { .sk-heat__hr--minor { visibility: hidden; } }
     @media print { .sk-heat__cell { print-color-adjust: exact; } }
   `],
 })
