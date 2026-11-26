@@ -32,6 +32,21 @@ public class ContractTests
         new("News", Lines: ["Concert on Saturday \"Brass & Winds\" <live>"]),
     ];
 
+    /// <summary>Same business figures as the Node fixtures (scripts/dotnet-golden.ts).</summary>
+    private static ReportBusiness? Business(StatsOverview o) => o.Range.Days > 30 ? null : new ReportBusiness(
+        [
+            new("Requests", "Quote requests", 5, 2, Group: "Requests", Series: [0, 1, 0, 2, 1, 0, 1]),
+            new("to-handle", "To handle", 2, Highlight: true, Group: "Requests", Sub: "oldest: 3 days", Link: new("https://www.example.test/admin/requests", "Open the requests →")),
+            new("customers", "Customers", 12, 12, Group: "Customers", Sub: "3 in trial"),
+            new("revenue", "Monthly revenue", 1490, 1290, Currency: "EUR", Group: "Customers"),
+            new("costs", "Costs this month", 43.5, 40, Currency: "USD", LowerIsBetter: true, Group: "Customers", Series: [40, 41.5, 43.5]),
+            new("ratio", "Documents signed", "21 / 26"),
+            new("new", "New accounts", 0, 0),
+        ],
+        Hint: o.Range.Days == 1 ? null : "From the shop database",
+        Status: o.Range.Days == 1 ? new BusinessStatus("ok", "All services are running") : new BusinessStatus(o.Range.Days == 7 ? "warn" : "down", "Services to check", ["Backup <late>", "Disk 91 % full"]),
+        Link: o.Range.Days == 1 ? null : new ReportLink("https://www.example.test/admin", "Open the administration →"));
+
     private static StatsKitOptions Full(string locale)
     {
         var o = new StatsKitOptions
@@ -47,6 +62,7 @@ public class ContractTests
             {
                 Theme = new ReportTheme { Brand = "#b87333", Head = "#1a1a1d", Display = "Georgia,serif", Map = new MapTheme { Land = "#e4ded3" }, Dark = new DarkTheme { Accent = "#e0a46b" } },
                 StatsUrl = "https://www.example.test/admin/statistics", Send = (_, _) => Task.FromResult(2), Blocks = (_, _) => Task.FromResult(Blocks),
+                Business = (o, _) => Task.FromResult(Business(o)),
                 SearchUrl = "https://www.example.test/admin/google", YoutubeUrl = "https://www.example.test/admin/youtube",
             },
         };

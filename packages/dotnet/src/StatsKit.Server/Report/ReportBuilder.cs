@@ -16,6 +16,38 @@ public sealed record ReportFigure(string Value, string Label, string? Sub = null
 /// <param name="Lines">Lines of text, bulleted.</param>
 public sealed record ReportBlock(string Title, string? Hint = null, IReadOnlyList<ReportFigure>? Figures = null, IReadOnlyList<string>? Lines = null);
 
+/// <summary>Link to a screen of the administration.</summary>
+public sealed record ReportLink(string Url, string Label);
+
+/// <summary>A business figure of the site. Leave out a figure the site cannot read: never a zero standing for "unknown".</summary>
+/// <param name="Id">Stable identifier (name of its chart image).</param>
+/// <param name="Value">Number (formatted in the language of the report: a <see cref="double"/>, <see cref="int"/>…), or a text already formatted ("3 of 5").</param>
+/// <param name="Previous">Value of the previous period (a number value only): change shown under the figure.</param>
+/// <param name="Currency">ISO 4217 currency of a number value: formatted as an amount ("1 490 €", "$12.50").</param>
+/// <param name="Sub">Line under the figure ("2 to handle", "ends within 7 days").</param>
+/// <param name="Series">Values per slot of the period, oldest first: a small chart (two values at least).</param>
+/// <param name="LowerIsBetter">A figure that should go down (costs, errors): a fall is good news.</param>
+/// <param name="Highlight">Something to do (requests to handle…): the figure is shown in amber.</param>
+/// <param name="Group">Name of the group of the figure ("Requests", "Customers"…).</param>
+/// <param name="Link">Screen of the administration where to act.</param>
+public sealed record BusinessKpi(string Id, string Label, object Value, double? Previous = null, string? Currency = null, string? Sub = null,
+    IReadOnlyList<double>? Series = null, bool LowerIsBetter = false, bool Highlight = false, string? Group = null, ReportLink? Link = null);
+
+/// <summary>State of the site's services: overall tone ("ok", "warn", "down"), a title, and the alerts in lines.</summary>
+public sealed record BusinessStatus(string Tone, string Title, IReadOnlyList<string>? Lines = null);
+
+/// <summary>
+/// Business figures of the site, at the top of the report: what the site itself counts (requests received and to handle,
+/// customers, trials, subscriptions, revenue, documents, messages, costs…), with the state of its services. Every text is given by
+/// the site in its language; numbers and amounts are formatted by the library in the language of the report.
+/// </summary>
+/// <param name="Kpis">Key figures, four per row (two by two on a phone), in the given order; figures of the same group together under its name.</param>
+/// <param name="Title">Title of the section (default: <c>report.businessTitle</c>, "Your business").</param>
+/// <param name="Hint">Line under the title (default: <c>report.businessHint</c>; an empty text: none).</param>
+/// <param name="Status">State of the services and alerts, under the figures.</param>
+/// <param name="Link">Link to the administration, at the end of the section.</param>
+public sealed record ReportBusiness(IReadOnlyList<BusinessKpi> Kpis, string? Title = null, string? Hint = null, BusinessStatus? Status = null, ReportLink? Link = null);
+
 /// <summary>Message ready to be handed to the site's sending function.</summary>
 public sealed record ReportMessage(string Subject, string Html, string Text, IReadOnlyList<InlineAttachment> Attachments)
 {
@@ -68,9 +100,10 @@ public static partial class ReportBuilder
     /// <param name="youtubeUrl">YouTube page of the administration (link at the end of the YouTube block).</param>
     /// <param name="daily">Visits and bounces day by day (charts of the "Visits" and "Bounce" figures); without them, no chart there.</param>
     /// <param name="goalSeries">Occurrences of each goal per slot, by goal id (charts of the goals).</param>
+    /// <param name="business">Business figures of the site (requests, customers, subscriptions, service status…), shown first, under the sentence.</param>
     public static ReportMessage Build(StatsOverview o, Texts texts, ReportTheme theme, string siteName, string? statsUrl = null, bool weekly = false, bool worldMap = true,
         bool glance = true, IReadOnlyList<ReportBlock>? blocks = null, SearchOverview? search = null, YoutubeOverview? youtube = null, IReadOnlyList<ReportVideo>? videos = null,
-        string? searchUrl = null, string? youtubeUrl = null, ReportDaily? daily = null, IReadOnlyDictionary<string, IReadOnlyList<double>>? goalSeries = null)
+        string? searchUrl = null, string? youtubeUrl = null, ReportDaily? daily = null, IReadOnlyDictionary<string, IReadOnlyList<double>>? goalSeries = null, ReportBusiness? business = null)
     {
         string R(string key) => texts["report." + key];
         var c = Palette.From(theme);
@@ -154,6 +187,52 @@ public static partial class ReportBuilder
             rows.Add(k.Paragraph(Texts.Fill(R("intro"), vars)));
             text.Add(Texts.Fill(R("intro"), vars));
             text.Add("");
+        }
+
+        // the site's business figures first: what needs doing, then how the business goes
+        if (business is { } biz && (biz.Kpis.Count > 0 || biz.Status is not null))
+        {
+            // one card (a light message: Gmail cuts a message beyond 102 KB): the figures by group, the state of the services, the link
+            var bizTitle = string.IsNullOrEmpty(biz.Title) ? R("businessTitle") : biz.Title;
+            var inner = k.H2(bizTitle, biz.Hint ?? R("businessHint"));
+            text.Add(Format.Upper(bizTitle));
+            string BizValue(BusinessKpi x) => AsNumber(x.Value) is { } n ? (x.Currency is { Length: > 0 } cur ? Format.Money(texts, n, cur) : Nf(n)) : x.Value.ToString() ?? "";
+            bool Compared(BusinessKpi x) => AsNumber(x.Value) is not null && x.Previous is not null;
+            foreach (var grp in biz.Kpis.GroupBy(x => x.Group ?? ""))
+            {
+                if (grp.Key.Length > 0)
+                {
+                    inner += k.H3(grp.Key);
+                    text.Add($"  {grp.Key}");
+                }
+                inner += k.Tiles([.. grp.Select(x =>
+                {
+                    var changeHtml = Compared(x) ? k.Trend(AsNumber(x.Value)!.Value, x.Previous, x.LowerIsBetter) : "";
+                    var go = x.Link is { } lk ? $"<a href=\"{MailKit.Esc(lk.Url)}\" class=\"sk-ac\" style=\"color:{c.AccentDeep}\">{MailKit.Esc(lk.Label)}</a>" : "";
+                    var subHtml = string.Join("<br>", new[] { changeHtml == "&nbsp;" ? "" : changeHtml, x.Sub is { Length: > 0 } sub ? Muted(sub) : "", go }.Where(y => y.Length > 0));
+                    var chart = x.Series is { Count: > 1 } series ? Line($"business-{NotId().Replace(x.Id.ToLowerInvariant(), "-")}", series) : "";
+                    return new Figure(BizValue(x), x.Label, subHtml, chart, x.Highlight ? "warn" : null);
+                })]);
+                foreach (var x in grp)
+                    text.Add($"  - {Lv(x.Label, BizValue(x))}{(Compared(x) ? T(AsNumber(x.Value)!.Value, x.Previous) : "")}{(x.Sub is { Length: > 0 } sub ? $" — {sub}" : "")}{(x.Link is { } lk ? $" {lk.Url}" : "")}");
+            }
+            if (biz.Status is { } st)
+            {
+                var lines = st.Lines ?? [];
+                inner += k.Status(st.Tone, st.Title, lines, biz.Kpis.Count > 0);
+                text.Add($"  {st.Title}");
+                text.AddRange(lines.Select(x => $"    - {x}"));
+            }
+            if (biz.Link is { } bl)
+            {
+                inner += k.Link(bl.Url, bl.Label);
+                text.Add($"  {bl.Url}");
+            }
+            rows.Add(k.Card(inner));
+            // the traffic of the site under its own title, so that the two parts read apart
+            rows.Add(k.Section(R("trafficTitle")));
+            text.Add("");
+            text.Add(Format.Upper(R("trafficTitle")));
         }
 
         if (ok)

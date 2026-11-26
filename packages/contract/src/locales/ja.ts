@@ -477,6 +477,9 @@ export const ja: Texts = {
     youtubeVideos: '最も再生された動画',
     youtubeVideosHint: '期間中の再生回数',
     textLink: '統計：{url}',
+    businessTitle: 'ビジネスの状況',
+    businessHint: '自社のデータより、同じ期間',
+    trafficTitle: 'サイトの訪問者',
   },
   /** Umami device codes. */
   devices: { desktop: 'パソコン', laptop: 'ノートパソコン', mobile: 'スマートフォン', tablet: 'タブレット', console: 'ゲーム機', smarttv: 'テレビ' } as Record<string, string>,

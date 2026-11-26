@@ -23,6 +23,20 @@ async function demoReport(locale: string) {
     goals: [{ id: 'calls', label: 'Clicks to call', events: ['phone-click'] }, { id: 'forms', label: 'Forms sent', events: ['form-sent'] }],
     report: {
       theme: { brand: '#1d3c9c' }, statsUrl: 'https://www.example.test/admin/statistics', searchUrl: 'https://www.example.test/admin/google', youtubeUrl: 'https://www.example.test/admin/youtube',
+      // the site's own figures at the top (labels given by the site, in its language)
+      business: () => {
+        const fr = locale.startsWith('fr');
+        return {
+          hint: fr ? 'D’après la base du site, sur la même période' : null,
+          kpis: [
+            { id: 'requests', label: fr ? 'Demandes de devis reçues' : 'Quote requests received', value: 5, previous: 2, group: fr ? 'Demandes' : 'Requests', series: [0, 1, 0, 2, 1, 0, 1] },
+            { id: 'to-handle', label: fr ? 'À traiter' : 'To handle', value: 2, highlight: true, group: fr ? 'Demandes' : 'Requests', sub: fr ? 'la plus ancienne : 3 jours' : 'oldest: 3 days', link: { url: 'https://www.example.test/admin/requests', label: fr ? 'Ouvrir →' : 'Open →' } },
+            { id: 'customers', label: fr ? 'Clients' : 'Customers', value: 12, group: fr ? 'Clients' : 'Customers', sub: fr ? 'dont 3 en essai' : '3 in trial' },
+            { id: 'revenue', label: fr ? 'Revenu mensuel' : 'Monthly revenue', value: 1490, previous: 1290, currency: 'EUR', group: fr ? 'Clients' : 'Customers' },
+          ],
+          status: { tone: 'warn', title: fr ? 'Un point demande votre attention' : 'One point needs your attention', lines: [fr ? 'Sauvegarde en retard d’un jour' : 'Backup one day late'] },
+        };
+      },
       blocks: () => [{ title: 'Costs', hint: 'AI services and subscriptions', figures: [{ value: money(12.5), label: 'AI usage (7 d)' }, { value: money(30), label: 'Subscriptions / month' }, { value: money(1490), label: 'Hosting / year' }], lines: [`Anthropic: ${money(9.25)}`, `OpenAI: ${money(3.25)}`] }],
     },
   };

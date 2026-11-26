@@ -8,7 +8,7 @@ import { buildOverview, siteExtras, sourceVisits, type OverviewOptions } from '.
 import { gscClient, gscConfigured, emptySearch, searchPeriod, type GscClient, type GscConfig } from './gsc.ts';
 import { Cache, errorMessage, type Fetch } from './http.ts';
 import { dailyVisits, goalSeries } from './report/daily.ts';
-import { buildReport, previewHtml, type ReportBlock, type ReportMessage } from './report/report.ts';
+import { buildReport, previewHtml, type ReportBlock, type ReportBusiness, type ReportMessage, type ReportVideo } from './report/report.ts';
 import { loadWorld, worldFile } from './report/map-png.ts';
 import type { ReportTheme } from './report/theme.ts';
 import { resolveRange, type RangeQuery } from './time.ts';
@@ -38,6 +38,18 @@ export interface ReportConfig {
    * function is logged and the report is sent without these cards.
    */
   blocks?: (overview: StatsOverview) => ReportBlock[] | Promise<ReportBlock[]>;
+  /**
+   * Business figures of the site (requests received and to handle, customers, subscriptions, service status…), shown at the
+   * top of the report; read at every report, given in the site's language. A failure of this function is logged and the report
+   * is sent without them.
+   */
+  business?: (overview: StatsOverview) => ReportBusiness | null | undefined | Promise<ReportBusiness | null | undefined>;
+  /**
+   * Google Search Console and YouTube figures of the report's period, given by the site when it reads them itself (another kit,
+   * its own YouTube reading…); a field given here replaces the connector of this kit. `null` for a field: no block (nothing empty
+   * in the message). A failure is logged and the report leaves with the connectors' figures. Same as `Report.Sources` in .NET.
+   */
+  sources?: (range: StatsOverview['range']) => ReportSources | null | undefined | Promise<ReportSources | null | undefined>;
   /** Google page of the administration: link at the end of the Google block of the report. */
   searchUrl?: string | null;
   /** YouTube page of the administration: link at the end of the YouTube block of the report. */
@@ -47,6 +59,14 @@ export interface ReportConfig {
    * applied over `texts`. The pages and the other routes keep the texts given at creation.
    */
   texts?: () => TextOverrides | null | undefined | Promise<TextOverrides | null | undefined>;
+}
+
+/** Google and YouTube figures of a report (see `ReportConfig.sources`); a field left out keeps the kit's connector. */
+export interface ReportSources {
+  search?: SearchOverview | null;
+  youtube?: YoutubeOverview | null;
+  /** Most viewed videos of the period, most viewed first. */
+  videos?: ReportVideo[] | null;
 }
 
 export interface StatsKitConfig extends Omit<OverviewOptions, 'timeZone' | 'dashboardUrl'> {
@@ -190,10 +210,20 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
     const r = config.report ?? {};
     const days = q.days ?? (q.from ? undefined : (r.days ?? 7));
     const o = await overview({ ...q, days });
-    const withSearch = r.search !== false && gsc ? await search({ days: o.range.days }) : null;
-    const withYoutube = r.youtube !== false && yt ? await youtube(Math.min(90, o.range.days)) : null;
-    let videos: { title: string; url: string; views: number }[] = [];
-    if (yt && withYoutube?.status === 'ok' && withYoutube.totals.views) videos = await yt.topVideos(withYoutube.start, withYoutube.end, 3, now()).catch(() => []);
+    let given: ReportSources | null | undefined = null;
+    if (r.sources) {
+      try {
+        given = await r.sources(o.range);
+      } catch (e) {
+        console.error('[stats-kit] report sources', e);
+      }
+    }
+    const has = (k: keyof ReportSources) => !!given && given[k] !== undefined;
+    const withSearch = has('search') ? given!.search ?? null : r.search !== false && gsc ? await search({ days: o.range.days }) : null;
+    const withYoutube = has('youtube') ? given!.youtube ?? null : r.youtube !== false && yt ? await youtube(Math.min(90, o.range.days)) : null;
+    let videos: ReportVideo[] = [];
+    if (has('youtube') || has('videos')) videos = given!.videos ?? [];
+    else if (yt && withYoutube?.status === 'ok' && withYoutube.totals.views) videos = await yt.topVideos(withYoutube.start, withYoutube.end, 3, now()).catch(() => []);
     let blocks: ReportBlock[] = [];
     if (r.blocks) {
       try {
@@ -202,12 +232,20 @@ export function createStatsKit(config: StatsKitConfig): StatsKit {
         console.error('[stats-kit] report blocks', e);
       }
     }
+    let business: ReportBusiness | null = null;
+    if (r.business) {
+      try {
+        business = (await r.business(o)) ?? null;
+      } catch (e) {
+        console.error('[stats-kit] report business figures', e);
+      }
+    }
     // visits and bounces day by day, occurrences of the goals: the charts of these figures
     const daily = umami ? await dailyVisits(umami, o) : null;
     const extra = r.texts ? await r.texts() : null;
     const reportTexts = extra ? createTexts(config.locale ?? 'en', mergeOverrides(config.texts, extra), config.baseTexts) : texts;
     return buildReport({
-      overview: o, blocks, glance: r.glance, daily, goalSeries: goalSeries(o, config.goals ?? []), search: withSearch, youtube: withYoutube, youtubeVideos: videos, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
+      overview: o, blocks, business, glance: r.glance, daily, goalSeries: goalSeries(o, config.goals ?? []), search: withSearch, youtube: withYoutube, youtubeVideos: videos, texts: reportTexts, theme: r.theme ?? { brand: '#2f5bd3' },
       siteName: config.siteName, statsUrl: r.statsUrl ?? null, searchUrl: r.searchUrl ?? null, youtubeUrl: r.youtubeUrl ?? null, weekly, world: getWorld(),
     });
   }

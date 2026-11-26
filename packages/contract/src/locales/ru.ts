@@ -477,6 +477,9 @@ export const ru: Texts = {
     youtubeVideos: 'Самые просматриваемые видео',
     youtubeVideosHint: 'Просмотры за период',
     textLink: 'Статистика: {url}',
+    businessTitle: 'Ваша деятельность',
+    businessHint: 'По вашим собственным данным, за тот же период',
+    trafficTitle: 'Аудитория сайта',
   },
   /** Umami device codes. */
   devices: { desktop: 'Компьютер', laptop: 'Ноутбук', mobile: 'Телефон', tablet: 'Планшет', console: 'Консоль', smarttv: 'Телевизор' },

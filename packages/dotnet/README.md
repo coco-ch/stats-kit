@@ -27,6 +27,6 @@ app.MapStatsKit("/api/admin/audience").RequireAuthorization("admin");
 
 The routes expose audience data: protect them. Avoid "analytics", "stats" or "track" in the address, which ad blockers block.
 
-Search Console and YouTube are connected by the Node server only for now; here their routes answer "not configured". Their blocks of the report are drawn from the figures the site gives with `o.Report.Sources`.
+Search Console and YouTube are connected by the Node server only for now; here their routes answer "not configured". Their blocks of the report are drawn from the figures the site gives with `o.Report.Sources`. The site's business figures (requests to handle, customers, subscriptions, service status…) go at the top of the report with `o.Report.Business = (overview, ct) => Task.FromResult<ReportBusiness?>(new([new BusinessKpi("requests", "Requests received", 5, Previous: 2)]))`.
 
 Documentation, Angular components and data contract: <https://github.com/manueldelarque/stats-kit>. Licence: MIT. Base map: Natural Earth (public domain).

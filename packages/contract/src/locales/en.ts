@@ -479,6 +479,9 @@ export const en = {
     youtubeVideos: 'Most viewed videos',
     youtubeVideosHint: 'Views over the period',
     textLink: 'Statistics: {url}',
+    businessTitle: 'Your business',
+    businessHint: 'From your own data, over the same period',
+    trafficTitle: 'Website audience',
   },
   /** Umami device codes. */
   devices: { desktop: 'Desktop', laptop: 'Laptop', mobile: 'Mobile', tablet: 'Tablet', console: 'Console', smarttv: 'TV' } as Record<string, string>,
