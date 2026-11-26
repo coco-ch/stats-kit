@@ -196,8 +196,9 @@ describe('blocks of the report', () => {
 
 describe('phone and dark mode (rendered in Chrome)', () => {
   let browser: Awaited<ReturnType<typeof chromium.launch>>;
-  beforeAll(async () => { browser = await chromium.launch({ channel: 'chrome' }); });
-  afterAll(async () => { await browser?.close(); });
+  // launching Chrome on a busy CI runner can take well over the default 10 s
+  beforeAll(async () => { browser = await chromium.launch({ channel: 'chrome' }); }, 60_000);
+  afterAll(async () => { await browser?.close(); }, 60_000);
   const report = async (locale: string) => {
     const kit = createStatsKit({
       siteName: 'Example Workshop', timeZone: 'Europe/Paris', locale, ...sources, fetch: fake, now: () => NOW,
@@ -366,8 +367,9 @@ describe('business figures of the site, at the top of the report', () => {
 
 describe('business figures on a phone and in dark mode (rendered in Chrome)', () => {
   let browser: Awaited<ReturnType<typeof chromium.launch>>;
-  beforeAll(async () => { browser = await chromium.launch({ channel: 'chrome' }); });
-  afterAll(async () => { await browser?.close(); });
+  // launching Chrome on a busy CI runner can take well over the default 10 s
+  beforeAll(async () => { browser = await chromium.launch({ channel: 'chrome' }); }, 60_000);
+  afterAll(async () => { await browser?.close(); }, 60_000);
   const html = async () => {
     const o = await overview();
     return previewHtml(buildReport({
