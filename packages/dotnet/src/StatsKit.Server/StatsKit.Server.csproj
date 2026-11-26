@@ -19,8 +19,8 @@
     <PackageTags>statistics;analytics;umami;aspnetcore;report;dashboard;angular</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/manueldelarque/stats-kit</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/manueldelarque/stats-kit</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/stats-kit/stats-kit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/stats-kit/stats-kit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
