@@ -3,6 +3,14 @@
   "version": "0.2.11",
   "description": "Website traffic statistics for a site administration: Umami, Google Search Console and YouTube connectors, weekly e-mail report, Angular components, labels in several languages.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stats-kit/stats-kit.git"
+  },
+  "homepage": "https://github.com/stats-kit/stats-kit#readme",
+  "bugs": {
+    "url": "https://github.com/stats-kit/stats-kit/issues"
+  },
   "type": "module",
   "engines": {
     "node": ">=22.18"

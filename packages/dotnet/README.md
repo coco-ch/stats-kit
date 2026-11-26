@@ -1,6 +1,6 @@
 # StatsKit.Server
 
-Website traffic statistics for a site's administration, for ASP.NET Core: the .NET server of [stats-kit](https://github.com/manueldelarque/stats-kit).
+Website traffic statistics for a site's administration, for ASP.NET Core: the .NET server of [stats-kit](https://github.com/stats-kit/stats-kit).
 
 - **Umami** connector (API v2 and v3, self-hosted with a read-only service account, or Umami Cloud with an API key), in-memory cache.
 - Overview of a period compared with the previous period: totals, series aligned day by day or hour by hour, last 24 hours, day × hour heatmap, pages with entries and exits, sources, channels, countries, regions, cities, languages, devices, browsers, systems, screens, events, UTM, goals, latest sessions, live count.
@@ -29,4 +29,4 @@ The routes expose audience data: protect them. Avoid "analytics", "stats" or "tr
 
 Search Console and YouTube are connected by the Node server only for now; here their routes answer "not configured". Their blocks of the report are drawn from the figures the site gives with `o.Report.Sources`. The site's business figures (requests to handle, customers, subscriptions, service status…) go at the top of the report with `o.Report.Business = (overview, ct) => Task.FromResult<ReportBusiness?>(new([new BusinessKpi("requests", "Requests received", 5, Previous: 2)]))`.
 
-Documentation, Angular components and data contract: <https://github.com/manueldelarque/stats-kit>. Licence: MIT. Base map: Natural Earth (public domain).
+Documentation, Angular components and data contract: <https://github.com/stats-kit/stats-kit>. Licence: MIT. Base map: Natural Earth (public domain).
