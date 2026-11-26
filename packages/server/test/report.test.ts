@@ -271,3 +271,131 @@ describe('phone and dark mode (rendered in Chrome)', () => {
     expect(html).toContain('<meta name="color-scheme" content="light dark">');
   });
 });
+
+describe('business figures of the site, at the top of the report', () => {
+  const business = {
+    hint: 'Read in the application, no health data',
+    kpis: [
+      { id: 'requests', label: 'Trial requests', value: 5, previous: 2, group: 'Requests', series: [0, 1, 0, 2, 1, 0, 1] },
+      { id: 'to-handle', label: 'To handle', value: 2, highlight: true, group: 'Requests', sub: 'oldest: 3 days', link: { url: 'https://app.example.test/requests', label: 'Open →' } },
+      { id: 'customers', label: 'Customers', value: 12, group: 'Customers', sub: '3 in trial' },
+      { id: 'revenue', label: 'Monthly revenue', value: 1490, previous: 1290, currency: 'EUR', group: 'Customers' },
+      { id: 'costs', label: 'Costs this month', value: 43.5, previous: 40, currency: 'EUR', lowerIsBetter: true, group: 'Customers' },
+      { id: 'ratio', label: 'Documents signed', value: '21 of 26' },
+    ],
+    status: { tone: 'warn' as const, title: 'One point needs your attention', lines: ['Access review overdue <now>'] },
+    link: { url: 'https://admin.example.test/', label: 'Open the console →' },
+  };
+  it('a section before the traffic: groups, amounts, changes, highlighted figures, status, link; text version', async () => {
+    const o = await overview();
+    const m = buildReport({ overview: o, business, texts: en, theme: { brand: '#1d3c9c' }, siteName: 'S', world: null });
+    const at = (s: string) => m.html.indexOf(s);
+    // after the sentence of the period, before the traffic figures
+    expect(at('Your business')).toBeGreaterThan(at('sk-soft'));
+    expect(at('Your business')).toBeLessThan(at('>Visitors<'));
+    expect(at('Website audience')).toBeGreaterThan(at('Monthly revenue'));
+    expect(at('Website audience')).toBeLessThan(at('>Visitors<'));
+    expect(m.html).toContain('Read in the application, no health data');
+    expect(m.html).toMatch(/€1,490/);
+    expect(m.html).toContain('class="sk-warn" bgcolor="#fff3d6"'); // "to handle" in amber
+    expect(m.html).toContain('Access review overdue &#60;now&#62;');
+    expect(m.html).toContain('href="https://app.example.test/requests"');
+    // a cost going up is bad news: red
+    const costs = m.html.slice(at('Costs this month'), at('Costs this month') + 400);
+    expect(costs).toContain('class="sk-dn"');
+    expect(m.attachments.map((a) => a.cid)).toContain('stats-kit-business-requests');
+    expect(m.attachments.map((a) => a.cid)).not.toContain('stats-kit-business-customers');
+    expect(sp(m.text)).toContain('YOUR BUSINESS\n  Requests\n  - Trial requests: 5  (+150%)\n  - To handle: 2 — oldest: 3 days https://app.example.test/requests\n  Customers\n  - Customers: 12 — 3 in trial\n  - Monthly revenue: €1,490  (+16%)\n  - Costs this month: €43.50  (+9%)\n  - Documents signed: 21 of 26\n  One point needs your attention\n    - Access review overdue <now>\n  https://admin.example.test/\n\nWEBSITE AUDIENCE\n');
+  });
+  it('without visit statistics the business figures still come; nothing when the site gives none', async () => {
+    const o = await overview();
+    const none: StatsOverview = { ...o, status: 'not-configured' };
+    const m = buildReport({ overview: none, business: { ...business, status: { tone: 'ok', title: 'All services are running' } }, texts: fr, theme: { brand: '#1d3c9c' }, siteName: 'S', world: null });
+    expect(m.html).toContain('Votre activité');
+    expect(m.html).toContain('✓ All services are running');
+    expect(m.html).toContain('Audience du site');
+    expect(m.html).toMatch(/1[   ]490[   ]€/);
+    for (const b of [null, { kpis: [] }]) {
+      const empty = buildReport({ overview: o, business: b, texts: en, theme: { brand: '#1d3c9c' }, siteName: 'S', world: null });
+      expect(empty.html).not.toContain('Your business');
+      expect(empty.html).not.toContain('Website audience');
+    }
+    const down = buildReport({ overview: o, business: { title: 'Platform', kpis: [], status: { tone: 'down', title: 'A service is down' } }, texts: en, theme: { brand: '#1d3c9c' }, siteName: 'S', world: null });
+    expect(down.html).toContain('Platform');
+    expect(down.html).toMatch(/class="sk-dn" style="[^"]*">! A service is down/);
+  });
+  it('kit: figures read at every report, a failure leaves without them; Google and YouTube given by the site', async () => {
+    let calls = 0;
+    const search = await gscClient(sources.gsc, fake).overview({ days: 7 }, NOW);
+    const youtube = await youtubeClient(sources.youtube, fake).overview(7, undefined, NOW);
+    const kit = createStatsKit({
+      siteName: 'S', timeZone: 'Europe/Paris', umami: sources.umami, fetch: fake, now: () => NOW, world: null,
+      report: {
+        business: (o) => (calls++ ? { kpis: [{ id: 'n', label: `Visitors seen: ${o.totals.visitors}`, value: calls }] } : null),
+        sources: (range) => ({ search: range.days === 7 ? search : null, youtube, videos: [{ title: 'Given video', url: 'https://youtube.example.test/v', views: 3 }] }),
+      },
+    });
+    expect((await kit.report({ days: '7' })).html).not.toContain('Your business');
+    const m = await kit.report({ days: '7' });
+    expect(m.html).toContain('Your business');
+    expect(m.html).toContain('In Google');
+    expect(m.html).toContain('On YouTube');
+    expect(m.html).toContain('Given video');
+    expect((await kit.report({ days: '30' })).html).not.toContain('In Google'); // a null field: no block
+    const failing = createStatsKit({ siteName: 'S', umami: sources.umami, fetch: fake, now: () => NOW, world: null, report: { business: () => { throw new Error('database down'); }, sources: () => { throw new Error('no sources'); } } });
+    const f = await failing.report({ days: '7' });
+    expect(f.html).not.toContain('Your business');
+    expect(f.html).not.toContain('In Google');
+    // a field left out keeps the connectors of the kit
+    const own = createStatsKit({ siteName: 'S', ...sources, fetch: fake, now: () => NOW, world: null, report: { sources: () => ({ youtube: null }) } });
+    const o = await own.report({ days: '7' });
+    expect(o.html).toContain('In Google');
+    expect(o.html).not.toContain('On YouTube');
+  });
+  it('full report with business figures, Google and YouTube stays under the clipping limit of Gmail (102 KB)', async () => {
+    const kit = createStatsKit({
+      siteName: 'Example Workshop', timeZone: 'Europe/Paris', locale: 'fr', ...sources, fetch: fake, now: () => NOW,
+      pages: { languages: ['en', 'fr', 'de'], labels: { '/': 'Home' } }, goals: [{ id: 'calls', label: 'Calls', events: ['phone-click'] }],
+      report: { theme: { brand: '#1d3c9c' }, statsUrl: 'https://www.example.test/admin', business: () => business },
+      world: loadWorld(),
+    });
+    const m = await kit.report({ days: '7' }, true);
+    expect(Buffer.byteLength(m.html)).toBeLessThan(102 * 1024);
+  });
+});
+
+describe('business figures on a phone and in dark mode (rendered in Chrome)', () => {
+  let browser: Awaited<ReturnType<typeof chromium.launch>>;
+  beforeAll(async () => { browser = await chromium.launch({ channel: 'chrome' }); });
+  afterAll(async () => { await browser?.close(); });
+  const html = async () => {
+    const o = await overview();
+    return previewHtml(buildReport({
+      overview: o, texts: fr, theme: { brand: '#1d3c9c' }, siteName: 'S', world: null,
+      business: { kpis: [
+        { id: 'a', label: 'Demandes d’essai reçues', value: 5, previous: 2, series: [0, 1, 2, 2] },
+        { id: 'b', label: 'Demandes à traiter', value: 2, highlight: true },
+        { id: 'c', label: 'Abonnements actifs', value: 7 },
+        { id: 'd', label: 'Revenu mensuel', value: 1490, currency: 'EUR' },
+      ], status: { tone: 'warn', title: 'Un point demande votre attention', lines: ['Revue des accès en retard'] } },
+    }));
+  };
+  it('320 px: two by two, no horizontal scrolling', async () => {
+    const page = await browser.newPage({ viewport: { width: 320, height: 800 } });
+    await page.setContent(await html());
+    const r = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth - window.innerWidth,
+      tiles: [...document.querySelector('.sk-card')!.querySelectorAll('td.sk-q')].filter((e) => e.children.length).slice(0, 4).map((e) => { const b = e.getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top)]; }),
+    }));
+    expect(r.overflow).toBeLessThanOrEqual(0);
+    const [a, b, c, d] = r.tiles;
+    expect([a[1] === b[1], c[1] > a[1], c[1] === d[1], a[0] === c[0]]).toEqual([true, true, true, true]);
+    await page.close();
+  });
+  it('dark mode: the figure to handle stays amber, on a dark background', async () => {
+    const page = await browser.newPage({ viewport: { width: 820, height: 800 }, colorScheme: 'dark' });
+    await page.setContent(await html());
+    expect(await page.evaluate(() => getComputedStyle(document.querySelector('table.sk-warn')!).backgroundColor)).toBe('rgb(58, 47, 22)');
+    await page.close();
+  });
+});

@@ -81,6 +81,12 @@ public sealed class ReportOptions
     /// function is logged and the report is sent without these cards.
     /// </summary>
     public Func<StatsOverview, CancellationToken, Task<IReadOnlyList<ReportBlock>>>? Blocks { get; set; }
+    /// <summary>
+    /// Business figures of the site (requests received and to handle, customers, subscriptions, service status…), shown at the top
+    /// of the report; read at every report, given in the site's language. Null: none. A failure of this function is logged and
+    /// the report is sent without them.
+    /// </summary>
+    public Func<StatsOverview, CancellationToken, Task<ReportBusiness?>>? Business { get; set; }
     /// <summary>Google page of the administration: link at the end of the Google block of the report.</summary>
     public string? SearchUrl { get; set; }
     /// <summary>YouTube page of the administration: link at the end of the YouTube block of the report.</summary>

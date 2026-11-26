@@ -478,7 +478,10 @@
    "googlePagesUpHint": "Clicks from Google, against the previous period",
    "youtubeVideos": "Most viewed videos",
    "youtubeVideosHint": "Views over the period",
-   "textLink": "Statistics: {url}"
+   "textLink": "Statistics: {url}",
+   "businessTitle": "Your business",
+   "businessHint": "From your own data, over the same period",
+   "trafficTitle": "Website audience"
   },
   "devices": {
    "desktop": "Desktop",
@@ -1012,7 +1015,10 @@
    "googlePagesUpHint": "Clics depuis Google, par rapport à la période précédente",
    "youtubeVideos": "Vidéos les plus vues",
    "youtubeVideosHint": "Vues sur la période",
-   "textLink": "Statistiques : {url}"
+   "textLink": "Statistiques : {url}",
+   "businessTitle": "Votre activité",
+   "businessHint": "D’après vos propres données, sur la même période",
+   "trafficTitle": "Audience du site"
   },
   "devices": {
    "desktop": "Ordinateur",
@@ -1546,7 +1552,10 @@
    "googlePagesUpHint": "Klicks aus Google ggü. dem vorherigen Zeitraum",
    "youtubeVideos": "Meistgesehene Videos",
    "youtubeVideosHint": "Aufrufe im Zeitraum",
-   "textLink": "Statistiken: {url}"
+   "textLink": "Statistiken: {url}",
+   "businessTitle": "Ihr Geschäft",
+   "businessHint": "Aus Ihren eigenen Daten, im selben Zeitraum",
+   "trafficTitle": "Reichweite der Website"
   },
   "devices": {
    "desktop": "Desktop",
@@ -2080,7 +2089,10 @@
    "googlePagesUpHint": "Clics desde Google frente al periodo anterior",
    "youtubeVideos": "Vídeos más vistos",
    "youtubeVideosHint": "Visualizaciones en el periodo",
-   "textLink": "Estadísticas: {url}"
+   "textLink": "Estadísticas: {url}",
+   "businessTitle": "Su actividad",
+   "businessHint": "Según sus propios datos, en el mismo periodo",
+   "trafficTitle": "Audiencia del sitio"
   },
   "devices": {
    "desktop": "Ordenador",
@@ -2614,7 +2626,10 @@
    "googlePagesUpHint": "Clic da Google rispetto al periodo precedente",
    "youtubeVideos": "Video più visti",
    "youtubeVideosHint": "Visualizzazioni nel periodo",
-   "textLink": "Statistiche: {url}"
+   "textLink": "Statistiche: {url}",
+   "businessTitle": "La vostra attività",
+   "businessHint": "Dai vostri dati, nello stesso periodo",
+   "trafficTitle": "Pubblico del sito"
   },
   "devices": {
    "desktop": "Computer",
@@ -3148,7 +3163,10 @@
    "googlePagesUpHint": "Cliques do Google em relação ao período anterior",
    "youtubeVideos": "Vídeos mais vistos",
    "youtubeVideosHint": "Visualizações no período",
-   "textLink": "Estatísticas: {url}"
+   "textLink": "Estatísticas: {url}",
+   "businessTitle": "A sua atividade",
+   "businessHint": "A partir dos seus próprios dados, no mesmo período",
+   "trafficTitle": "Audiência do site"
   },
   "devices": {
    "desktop": "Computador",
@@ -3682,7 +3700,10 @@
    "googlePagesUpHint": "Klikken vanuit Google t.o.v. de vorige periode",
    "youtubeVideos": "Meest bekeken video’s",
    "youtubeVideosHint": "Weergaven in de periode",
-   "textLink": "Statistieken: {url}"
+   "textLink": "Statistieken: {url}",
+   "businessTitle": "Uw activiteit",
+   "businessHint": "Uit uw eigen gegevens, over dezelfde periode",
+   "trafficTitle": "Bereik van de website"
   },
   "devices": {
    "desktop": "Desktop",
@@ -4216,7 +4237,10 @@
    "googlePagesUpHint": "Клики из Google к предыдущему периоду",
    "youtubeVideos": "Самые просматриваемые видео",
    "youtubeVideosHint": "Просмотры за период",
-   "textLink": "Статистика: {url}"
+   "textLink": "Статистика: {url}",
+   "businessTitle": "Ваша деятельность",
+   "businessHint": "По вашим собственным данным, за тот же период",
+   "trafficTitle": "Аудитория сайта"
   },
   "devices": {
    "desktop": "Компьютер",
@@ -4750,7 +4774,10 @@
    "googlePagesUpHint": "来自 Google 的点击，与上一时段相比",
    "youtubeVideos": "观看最多的视频",
    "youtubeVideosHint": "本时段观看次数",
-   "textLink": "统计：{url}"
+   "textLink": "统计：{url}",
+   "businessTitle": "您的业务",
+   "businessHint": "来自您自己的数据，同一时期",
+   "trafficTitle": "网站受众"
   },
   "devices": {
    "desktop": "台式机",
@@ -5284,7 +5311,10 @@
    "googlePagesUpHint": "Google からのクリック（前の期間との比較）",
    "youtubeVideos": "最も再生された動画",
    "youtubeVideosHint": "期間中の再生回数",
-   "textLink": "統計：{url}"
+   "textLink": "統計：{url}",
+   "businessTitle": "ビジネスの状況",
+   "businessHint": "自社のデータより、同じ期間",
+   "trafficTitle": "サイトの訪問者"
   },
   "devices": {
    "desktop": "パソコン",
@@ -5818,7 +5848,10 @@
    "googlePagesUpHint": "Google 클릭, 이전 기간 대비",
    "youtubeVideos": "가장 많이 본 동영상",
    "youtubeVideosHint": "기간 중 조회수",
-   "textLink": "통계: {url}"
+   "textLink": "통계: {url}",
+   "businessTitle": "비즈니스 현황",
+   "businessHint": "자체 데이터 기준, 같은 기간",
+   "trafficTitle": "사이트 방문자"
   },
   "devices": {
    "desktop": "데스크톱",

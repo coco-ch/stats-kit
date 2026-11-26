@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.11
+
+The site's own business figures at the top of the report, the same in Node and .NET. Backward compatible: a site that gives none gets the same report as before.
+
+### Added
+
+- **Business figures** (`report.business`, `ReportInput.business`): a section at the top of the report, under the sentence of the period, with what the site itself counts — requests received and to handle, customers, trials, subscriptions, revenue, documents, messages, costs… (`BusinessKpi`: number or text, previous value and its change, `currency` for an amount written in the language of the report, `series` for a small chart, `lowerIsBetter`, `highlight` in amber for what is to handle, `group`, `link` to the screen where to act), then the state of the services (`BusinessStatus`: `ok`, `warn` or `down`, a title, the alerts in lines) and a link to the administration. In one card (a light message), four figures per row, two by two on a phone, dark mode, plain-text version. The traffic follows under its own title ("Website audience"). Shown even when Umami is not connected; a failure of the function only removes the section. New texts `report.businessTitle`, `report.businessHint` and `report.trafficTitle` in the eleven languages.
+- **Google and YouTube figures given by the site** in Node too (`report.sources`, as `Report.Sources` in .NET): for a site that reads them itself (another kit, its own YouTube reading); a field given replaces the connector of the kit, `null` removes the block.
+
+### .NET server
+
+- The same: `ReportOptions.Business`, `ReportBusiness`, `BusinessKpi`, `BusinessStatus`, `ReportLink`, `ReportBuilder.Build(…, business)`; the contract fixtures now carry business figures (statuses `ok`, `warn`, `down`, amounts in euros and dollars, groups, charts, links).
+
 ## 0.2.10
 
 Found by the review of the 0.2.9 report. Backward compatible.

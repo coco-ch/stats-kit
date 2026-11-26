@@ -29,6 +29,8 @@ export interface Figure {
   label: string;
   sub: string;
   image?: string;
+  /** `warn`: something to do, the figure in amber. */
+  tone?: 'warn';
 }
 
 /** Tone of a change: good news, bad news, neither. */
@@ -121,6 +123,25 @@ export function mailKit(C: Palette, texts: Texts) {
     return `<table ${T}>${rows.join('')}</table>`;
   };
 
+  /**
+   * Figures inside a card, `columns` per row (two by two on a phone): value, label, lines under it, optional chart; a `warn`
+   * figure on an amber background. Lighter than framed key figures: the message stays under the 102 KB that Gmail shows.
+   */
+  const tiles = (list: Figure[], columns = 4) => {
+    const width = `${(100 / columns).toFixed(2)}%`;
+    const body = (f: Figure) => `<div ${ts('22px/1.15', 800, C.ink, C.display, 'letter-spacing:-0.02em')}>${esc(f.value)}</div><div ${ts('12px/1.4', 400, C.muted, C.font, 'margin-top:2px')}>${esc(f.label)}</div>${f.sub ? `<div ${ts('11px/1.5', 400, C.text, C.font, 'margin-top:4px')}>${f.sub}</div>` : ''}${f.image ?? ''}`;
+    const cell = (f: Figure) => f.tone === 'warn'
+      ? `<td class="sk-q" width="${width}" valign="top" style="padding:2px 6px 8px 0"><table ${T} class="sk-warn" bgcolor="${C.warnSoft}" style="background:${C.warnSoft};border-radius:10px"><tr><td style="padding:8px 10px">${body(f)}</td></tr></table></td>`
+      : `<td class="sk-q" width="${width}" valign="top" style="padding:10px 16px 16px 10px">${body(f)}</td>`;
+    const rows: string[] = [];
+    for (let i = 0; i < list.length; i += columns) {
+      const part = list.slice(i, i + columns).map(cell);
+      while (part.length < columns) part.push(`<td class="sk-q" width="${width}"></td>`);
+      rows.push(`<tr>${part.join('')}</tr>`);
+    }
+    return `<table ${T}>${rows.join('')}</table>`;
+  };
+
   /** Ranking: label and number, proportional bar below. */
   const list = (title: string, rows: [string, number][], hint = '') => {
     if (!rows.length) return { inner: '', text: '' };
@@ -195,6 +216,15 @@ export function mailKit(C: Palette, texts: Texts) {
   const headline = (text: string) =>
     `<tr><td class="sk-px" style="padding:0 24px 16px"><table ${T} class="sk-soft" bgcolor="${C.soft}" style="background:${C.soft};border-radius:12px"><tr><td style="padding:14px 18px;border-left:4px solid ${C.accentDeep};border-radius:12px;font-family:${C.font}"><div ${ts('17px/1.45', 700, C.ink, C.display)}>${esc(text)}</div></td></tr></table></td></tr>`;
 
+  /** Title of a part of the report, outside the cards. */
+  const section = (title: string) =>
+    `<tr><td class="sk-px" style="padding:4px 24px 10px;font-family:${C.font}"><div ${ts('18px/1.3', 800, C.ink, C.display, 'letter-spacing:-0.01em')}>${esc(title)}</div></td></tr>`;
+  /** State of the services inside a card: a coloured title (`ok` green, `warn` amber, `down` red), the alerts in lines; `rule`: a line above. */
+  const status = (tone: 'ok' | 'warn' | 'down', title: string, lines: string[], rule: boolean) => {
+    const color = tone === 'ok' ? C.up : tone === 'down' ? C.down : C.warnInk;
+    return `<div ${ts('14px/1.4', 700, color, C.font, rule ? `margin-top:4px;padding-top:10px;border-top:1px solid ${C.line}` : '', [tone === 'warn' ? 'sk-wi' : '', rule ? 'sk-bd' : ''].filter(Boolean).join(' '))}>${tone === 'ok' ? '✓' : '!'} ${esc(title)}</div>${lines.length ? bullets(lines) : ''}`;
+  };
+
   const note = (text: string) => `<tr><td class="sk-px" ${ts('13px/1.5', 400, C.muted, C.font, `padding:0 24px 16px;font-family:${C.font}`)}>${esc(text)}</td></tr>`;
   /** Highlighted site data (requests to handle…), in amber: `sk-warn` / `sk-wi` in dark mode. */
   const callout = (html: string) => `<tr><td class="sk-px" style="padding:0 24px 16px"><table ${T} class="sk-warn" bgcolor="${C.warnSoft}" style="background:${C.warnSoft};border-radius:12px"><tr><td ${ts('14px/1.5', 400, C.warnInk, C.font, `padding:14px 16px;font-family:${C.font}`, 'sk-wi')}>${html}</td></tr></table></td></tr>`;
@@ -223,7 +253,7 @@ ${rows}
 <!--[if mso]></td></tr></table><![endif]-->
 </td></tr></table></body></html>`;
 
-  return { trend, gap, delta, box, card, row, pairs, split, h2, h3, spark, kpi, kpiRow, figures, list, grid, moves, bars, bullets, heat, button, header, headline, note, callout, paragraph, footer, link, page, fill, ts };
+  return { trend, gap, delta, box, card, row, pairs, split, h2, h3, spark, kpi, kpiRow, figures, tiles, list, grid, moves, bars, bullets, heat, button, header, headline, section, status, note, callout, paragraph, footer, link, page, fill, ts };
 }
 
 export type MailKit = ReturnType<typeof mailKit>;

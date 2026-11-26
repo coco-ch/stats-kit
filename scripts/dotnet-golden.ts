@@ -72,6 +72,20 @@ const full = (locale: string, fetch: Fetch): StatsKitConfig => ({
   extras: async () => extras,
   report: { theme: { brand: '#b87333', head: '#1a1a1d', display: 'Georgia,serif', map: { land: '#e4ded3' }, dark: { accent: '#e0a46b' } }, statsUrl: 'https://www.example.test/admin/statistics', send: async () => 2,
     searchUrl: 'https://www.example.test/admin/google', youtubeUrl: 'https://www.example.test/admin/youtube',
+    business: async (o) => o.range.days > 30 ? null : {
+      hint: o.range.days === 1 ? null : 'From the shop database',
+      kpis: [
+        { id: 'Requests', label: 'Quote requests', value: 5, previous: 2, group: 'Requests', series: [0, 1, 0, 2, 1, 0, 1] },
+        { id: 'to-handle', label: 'To handle', value: 2, highlight: true, group: 'Requests', sub: 'oldest: 3 days', link: { url: 'https://www.example.test/admin/requests', label: 'Open the requests →' } },
+        { id: 'customers', label: 'Customers', value: 12, previous: 12, group: 'Customers', sub: '3 in trial' },
+        { id: 'revenue', label: 'Monthly revenue', value: 1490, previous: 1290, currency: 'EUR', group: 'Customers' },
+        { id: 'costs', label: 'Costs this month', value: 43.5, previous: 40, currency: 'USD', lowerIsBetter: true, group: 'Customers', series: [40, 41.5, 43.5] },
+        { id: 'ratio', label: 'Documents signed', value: '21 / 26' },
+        { id: 'new', label: 'New accounts', value: 0, previous: 0 },
+      ],
+      status: o.range.days === 1 ? { tone: 'ok', title: 'All services are running' } : { tone: o.range.days === 7 ? 'warn' : 'down', title: 'Services to check', lines: ['Backup <late>', 'Disk 91 % full'] },
+      link: o.range.days === 1 ? null : { url: 'https://www.example.test/admin', label: 'Open the administration →' },
+    },
     blocks: async () => [
       { title: 'Costs', hint: 'Over the period', figures: [{ value: '12.50 EUR', label: 'AI usage', sub: '7 days' }, { value: '30.00 EUR', label: 'Subscriptions / month' }, { value: '3', label: 'Invoices' }, { value: '1', label: 'Alerts', sub: 'to check' }], lines: ['Anthropic: 9.25 EUR', 'OpenAI: 3.25 EUR'] },
       { title: 'News', lines: ['Concert on Saturday "Brass & Winds" <live>'] },

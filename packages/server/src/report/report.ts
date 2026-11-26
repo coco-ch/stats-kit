@@ -1,12 +1,12 @@
 /*
- * Traffic report by e-mail (weekly or on demand): a sentence that sums up the period, key figures with their change and a small
- * chart, goals, site data, rising and falling pages and sources, world map, page views per day, heatmap, Google, YouTube,
+ * Traffic report by e-mail (weekly or on demand): a sentence that sums up the period, the site's business figures (requests to
+ * handle, customers, subscriptions…, given by the site), key figures with their change and a small chart, goals, site data, rising and falling pages and sources, world map, page views per day, heatmap, Google, YouTube,
  * rankings, site-specific cards. A plain-text version comes with it. Every text comes from the texts of the chosen language;
  * numbers, amounts, dates, weekdays and hours are formatted with Intl. Images (map, charts) are PNG attachments ("cid:").
  * The library sends nothing: the message is handed to the site's sending function.
  */
 import {
-  bestSlot, browserName, countryName, deviceName, fill, formatDuration, formatNumber, formatPercent, hourName, labelValue, languageName, longDay,
+  bestSlot, browserName, countryName, deviceName, fill, formatDuration, formatMoney, formatNumber, formatPercent, hourName, labelValue, languageName, longDay,
   mergeLanguages, pathOf, percentChange, shortDate, slotLabel, weekdayName,
   type Item, type SearchOverview, type StatsOverview, type Texts, type World, type YoutubeOverview,
 } from 'stats-kit/contract';
@@ -63,6 +63,8 @@ export interface ReportInput {
   glance?: boolean;
   /** Site-specific cards, shown after the rankings (costs, requests, news of the site…). */
   blocks?: ReportBlock[];
+  /** Business figures of the site (requests, customers, subscriptions, service status…), shown first, under the sentence. */
+  business?: ReportBusiness | null;
   /** Visits and bounces day by day (charts of the "Visits" and "Bounce" figures); without them, no chart there. */
   daily?: ReportDaily | null;
   /** Occurrences of each goal per slot, by goal id (charts of the goals). */
@@ -79,6 +81,56 @@ export interface ReportBlock {
   /** Key figures, on one light line (three per row, two on a phone). */
   figures?: { value: string; label: string; sub?: string }[];
   /** Lines of text, bulleted. */
+  lines?: string[];
+}
+
+/**
+ * Business figures of the site, at the top of the report: what the site itself counts (requests received and to handle,
+ * customers, trials, subscriptions, revenue, documents, messages, costs…), with the state of its services. Every text is given by
+ * the site in its language; numbers and amounts are formatted by the library in the language of the report.
+ */
+export interface ReportBusiness {
+  /** Title of the section (default: `report.businessTitle`, "Your business"). */
+  title?: string | null;
+  /** Line under the title (default: `report.businessHint`). */
+  hint?: string | null;
+  /** Key figures, four per row (two by two on a phone), in the given order; figures of the same `group` together under its name. */
+  kpis: BusinessKpi[];
+  /** State of the services and alerts, under the figures. */
+  status?: BusinessStatus | null;
+  /** Link to the administration, at the end of the section. */
+  link?: { url: string; label: string } | null;
+}
+
+/** A business figure. Leave out a figure the site cannot read: never a zero standing for "unknown". */
+export interface BusinessKpi {
+  /** Stable identifier (name of its chart image). */
+  id: string;
+  label: string;
+  /** Number (formatted in the language of the report), or a text already formatted ("3 of 5"). */
+  value: number | string;
+  /** Value of the previous period (a number value only): change shown under the figure. */
+  previous?: number | null;
+  /** ISO 4217 currency of a number value: formatted as an amount ("1 490 €", "$12.50"). */
+  currency?: string | null;
+  /** Line under the figure ("2 to handle", "ends within 7 days"). */
+  sub?: string | null;
+  /** Values per slot of the period, oldest first: a small chart (two values at least). */
+  series?: number[] | null;
+  /** A figure that should go down (costs, errors): a fall is good news. */
+  lowerIsBetter?: boolean;
+  /** Something to do (requests to handle…): the figure is shown in amber. */
+  highlight?: boolean;
+  /** Name of the group of the figure ("Requests", "Customers"…). */
+  group?: string | null;
+  /** Screen of the administration where to act. */
+  link?: { url: string; label: string } | null;
+}
+
+/** State of the site's services: overall tone, a title, and the alerts in lines. */
+export interface BusinessStatus {
+  tone: 'ok' | 'warn' | 'down';
+  title: string;
   lines?: string[];
 }
 
@@ -164,6 +216,51 @@ export function buildReport(input: ReportInput): ReportMessage {
   if (R.intro) {
     rows.push(K.paragraph(fill(R.intro, vars)));
     text.push(fill(R.intro, vars), '');
+  }
+
+  // the site's business figures first: what needs doing, then how the business goes
+  const biz = input.business;
+  if (biz && (biz.kpis.length || biz.status)) {
+    // one card (a light message: Gmail cuts a message beyond 102 KB): the figures by group, the state of the services, the link
+    const title = biz.title || R.businessTitle, hint = biz.hint ?? R.businessHint;
+    let inner = K.h2(title, hint);
+    text.push(upper(title));
+    const groups: { name: string; kpis: BusinessKpi[] }[] = [];
+    for (const x of biz.kpis) {
+      const name = x.group ?? '';
+      const grp = groups.find((g) => g.name === name);
+      if (grp) grp.kpis.push(x);
+      else groups.push({ name, kpis: [x] });
+    }
+    const value = (x: BusinessKpi) => (typeof x.value === 'number' ? (x.currency ? formatMoney(texts, x.value, x.currency) : nf(x.value)) : x.value);
+    const compared = (x: BusinessKpi) => typeof x.value === 'number' && x.previous !== null && x.previous !== undefined;
+    for (const grp of groups) {
+      if (grp.name) {
+        inner += K.h3(grp.name);
+        text.push(`  ${grp.name}`);
+      }
+      inner += K.tiles(grp.kpis.map((x): Figure => {
+        const change = compared(x) ? K.trend(x.value as number, x.previous, x.lowerIsBetter) : '';
+        const go = x.link ? `<a href="${esc(x.link.url)}" class="sk-ac" style="color:${C.accentDeep}">${esc(x.link.label)}</a>` : '';
+        const sub = [change === '&nbsp;' ? '' : change, x.sub ? muted(x.sub) : '', go].filter(Boolean).join('<br>');
+        const chart = x.series && x.series.length > 1 ? line(`business-${x.id.toLowerCase().replace(/[^a-z0-9-]+/g, '-')}`, x.series) : '';
+        return { value: value(x), label: x.label, sub, image: chart, tone: x.highlight ? 'warn' : undefined };
+      }));
+      for (const x of grp.kpis) text.push(`  - ${lv(x.label, value(x))}${compared(x) ? t(x.value as number, x.previous) : ''}${x.sub ? ` — ${x.sub}` : ''}${x.link ? ` ${x.link.url}` : ''}`);
+    }
+    if (biz.status) {
+      const lines = biz.status.lines ?? [];
+      inner += K.status(biz.status.tone, biz.status.title, lines, biz.kpis.length > 0);
+      text.push(`  ${biz.status.title}`, ...lines.map((x) => `    - ${x}`));
+    }
+    if (biz.link) {
+      inner += K.link(biz.link.url, biz.link.label);
+      text.push(`  ${biz.link.url}`);
+    }
+    rows.push(K.card(inner));
+    // the traffic of the site under its own title, so that the two parts read apart
+    rows.push(K.section(R.trafficTitle));
+    text.push('', upper(R.trafficTitle));
   }
 
   if (ok) {

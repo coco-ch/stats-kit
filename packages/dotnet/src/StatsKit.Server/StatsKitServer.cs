@@ -102,6 +102,18 @@ public sealed class StatsKitServer
                 _logger.LogError(e, "[stats-kit] report blocks");
             }
         }
+        ReportBusiness? business = null;
+        if (r.Business is not null)
+        {
+            try
+            {
+                business = await r.Business(o, ct).ConfigureAwait(false);
+            }
+            catch (Exception e) when (!ct.IsCancellationRequested)
+            {
+                _logger.LogError(e, "[stats-kit] report business figures");
+            }
+        }
         ReportSources? sources = null;
         if (r.Sources is not null)
         {
@@ -125,7 +137,7 @@ public sealed class StatsKitServer
         // visits and bounces day by day, occurrences of the goals: the charts of these figures
         var daily = Umami is null ? null : await Daily.VisitsAsync(Umami, o, ct).ConfigureAwait(false);
         return ReportBuilder.Build(o, texts, r.Theme, _options.SiteName, r.StatsUrl, weekly, _options.WorldMap, r.Glance, blocks,
-            sources?.Search, sources?.Youtube, sources?.Videos, r.SearchUrl, r.YoutubeUrl, daily, Daily.GoalSeries(o, _options.Goals));
+            sources?.Search, sources?.Youtube, sources?.Videos, r.SearchUrl, r.YoutubeUrl, daily, Daily.GoalSeries(o, _options.Goals), business);
     }
 
     /// <summary>Builds the report and hands it to <see cref="ReportOptions.Send"/>.</summary>

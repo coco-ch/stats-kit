@@ -76,6 +76,7 @@ A site tile (`extras.tiles`) may carry a `link` (`{ url, label }`: "Open the req
 What the report contains, in this order:
 
 - a **sentence that sums up the period**, also the preheader of the message ("Quieter week: 404 visitors, 4% fewer; France still in the lead"), and a **subject with the figures** ("Example Workshop — 404 visitors this week (−4%)");
+- the **business figures of the site** when it gives them (`report.business`): requests received and to handle, customers, trials, subscriptions, revenue, documents, messages, costs… in one card, four per row (two by two on a phone), by group, with their change, a small chart, an amber background for what is to handle and a link to the screen where to act; then the state of the services and the alerts. The traffic follows under its own title ("Website audience"). Shown even when Umami is not connected;
 - the **key figures** (visitors, page views, visits, bounce rate) with their change and a **small chart** each (the trend of the period day by day: visitors, page views, visits, bounce rate, and each goal; a period counted by hour, or longer than 31 days, has no chart for visits and bounce rate), then the average duration, pages per visit and visits per visitor, each with its change; the goals;
 - the site data, an "At a glance" card (top source, country, page and entry page, best day, busiest slot; `report.glance: false` to remove it), **rising and falling** pages and sources, the world map, page views per day next to the previous period day by day, the heatmap;
 - **Google** (clicks, impressions, click-through rate, average position, each with its change; top queries; pages gaining clicks) and **YouTube** (views, minutes watched, subscribers, visits and requests from YouTube; most viewed videos), only when the source is connected: no empty block;
@@ -88,6 +89,23 @@ report: {
   // …
   // Site-specific cards, after the rankings, in the site's language (costs, requests, news…). A failure only removes them.
   blocks: async (overview) => [{ title: 'Cost of the site', hint: 'Monthly estimate', figures: [{ value: '$14.30', label: 'per month', sub: '$171.60 per year' }], lines: ['No usage-based service'] }],
+  // Business figures at the top, read at every report, in the site's language (a failure only removes them). Leave out a figure
+  // the site cannot read: never a zero standing for "unknown". `currency`: the number is written as an amount in the report's language.
+  business: async (overview) => ({
+    // title: 'Your business' and hint: 'From your own data, over the same period' by default (report.businessTitle / businessHint)
+    kpis: [
+      { id: 'requests', label: 'Requests received', value: 5, previous: 2, group: 'Requests', series: [0, 1, 0, 2, 1, 0, 1] },
+      { id: 'to-handle', label: 'To handle', value: 2, highlight: true, group: 'Requests', link: { url: 'https://www.example.org/admin/requests', label: 'Open →' } },
+      { id: 'customers', label: 'Customers', value: 12, sub: '3 in trial', group: 'Customers' },
+      { id: 'revenue', label: 'Monthly revenue', value: 1490, previous: 1290, currency: 'EUR', group: 'Customers' },
+      { id: 'costs', label: 'Costs this month', value: 43.5, currency: 'EUR', lowerIsBetter: true },
+    ],
+    status: { tone: 'warn', title: 'One point needs your attention', lines: ['Backup one day late'] }, // 'ok' | 'warn' | 'down'
+    link: { url: 'https://www.example.org/admin', label: 'Open the administration →' },
+  }),
+  // Google and YouTube figures read by the site itself (another kit, its own YouTube reading…): a field given replaces the
+  // connector of this kit, `null` removes the block. Same as `Report.Sources` in .NET.
+  sources: async (range) => ({ youtube: await myYoutubeOverview(range.days), videos: await myTopVideos(range) }),
   // Texts edited in the site's administration, read again at every report (over `texts`; the pages keep the texts of the creation).
   texts: async () => ({ report: { subjectWeekly: await myDb.read('report.subject'), intro: await myDb.read('report.intro') } }),
   // Links at the end of the Google and YouTube blocks, to the pages of the administration.
@@ -130,7 +148,7 @@ app.MapStatsKit("/api/admin/audience").RequireAuthorization("admin");
 ```
 
 - `ReportMessage` has `Subject`, `Html`, `Text` and `Attachments` (`Cid`, `FileName`, `ContentType`, `Content`): send it with Microsoft Graph, SMTP… as the site does. The library sends nothing.
-- The same settings as in Node: `Pages` (languages, labels, groups), `EventLabels`, `Goals`, `Extras` (site data, shown even without Umami), `Report.Blocks` (site-specific cards), `Report.Glance`, `Texts["report.footer"] = "…"` (overrides by path), `BaseTexts` (a language the library does not ship), `CacheTtl`.
+- The same settings as in Node: `Pages` (languages, labels, groups), `EventLabels`, `Goals`, `Extras` (site data, shown even without Umami), `Report.Blocks` (site-specific cards), `Report.Business` (business figures at the top: `ReportBusiness`, `BusinessKpi`, `BusinessStatus`), `Report.Glance`, `Texts["report.footer"] = "…"` (overrides by path), `BaseTexts` (a language the library does not ship), `CacheTtl`.
 - Without ASP.NET routing: `kit.HandleAsync(new KitRequest("GET", "/overview", query))` returns `{ Status, Headers, Body }`; `kit.OverviewAsync()`, `kit.LiveAsync()`, `kit.ReportAsync()`, `kit.SendReportAsync()` give the data. `kit.Umami.GetAsync("stats", …)` reads Umami directly with the same account (for a site's own alerts).
 - Weekly report: register a `WeeklyReportService` (hosted service) with a `WeeklySchedule { Weekday = 1, Hour = 8, TimeZone = "Europe/Paris" }` (a missed report is caught up during `CatchUpDays` days, 3 by default, as in Node), the reading and writing of the last week sent (database: once a week only, even with several instances) and the sending (`(await kit.SendReportAsync(RangeQuery.ForDays(7), weekly: true)).Ok`).
 - Search Console and YouTube are not connected by the .NET server yet: `/search`, `/search/indexation` and `/youtube` answer "not configured" (the pages then show what to do). Their blocks of the report are there: give their figures with `Report.Sources = (range, ct) => …` (`ReportSources(SearchOverview, YoutubeOverview, Videos)`, read for instance from a Node stats-kit server with `ContractJson.Deserialize<SearchOverview>(json)`); without them, no block. Links to the Google and YouTube pages: `Report.SearchUrl`, `Report.YoutubeUrl`; texts read again at every report: `Report.Texts = ct => …` (overrides by path); map and dark-mode colours: `ReportTheme.Map`, `ReportTheme.Dark`; amounts: `Format.Money(kit.Texts, 12.5, "USD")`.

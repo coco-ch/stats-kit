@@ -36,7 +36,8 @@ internal sealed record Palette(
 }
 
 /// <summary>A figure of a row: value, label, line under it (HTML), optional image (HTML).</summary>
-internal sealed record Figure(string Value, string Label, string Sub, string Image = "");
+/// <param name="Tone">"warn": something to do, the figure in amber.</param>
+internal sealed record Figure(string Value, string Label, string Sub, string Image = "", string? Tone = null);
 
 /// <summary>Line of a "rising and falling" list: label, small word after it, change, tone ("up", "down", "flat").</summary>
 internal sealed record MoveRow(string Label, string Tag, string Text, string Tone);
@@ -149,6 +150,28 @@ internal sealed class MailKit(Palette c, Texts texts)
         return string.Concat(rows);
     }
 
+    /// <summary>
+    /// Figures inside a card, <paramref name="columns"/> per row (two by two on a phone): value, label, lines under it, optional
+    /// chart; a "warn" figure on an amber background. Lighter than framed key figures: the message stays under the 102 KB that Gmail shows.
+    /// </summary>
+    public string Tiles(IReadOnlyList<Figure> list, int columns = 4)
+    {
+        var width = Width(columns);
+        string Body(Figure f) =>
+            $"<div {Ts("22px/1.15", 800, c.Ink, c.Display, "letter-spacing:-0.02em")}>{Esc(f.Value)}</div><div {Ts("12px/1.4", 400, c.Muted, c.Font, "margin-top:2px")}>{Esc(f.Label)}</div>{(f.Sub.Length > 0 ? $"<div {Ts("11px/1.5", 400, c.Text, c.Font, "margin-top:4px")}>{f.Sub}</div>" : "")}{f.Image}";
+        string Cell(Figure f) => f.Tone == "warn"
+            ? $"<td class=\"sk-q\" width=\"{width}\" valign=\"top\" style=\"padding:2px 6px 8px 0\"><table {T} class=\"sk-warn\" bgcolor=\"{c.WarnSoft}\" style=\"background:{c.WarnSoft};border-radius:10px\"><tr><td style=\"padding:8px 10px\">{Body(f)}</td></tr></table></td>"
+            : $"<td class=\"sk-q\" width=\"{width}\" valign=\"top\" style=\"padding:10px 16px 16px 10px\">{Body(f)}</td>";
+        var rows = new List<string>();
+        for (var i = 0; i < list.Count; i += columns)
+        {
+            var part = list.Skip(i).Take(columns).Select(Cell).ToList();
+            while (part.Count < columns) part.Add($"<td class=\"sk-q\" width=\"{width}\"></td>");
+            rows.Add($"<tr>{string.Concat(part)}</tr>");
+        }
+        return $"<table {T}>{string.Concat(rows)}</table>";
+    }
+
     /// <summary>Light row of figures inside a card: no frame, a line of figures (two by two on a phone).</summary>
     public string Figures(IReadOnlyList<Figure> list, int columns = 3)
     {
@@ -242,6 +265,18 @@ internal sealed class MailKit(Palette c, Texts texts)
     /// <summary>Sentence that sums up the period, large, under the header.</summary>
     public string Headline(string text) =>
         $"<tr><td class=\"sk-px\" style=\"padding:0 24px 16px\"><table {T} class=\"sk-soft\" bgcolor=\"{c.Soft}\" style=\"background:{c.Soft};border-radius:12px\"><tr><td style=\"padding:14px 18px;border-left:4px solid {c.AccentDeep};border-radius:12px;font-family:{c.Font}\"><div {Ts("17px/1.45", 700, c.Ink, c.Display)}>{Esc(text)}</div></td></tr></table></td></tr>";
+
+    /// <summary>Title of a part of the report, outside the cards.</summary>
+    public string Section(string title) =>
+        $"<tr><td class=\"sk-px\" style=\"padding:4px 24px 10px;font-family:{c.Font}\"><div {Ts("18px/1.3", 800, c.Ink, c.Display, "letter-spacing:-0.01em")}>{Esc(title)}</div></td></tr>";
+
+    /// <summary>State of the services inside a card: a coloured title ("ok" green, "warn" amber, "down" red), the alerts in lines; <paramref name="rule"/>: a line above.</summary>
+    public string Status(string tone, string title, IReadOnlyList<string> lines, bool rule)
+    {
+        var color = tone == "ok" ? c.Up : tone == "down" ? c.Down : c.WarnInk;
+        var cls = string.Join(' ', new[] { tone == "warn" ? "sk-wi" : "", rule ? "sk-bd" : "" }.Where(x => x.Length > 0));
+        return $"<div {Ts("14px/1.4", 700, color, c.Font, rule ? $"margin-top:4px;padding-top:10px;border-top:1px solid {c.Line}" : "", cls)}>{(tone == "ok" ? "✓" : "!")} {Esc(title)}</div>{(lines.Count > 0 ? Bullets(lines) : "")}";
+    }
 
     public string Note(string text) => $"<tr><td class=\"sk-px\" {Ts("13px/1.5", 400, c.Muted, c.Font, $"padding:0 24px 16px;font-family:{c.Font}")}>{Esc(text)}</td></tr>";
     /// <summary>Highlighted site data (requests to handle…), in amber: <c>sk-warn</c> / <c>sk-wi</c> in dark mode.</summary>
