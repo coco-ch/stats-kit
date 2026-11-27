@@ -20,7 +20,7 @@ The package installs straight from Git. Two options:
 
 ```sh
 # Released version: the tag contains the packages already built (immediate installation, recommended)
-npm i github:stats-kit/stats-kit#v0.2.12
+npm i github:stats-kit/stats-kit#v0.2.13
 
 # Main branch: the packages are built at installation ("prepare" script, one to two minutes)
 npm i github:stats-kit/stats-kit
