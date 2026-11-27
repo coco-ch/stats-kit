@@ -348,7 +348,7 @@ npm run dotnet:golden # regenerates the contract fixtures of the .NET server (an
 cd packages/dotnet && dotnet test --project test/StatsKit.Server.Tests   # .NET server: unit and contract tests
 ```
 
-The .NET data and fixtures depend on the ICU data of Node: they are generated with Node 26 (as in CI).
+The .NET data and fixtures depend on the ICU data of Node: they are generated with Node 26, the version used for development and CI (`.nvmrc`). The packages themselves still run on Node 22.18 or later.
 
 The demo (`demo/`) plays the part of a site: it has its own global styles, including deliberately hostile rules, and serves as the ground for the end-to-end tests. Its language menu switches between the shipped languages. The fake services (`demo/fake/services.ts`) imitate Umami, Search Console and YouTube with fictitious, deterministic traffic; nothing leaves the machine.
 
