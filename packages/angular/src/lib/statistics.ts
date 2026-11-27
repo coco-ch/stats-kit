@@ -38,6 +38,9 @@ const today = () => new Date().toISOString().slice(0, 10);
     .sk-pause:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
     .sk-geo { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: var(--k-gap); align-items: start; }
     @media (max-width: 1000px) { .sk-geo { grid-template-columns: minmax(0, 1fr); } }
+    /* also one above the other when the page itself is narrow (a host with a side menu, enlarged text: the threshold is in rem) */
+    .sk-page { container: sk-stats / inline-size; }
+    @container sk-stats (max-width: 40rem) { .sk-geo { grid-template-columns: minmax(0, 1fr); } }
     .sk-map-card { display: grid; gap: .75rem; }
     .sk-map-card__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; }
     .sk-legend { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .25rem .5rem; max-width: 100%; font-size: .76rem; font-weight: var(--k-w-label); color: var(--k-ink2); }
