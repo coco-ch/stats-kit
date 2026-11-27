@@ -7,7 +7,7 @@ Layout of the statistics page with enlarged text, found by an administration tha
 ### Fixed
 
 - **World map and its table with enlarged text in a host with a side menu**: the map card and the countries table stayed side by side as long as the window was wider than 1000 px, even when the page itself was much narrower (a side menu sized in rem grows with the text: at 1024 px with the text at 200 %, the page kept less than 500 px). The map card then got a few dozen pixels, and its title ("Where visits come from") and its legend ran over the table. The two now go one above the other also when the page itself is narrower than 40 rem (a container query on the page: 640 px with the text at its normal size, 1280 px at 200 %).
-- **Zoom buttons of the map with enlarged text**: they kept 32 × 32 px (48 × 48 px on a phone) while their sign grew with the text and came out of them; they are now at least twice the size of their sign (the same size with the text at its normal size).
+- **Zoom buttons of the map and pause button of the live view with enlarged text**: they kept a size in pixels (32 and 34 px, 48 px on a phone) while their sign grew with the text and came out of them; they now grow with their sign (the same size with the text at its normal size).
 
 ### Tests
 

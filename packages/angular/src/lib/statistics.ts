@@ -33,7 +33,7 @@ const today = () => new Date().toISOString().slice(0, 10);
     .sk-badge--stale i { animation: none; }
     @media (prefers-reduced-motion: reduce) { .sk-badge i { animation: none; } }
     @keyframes sk-pulse { 50% { opacity: .35; } }
-    .sk-pause { flex: none; width: 34px; height: 34px; display: inline-grid; place-items: center; font-size: .65rem; color: var(--k-ink2); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: 50%; cursor: pointer; }
+    .sk-pause { flex: none; width: max(34px, 3.25em); height: max(34px, 3.25em); display: inline-grid; place-items: center; font-size: .65rem; color: var(--k-ink2); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: 50%; cursor: pointer; }
     .sk-pause:hover { color: var(--k-brand); border-color: var(--k-brand); }
     .sk-pause:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
     .sk-geo { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr); gap: var(--k-gap); align-items: start; }
@@ -67,7 +67,7 @@ const today = () => new Date().toISOString().slice(0, 10);
       .sk-sessions td[data-label]::before { content: attr(data-label) ' '; color: var(--k-muted); font-size: .76rem; }
       .sk-sessions .sk-num { text-align: left; }
     }
-    @media (max-width: ${PHONE}px) { .sk-pause { width: 48px; height: 48px; } }
+    @media (max-width: ${PHONE}px) { .sk-pause { width: max(48px, 3.25em); height: max(48px, 3.25em); } }
     @media print { .sk-geo, .sk-twin { break-inside: avoid; } .sk-funnel__bar, .sk-funnel__bar::after { print-color-adjust: exact; } }
   `],
   template: `
