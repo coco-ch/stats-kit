@@ -51,10 +51,10 @@ interface Shape { iso: string; d: string; n: number }
     .sk-map__dot { fill: var(--k-map-hi); stroke: var(--k-card); }
     .sk-map__tip { position: absolute; left: .5rem; top: .5rem; max-width: calc(100% - 1rem); overflow-wrap: anywhere; padding: .25rem .55rem; font-size: .8rem; font-weight: var(--k-w-label); color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line); border-radius: 6px; box-shadow: var(--k-shadow); pointer-events: none; }
     .sk-map__zoom { position: absolute; right: .5rem; bottom: .5rem; display: grid; gap: .5rem; }
-    .sk-map__zoom button { width: max(32px, 2em); height: max(32px, 2em); font: inherit; font-size: 1rem; font-weight: var(--k-w-strong); line-height: 1; color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: var(--sk-radius-control, 6px); cursor: pointer; }
+    .sk-map__zoom button { min-width: max(32px, 2em); height: max(32px, 2em); padding: 0 .5rem; font: inherit; font-size: 1rem; font-weight: var(--k-w-strong); line-height: 1; color: var(--k-ink); background: var(--k-card); border: 1px solid var(--k-line2); border-radius: var(--sk-radius-control, 6px); cursor: pointer; }
     .sk-map__zoom button:hover { color: var(--k-brand); border-color: var(--k-brand); }
     .sk-map__zoom button:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
-    @media (max-width: ${PHONE}px) { .sk-map__zoom { grid-auto-flow: column; } .sk-map__zoom button { width: max(48px, 2em); height: max(48px, 2em); } }
+    @media (max-width: ${PHONE}px) { .sk-map__zoom { grid-auto-flow: column; grid-auto-columns: 1fr; } .sk-map__zoom button { min-width: max(48px, 2em); height: max(48px, 2em); } }
     @media print { .sk-map__land, .sk-map__dot { print-color-adjust: exact; } }
   `],
 })
