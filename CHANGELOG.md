@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.13
+
+Spacing of the statistics page, found by an administration that embeds it (it had to override the two rules below). Backward compatible.
+
+### Fixed
+
+- **Zoom buttons of the map**: they were 4 px apart, a fixed gap that did not grow with the text; they are now 0.5 rem apart (8 px with the text at its normal size, 16 px at 200 %), so that a finger or a pointer does not hit the neighbouring button.
+- **Trend badges of the tiles** ("▲ +12 %"): almost no inner margin above and below the text (0.8 px) and 7 px on the sides; they now have 0.125 rem above and below and 0.5 rem on the sides, so that the text does not touch the edge of the badge in fonts with a tall line box.
+
+### Tests
+
+- The layout check has a seventh rule, the same as in the administrations that embed the components: at least 8 px between two neighbouring controls and between a text and a neighbouring control with a visible edge, and between a text and the edge of its container (8 px on the sides, 4 px at the top and bottom, 2 px for a one-line badge). An element marked `data-spacing` (group touching on purpose) is exempt.
+- It runs at the usual widths (now including 390 and 1280 px) in both themes, and with the text enlarged to 200 % at 320, 390, 768, 1024, 1280 and 1366 px.
+
+
 ## 0.2.12
 
 Layout of the statistics page with enlarged text, found by an administration that embeds it. Backward compatible; nothing changes with the text at its normal size.
