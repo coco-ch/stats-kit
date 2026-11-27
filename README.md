@@ -20,7 +20,7 @@ The package installs straight from Git. Two options:
 
 ```sh
 # Released version: the tag contains the packages already built (immediate installation, recommended)
-npm i github:stats-kit/stats-kit#v0.2.11
+npm i github:stats-kit/stats-kit#v0.2.12
 
 # Main branch: the packages are built at installation ("prepare" script, one to two minutes)
 npm i github:stats-kit/stats-kit
@@ -328,7 +328,7 @@ Behaviour changes to check:
 6. **Report**: the map attachment is now `cid:stats-kit-map` / `map.png` (was `stats-kit-carte` / `carte.png`), and `<html lang>` carries the full tag.
 7. **Error messages for developers** (`error` fields of the responses, logs) are in English.
 
-Then install the new tag: `npm i github:stats-kit/stats-kit#v0.2.11`. Details: [CHANGELOG.md](CHANGELOG.md).
+Then install the new tag: `npm i github:stats-kit/stats-kit#v0.2.12`. Details: [CHANGELOG.md](CHANGELOG.md).
 
 ## Development
 
