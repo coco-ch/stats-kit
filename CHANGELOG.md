@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.12
+
+Layout of the statistics page with enlarged text, found by an administration that embeds it. Backward compatible; nothing changes with the text at its normal size.
+
+### Fixed
+
+- **World map and its table with enlarged text in a host with a side menu**: the map card and the countries table stayed side by side as long as the window was wider than 1000 px, even when the page itself was much narrower (a side menu sized in rem grows with the text: at 1024 px with the text at 200 %, the page kept less than 500 px). The map card then got a few dozen pixels, and its title ("Where visits come from") and its legend ran over the table. The two now go one above the other also when the page itself is narrower than 40 rem (a container query on the page: 640 px with the text at its normal size, 1280 px at 200 %).
+- **Zoom buttons of the map and pause button of the live view with enlarged text**: they kept a size in pixels (32 and 34 px, 48 px on a phone) while their sign grew with the text and came out of them; they now grow with their sign (the same size with the text at its normal size).
+
+### Tests
+
+- The layout check with the text enlarged to 200 % now also runs at 1024 and 1366 px, and each page is checked inside a host with a side menu sized in rem (normal and enlarged text).
+
 ## 0.2.11
 
 The site's own business figures at the top of the report, the same in Node and .NET. Backward compatible: a site that gives none gets the same report as before.
