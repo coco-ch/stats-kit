@@ -52,7 +52,7 @@ const ZERO = /^(?:0(?:[,.]0+)?(?:\s?%)?|—)$/;
     .sk-tile__link { display: inline-flex; align-items: center; min-height: 24px; font-weight: var(--k-w-label); color: var(--k-brand); }
     .sk-tile__link:focus-visible { outline: 2px solid var(--k-brand); outline-offset: 2px; }
     @media (max-width: ${PHONE}px) { .sk-tile__link { min-height: 48px; } }
-    .sk-d { display: inline-block; max-width: 100%; padding: .05rem .45rem; border-radius: 999px; font-style: normal; font-size: .74rem; font-weight: var(--k-w-strong); line-height: 1.45; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--k-badge); color: var(--k-muted); }
+    .sk-d { display: inline-block; max-width: 100%; padding: .125rem .5rem; border-radius: 999px; font-style: normal; font-size: .74rem; font-weight: var(--k-w-strong); line-height: 1.45; white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--k-badge); color: var(--k-muted); }
     .sk-d--up { background: var(--k-up-soft); color: var(--k-up); }
     .sk-d--down { background: var(--k-down-soft); color: var(--k-down); }
     svg.sk-spark { display: block !important; width: 100% !important; height: 22px !important; max-width: none !important; overflow: visible; }

@@ -4,14 +4,14 @@ import { checkLayout, enlargeText, line } from './layout.ts';
 
 /*
  * Layout of the three pages, as a host administration shows them: no horizontal scrolling, nothing out of the window or of its
- * card, no overlap, no cut text, 48 × 48 px tap targets at phone widths. Every page in a wide font, at the usual widths in both
- * themes, then with the text enlarged to 200 % (text size setting of a phone, or of the browser on a computer) at 320, 375, 1024
- * and 1366 px, in English and in German (longest words), and inside a host with a side menu sized in rem (it grows with the text, as
- * in most administrations: the page gets narrow in a wide window).
+ * card, no overlap, no cut text, 48 × 48 px tap targets at phone widths, 8 px between neighbouring controls and around texts.
+ * Every page in a wide font, at the usual widths in both themes, then with the text enlarged to 200 % (text size setting of a phone,
+ * or of the browser on a computer) from 320 to 1366 px, in English and in German (longest words), and inside a host with a side menu
+ * sized in rem (it grows with the text, as in most administrations: the page gets narrow in a wide window).
  */
 const PAGES = [{ name: 'statistics', hash: '' }, { name: 'google', hash: '#google' }, { name: 'youtube', hash: '#youtube' }];
-const WIDTHS = [320, 375, 412, 768, 1024, 1366, 1440, 1920];
-const ENLARGED = [320, 375, 1024, 1366];
+const WIDTHS = [320, 375, 390, 412, 768, 1024, 1280, 1366, 1440, 1920];
+const ENLARGED = [320, 390, 768, 1024, 1280, 1366];
 /** Side menu of the host, in rem: 20 rem, 640 px with the text at 200 %. */
 const SIDE_MENU = 'main { margin-left: 20rem !important; }';
 /** Wide font (Verdana on Windows and macOS, DejaVu Sans on Linux): words at least as long as with the default fonts of any system. */

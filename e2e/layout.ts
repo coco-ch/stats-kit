@@ -1,7 +1,7 @@
 /*
  * Automatic layout check of the page as displayed, at the current width (same rules as the administration consoles that embed
  * the components). Only the elements inside `root` (the library's components) are checked, plus the horizontal scrolling of the
- * whole page. Six checks:
+ * whole page. Seven checks:
  *  1. horizontal scrolling of the page;
  *  2. element (text or control) that leaves the window;
  *  3. element that leaves its closest container with a visible edge (border, background or shadow: card, button, field, badge…);
@@ -9,7 +9,8 @@
  *     both directions, without a parent-child relation, in the same layer;
  *  5. text cut on a button or a heading (overflow, ellipsis);
  *  6. tap target smaller than 48 × 48 px at phone widths (PHONE and below); a link inside running text is exempt (WCAG 2.5.8), a
- *     checkbox or radio button counts with its label.
+ *     checkbox or radio button counts with its label;
+ *  7. spacing: neighbouring controls, text and a control, text and the edge of its container (SPACE px, see below).
  * Layers: a fixed element, an open `<dialog>`, an open `[popover]` or an element with `data-overlay` is drawn on top of the rest on
  * purpose; its elements are only compared with each other.
  */
@@ -19,15 +20,18 @@ import type { Page } from '@playwright/test';
 export const THRESHOLD = 4;
 /** Minimum tap target (48 px; half a pixel of margin for rounding). */
 export const TAP = 47.5;
+/** Minimum space (pixels) between two neighbouring controls, between a text and a control with a visible edge, and between a text and
+ *  the edge of its container on the sides (half of it at the top and bottom). */
+export const SPACE = 8;
 /** Widths below which (inclusive) tap targets are checked. */
 export const PHONE = 760;
 
-export type DefectKind = 'scroll' | 'window' | 'container' | 'overlap' | 'cut' | 'tap';
+export type DefectKind = 'scroll' | 'window' | 'container' | 'overlap' | 'cut' | 'tap' | 'spacing';
 export interface Box { x: number; y: number; w: number; h: number }
 export interface Target { sel: string; box: Box }
 export interface Defect { kind: DefectKind; a: Target; b?: Target; detail: string }
 
-interface Options { root: string; phone: boolean; threshold: number; tap: number }
+interface Options { root: string; phone: boolean; threshold: number; tap: number; space: number }
 
 /** Analysis run in the page (self-contained function: it is serialised by Playwright). */
 function analyse(o: Options): Defect[] {
@@ -95,7 +99,7 @@ function analyse(o: Options): Defect[] {
 
   // ---- leaves: displayed text fragments (one box per line) and controls
   const CONTROLS = 'a[href], button, input:not([type=hidden]), select, textarea, summary, [role=button], [role=link], [role=tab], [role=checkbox], [role=radio], [role=switch], [role=option], [role=combobox], [tabindex]:not([tabindex="-1"])';
-  type Leaf = { e: Element; r: R; c: Element | null; control: boolean };
+  type Leaf = { e: Element; r: R; c: Element | null; control: boolean; clipped?: boolean };
   const leaves: Leaf[] = [];
   for (const e of all(CONTROLS).filter((e) => visible(e) && !srOnly(e))) {
     // an inline link broken over two lines counts for its two pieces, not for the rectangle that holds them
@@ -115,7 +119,7 @@ function analyse(o: Options): Defect[] {
       const c = layer(e), cp = clip(e);
       for (const fr of range.getClientRects()) {
         const r = inter(rect(fr), cp);
-        if (!empty(r) && fr.width > 1) leaves.push({ e, r, c, control: false });
+        if (!empty(r) && fr.width > 1) leaves.push({ e, r, c, control: false, clipped: r.l > fr.left + 0.5 || r.r < fr.right - 0.5 || r.t > fr.top + 0.5 || r.b < fr.bottom - 0.5 });
       }
     }
   }
@@ -218,6 +222,95 @@ function analyse(o: Options): Defect[] {
       }
     }
   }
+  // 7. spacing ("buttons touching, texts touching, no margins"):
+  //    a. two neighbouring controls (side by side or one above the other) less than SPACE px apart;
+  //    b. a text (outside a control) touching a neighbouring control with a visible edge (button, field, clickable chip);
+  //    c. a text (control labels included) too close to the visible edge of its container (inner margin): SPACE px on the sides,
+  //       SPACE / 2 at the top and bottom (a line of text already carries its line spacing: 4 px above and below the text box give
+  //       8 px to the eye); SPACE / 4 only for a one-line badge (container less than twice as tall as its text: badge, counter),
+  //       whose height makes it readable; a text cut by a frame that scrolls does not count.
+  //    The VISIBLE boxes are measured: the rectangle of a control with a visible edge, the content (text, icon) of a control
+  //    without one (link, quiet button), so that the transparent tap area does not count.
+  //    Two controls without an edge one above the other (list of links, menu) are only compared side by side: that is the line
+  //    spacing of a list. A label and the field it names (label > field) go together. Exempt: links inside running text, elements
+  //    marked `data-spacing` (group touching on purpose, with its reason as value).
+  const exempt = (e: Element) => !!e.closest('[data-spacing]');
+  const inText = (e: Element) => e.tagName === 'A' && st(e).display === 'inline' && [...e.parentElement!.childNodes].some((n) => n !== e && (n.textContent ?? '').trim());
+  const rangeS = document.createRange();
+  const visibleBox = (e: Element): R => {
+    if (edged(e) || ['INPUT', 'SELECT', 'TEXTAREA', 'IMG', 'svg'].includes(e.tagName)) return rect(e.getBoundingClientRect());
+    rangeS.selectNodeContents(e);
+    const r = rangeS.getBoundingClientRect();
+    return r.width > 0.5 && r.height > 0.5 ? rect(r) : rect(e.getBoundingClientRect());
+  };
+  /** Gap between two neighbouring boxes (side by side or one above the other); null if they overlap or are only diagonal. */
+  const gap = (a: R, b: R): number | null => {
+    const dx = Math.max(b.l - a.r, a.l - b.r), dy = Math.max(b.t - a.b, a.t - b.b);
+    if (dx > 0 && dy < -o.threshold) return dx;
+    if (dy > 0 && dx < -o.threshold) return dy;
+    return null;
+  };
+  const controls = [...new Set(leaves.filter((f) => f.control).map((f) => f.e))]
+    .filter((e) => !exempt(e) && !inText(e) && !e.matches('[tabindex]:not(a, button, input, select, textarea, summary, [role])'))
+    .map((e) => ({ e, r: inter(visibleBox(e), clip(e.parentElement)), c: layer(e), edge: edged(e) || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.tagName) }))
+    .filter((x) => !empty(x.r));
+  const seenS = new Set<string>();
+  const report = (a: Element, ra: R, b: Element, rb: R, d: number, what: string) => {
+    const sa = describe(a), sb = describe(b), key = sa < sb ? sa + '|' + sb : sb + '|' + sa;
+    if (seenS.has(key)) return;
+    seenS.add(key);
+    defects.push({ kind: 'spacing', a: { sel: sa, box: box(ra) }, b: { sel: sb, box: box(rb) }, detail: `${what}: ${Math.round(d * 10) / 10} px (${o.space} at least)` });
+  };
+  // a. neighbouring controls (1 px of tolerance everywhere: text boxes carry the side bearings of the font)
+  for (let i = 0; i < controls.length; i++) for (let j = i + 1; j < controls.length; j++) {
+    const a = controls[i]!, b = controls[j]!;
+    if (a.c !== b.c || a.e.contains(b.e) || b.e.contains(a.e)) continue;
+    const d = gap(a.r, b.r);
+    const stacked = Math.max(b.r.t - a.r.b, a.r.t - b.r.b) > 0;
+    if (stacked && !a.edge && !b.edge) continue;
+    if (d !== null && d < o.space - 1) report(a.e, a.r, b.e, b.r, d, 'controls too close');
+  }
+  // b. and c. texts (outside controls): next to a control with a visible edge, then inner margin of their container with a visible edge
+  const texts = leaves.filter((f) => !f.control && !exempt(f.e) && !f.e.closest('svg')); // text of a drawing: part of the picture
+  const edgedControls = controls.filter((x) => x.edge);
+  const marginSeen = new Set<string>();
+  for (const f of texts) {
+    if (!f.e.closest(CONTROLS)) for (const x of edgedControls) {
+      if (x.c !== f.c || x.e.contains(f.e) || f.e.closest('label')?.contains(x.e)) continue;
+      const d = gap(f.r, x.r);
+      if (d !== null && d < o.space - 1) report(f.e, f.r, x.e, x.r, d, 'text touching a control');
+    }
+    let x: Element | null = f.e;
+    for (; x && x !== document.body; x = x.parentElement) {
+      if (edged(x)) break;
+      const p = st(x).position;
+      if (p === 'absolute' || p === 'fixed') { x = null; break; }
+    }
+    if (!x || x === document.body || !inside(x) || exempt(x) || !visible(x) || f.clipped) continue;
+    // badge laid over an icon: it reads as a mark, not as a text
+    if (st(x).position === 'absolute' && x.getBoundingClientRect().height < 2 * (f.r.b - f.r.t)) continue;
+    const s = st(x);
+    if (s.display === 'inline' && ['top', 'right', 'bottom', 'left'].every((k) => !parseFloat(s.getPropertyValue(`padding-${k}`)))) continue;
+    const filled = s.boxShadow !== 'none' || (shows(s.backgroundColor) && s.backgroundColor !== backgroundOf(x.parentElement));
+    // inline element broken over several lines: the line of the text is measured; frame that scrolls: its content goes on past the edge
+    const lines = s.display === 'inline' ? [...x.getClientRects()].filter((r) => r.bottom > f.r.t && r.top < f.r.b) : [];
+    const hx = x as HTMLElement;
+    if ((s.overflowX !== 'visible' && hx.scrollWidth > hx.clientWidth + 1) || (s.overflowY !== 'visible' && hx.scrollHeight > hx.clientHeight + 1)) continue;
+    const cr = rect(lines[0] ?? x.getBoundingClientRect());
+    const vertical = cr.b - cr.t < 2 * (f.r.b - f.r.t) ? o.space / 4 : o.space / 2;
+    const side = (k: 'top' | 'right' | 'bottom' | 'left') => filled || (parseFloat(s.getPropertyValue(`border-${k}-width`)) > 0 && shows(s.getPropertyValue(`border-${k}-color`)) && s.getPropertyValue(`border-${k}-style`) !== 'none');
+    const bw = (k: string) => parseFloat(s.getPropertyValue(`border-${k}-width`)) || 0;
+    const sides: [boolean, number, number][] = [
+      [side('left'), f.r.l - cr.l - bw('left'), o.space], [side('right'), cr.r - bw('right') - f.r.r, o.space],
+      [side('top'), f.r.t - cr.t - bw('top'), vertical], [side('bottom'), cr.b - bw('bottom') - f.r.b, vertical],
+    ];
+    const short = sides.filter(([v, d, min]) => v && d > -2 && d < min - 1).sort((m, n) => (m[1] - m[2]) - (n[1] - n[2]))[0];
+    if (!short) continue;
+    const key = describe(x);
+    if (marginSeen.has(key)) continue;
+    marginSeen.add(key);
+    defects.push({ kind: 'spacing', a: { sel: describe(f.e), box: box(f.r) }, b: { sel: key, box: box(cr) }, detail: `text ${Math.round(short[1] * 10) / 10} px from the edge of its container (${short[2]} at least)` });
+  }
   return defects;
 }
 
@@ -235,7 +328,7 @@ export async function checkLayout(p: Page, root = 'main'): Promise<Defect[]> {
   await settle(p);
   await p.evaluate(() => window.scrollTo(0, 0));
   await settle(p);
-  return p.evaluate(analyse, { root, phone: p.viewportSize()!.width <= PHONE, threshold: THRESHOLD, tap: TAP });
+  return p.evaluate(analyse, { root, phone: p.viewportSize()!.width <= PHONE, threshold: THRESHOLD, tap: TAP, space: SPACE });
 }
 
 /**
