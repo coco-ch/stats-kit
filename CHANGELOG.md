@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.14
+
+Found by a second administration with its own font. Backward compatible.
+
+### Fixed
+
+- **Zoom buttons of the map with a wide sign**: they were exactly twice as wide as their font size, so a font that draws "⟲" wider than usual left less than 8 px between the sign and the edge of the button. They now have 0.5 rem of inner margin on the sides and grow with their sign (same size as before with the usual fonts); on a phone the three buttons keep the same width.
+
 ## 0.2.13
 
 Spacing of the statistics page, found by an administration that embeds it (it had to override the two rules below). Backward compatible.
